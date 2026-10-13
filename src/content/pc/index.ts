@@ -13,6 +13,7 @@ import complexMatrices from "./complex-matrices";
 import vectors from "./vectors";
 import parametric from "./parametric";
 import recursive from "./recursive";
+import challenges from "./challenges";
 
 const topics: Topic[] = [
   { id: "pc-compose-inverse", course: "pc", unit: 1, strand: "algebra", family: "functions", title: "Composition & Inverses", standards: "PC.F.5.1–F.5.7", blurb: "Chain functions together, take them apart, and undo them.", icon: "∘" },
@@ -31,5 +32,5 @@ const topics: Topic[] = [
 ];
 const skills: Skill[] = [...composeInverse, ...transformations, ...rational, ...explog, ...unitCircle, ...trigGraphs, ...trigEquations, ...triangles, ...conics, ...complexMatrices, ...vectors, ...parametric, ...recursive];
 
-const content: CourseContent = { topics, skills };
+const content: CourseContent = { topics, skills, challenges };
 export default content;

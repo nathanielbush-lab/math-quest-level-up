@@ -58,7 +58,7 @@ const radians: Skill = {
       return {
         prompt: `Convert ${angText(A)} radians to degrees.`,
         answer: num(deg, { unit: DEG }),
-        hints: ["Multiply by {180/π}. The π's cancel.", `${angText(A)} · {180/π} = {${A.n} · 180/${A.d}}.`],
+        hints: ["Multiply by {180/π}. The π's cancel.", `${angText(A)} · {180/π} = {${ms(A.n)} · 180/${A.d}}.`],
         steps: [st("Multiply by 180/π.", `${angText(A)} · {180/π} = {${ms(A.n)} · 180/${A.d}}`), st("Simplify.", `= ${ms(deg)}${DEG}`)],
         traps: traps(frac(deg), [trap(frac(A.n * 180, A.d * 2), "π radians is 180°, not 360°."), trap(frac(A.n, A.d), "That's the multiple of π. Multiply by 180 to get degrees.")]),
       };

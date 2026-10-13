@@ -217,7 +217,7 @@ const context: Skill = {
       prompt: `B(0) = ${B0} and B(n) = ${g}B(n − 1) + ${dep} gives a savings balance after n months. Find B(${k}), to the nearest cent.`,
       answer: num(seq[k], { tolerance: 0.011, pre: "$" }),
       hints: [`B(1) = ${g}(${B0}) + ${dep}.`, "Apply the rule again, rounding to cents each month."],
-      steps: seq.slice(1).map((v, i) => st(`B(${i + 1}).`, `${g}(${seq[i]}) + ${dep} = ${v.toFixed(2)}`)),
+      steps: seq.slice(1).map((v, i) => st(`B(${i + 1}).`, `${g}(${seq[i].toFixed(2)}) + ${dep} = ${v.toFixed(2)}`)),
       traps: traps(frac(Math.round(seq[k] * 100), 100), [trap(B0 + k * dep, "You left out the interest."), trap(seq[k - 1], `That's B(${k - 1}).`)]),
     };
   },

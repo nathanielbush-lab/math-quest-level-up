@@ -155,7 +155,7 @@ const cosinesSide: Skill = {
       prompt: `In triangle ABC, a = ${a}, b = ${b} and C = ${C}${DEG}. Find c to the nearest tenth.`,
       visual: vis,
       answer: ans1(c),
-      hints: ["Two sides and the included angle: use the Law of Cosines.", `c^2 = ${a}^2 + ${b}^2 − 2(${a})(${b}) cos ${C}°.`, `2(${a})(${b}) cos ${C}° ≈ ${(2 * a * b * cosD(C)).toFixed(2)}. Subtract it from ${a * a + b * b}, then take the square root.`],
+      hints: ["Two sides and the included angle: use the Law of Cosines.", `c^2 = ${a}^2 + ${b}^2 − 2(${a})(${b}) cos ${C}°.`, `2(${a})(${b}) cos ${C}° ≈ ${ms((2 * a * b * cosD(C)).toFixed(2))}. Subtract it from ${a * a + b * b}, then take the square root.`],
       steps: [
         st("Law of Cosines.", `c^2 = ${a}^2 + ${b}^2 − 2(${a})(${b}) cos ${C}°`),
         st("Compute.", `c^2 = ${a * a + b * b} − ${(2 * a * b * cosD(C)).toFixed(2).replace("-", "(−") + (cosD(C) < 0 ? ")" : "")} ≈ ${c2.toFixed(2)}`),
@@ -202,7 +202,7 @@ const cosinesAngle: Skill = {
       prompt: `A triangle has sides a = ${a}, b = ${b} and c = ${c}. Find angle C (opposite side c) to the nearest tenth of a degree.`,
       visual: figSSS(a, b, c, { a: String(a), b: String(b), c: String(c), C: "C" }),
       answer: ans1(C, DEG),
-      hints: [`cos C = {a^2 + b^2 − c^2/2ab}.`, `cos C = {${a * a} + ${b * b} − ${c * c}/2(${a})(${b})} = {${a * a + b * b - c * c}/${2 * a * b}}. Then use inverse cosine.`],
+      hints: [`cos C = {a^2 + b^2 − c^2/2ab}.`, `cos C = {${a * a} + ${b * b} − ${c * c}/2(${a})(${b})} = {${ms(a * a + b * b - c * c)}/${2 * a * b}}. Then use inverse cosine.`],
       steps: [st("Law of Cosines solved for cos C.", `cos C = {${a}^2 + ${b}^2 − ${c}^2/2(${a})(${b})}`), st("Compute.", `cos C = {${ms(a * a + b * b - c * c)}/${2 * a * b}} ≈ ${ms(cosC.toFixed(4))}`), st("Inverse cosine.", `C ≈ ${f1(C)}°${cosC < 0 ? " (obtuse, since cos C < 0)" : ""}`)],
       traps: trapsTol(round(C, 1), TOL, [trap(round(180 - C, 1), "Check the sign of cos C: negative means obtuse, positive means acute."), trap(round(degOf(Math.acos(Math.max(-1, Math.min(1, (c * c - a * a - b * b) / (2 * a * b))))), 1), "The c² term is subtracted: a² + b² − c² on top.")]),
     };
