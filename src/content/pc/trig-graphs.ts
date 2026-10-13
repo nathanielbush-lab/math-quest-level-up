@@ -1,5 +1,5 @@
 // Unit 6: Graphs of the trig functions and sinusoidal models (PC.F.1.1–PC.F.1.4).
-import { choice, cst, expr, ms, num, trap } from "../helpers";
+import { choice, cst, expr, ms, num, sn, trap } from "../helpers";
 import { frac } from "../../lib/rational";
 import { st } from "../steps";
 import type { Skill } from "../types";
@@ -174,7 +174,7 @@ const fromGraph: Skill = {
       ],
       steps: [
         st("Midline.", `y = {${ms(D + A)} + ${ms(D - A).replace(/^−/, "(−") + (D - A < 0 ? ")" : "")}/2} = ${ms(D)}`),
-        st("Amplitude.", `${ms(D + A)} − ${ms(D)} = ${A}`),
+        st("Amplitude.", `${ms(D + A)} − ${sn(D)} = ${A}`),
         st("Period.", `Max to min takes ${k}, so the period is ${P}: B = {2π/${P}} = {π/${k}}.`),
         st(flip ? "A minimum is at the start, so use −cos." : "Cosine starts at a maximum.", `Shift: ${C === 0 ? "none" : `${C} to the right`}.`),
         st("Equation.", `y = ${sinText(s)}`),
@@ -305,7 +305,7 @@ const other: Skill = {
         prompt: `Which line is a vertical asymptote of y = ${fn}(${bD})?`,
         answer: choice(r, correct, half ? choices : choices.slice(0, 2)),
         hints: [half ? `${fn} has asymptotes where cos(${bD}) = 0.` : `${fn} has asymptotes where sin(${bD}) = 0.`, half ? `cos is 0 at {π/2}. Solve ${bD} = {π/2}.` : `sin is 0 at π (and 0). Solve ${bD} = π.`],
-        steps: [st("Where is the function undefined?", half ? `${fn} = {${fn === "tan" ? "sin" : "1"}/cos}: not defined when cos(${bD}) = 0.` : `${fn} = {${fn === "cot" ? "cos" : "1"}/sin}: not defined when sin(${bD}) = 0.`), st("Solve.", `${bD} = ${half ? "{π/2}" : "π"} gives x = ${angText(first)}.`)],
+        steps: [st("Where does the function not exist?", half ? `${fn} = {${fn === "tan" ? "sin" : "1"}/cos}: not defined when cos(${bD}) = 0.` : `${fn} = {${fn === "cot" ? "cos" : "1"}/sin}: not defined when sin(${bD}) = 0.`), st("Solve.", `${bD} = ${half ? "{π/2}" : "π"} gives x = ${angText(first)}.`)],
       };
     }
     const sec = r.chance(0.5);
@@ -354,7 +354,7 @@ const contextSolve: Skill = {
         prompt: `A Ferris wheel rider's height is ${model} meters, t minutes after boarding. Find the height after ${t} minutes.`,
         answer: num(h, { unit: " m" }),
         hints: [`Substitute t = ${t}: the angle is {π · ${t}/${k}}.`, `cos({π · ${t}/${k}}) = ${ms(Math.round(c * 100) / 100)}.`],
-        steps: [st("Substitute.", `h(${t}) = ${hub} − ${R} cos({${t}π/${k}})`), st("Evaluate cosine.", `cos(${angText(ang(t, k))}) = ${ms(Math.round(c * 100) / 100)}`), st("Finish.", `${hub} − ${R} · ${ms(Math.round(c * 100) / 100).replace(/^−/, "(−") + (c < 0 ? ")" : "")} = ${h} m`)],
+        steps: [st("Substitute.", `h(${t}) = ${hub} − ${R} cos({${t}π/${k}}) = ${hub} − ${R} cos(${angText(ang(t, k))})`), st("Evaluate cosine.", `cos(${angText(ang(t, k))}) = ${ms(Math.round(c * 100) / 100)}`), st("Finish.", `${hub} − ${R} · ${ms(Math.round(c * 100) / 100).replace(/^−/, "(−") + (c < 0 ? ")" : "")} = ${h} m`)],
         traps: trapsTol(h, 0, [trap(Math.round((hub - R * Math.cos(t)) * 100) / 100, "Your calculator was in degree mode, or you dropped the π/" + k + ". Use radians."), trap(hub - R, "That's the height at t = 0.")].filter((x) => Number.isFinite(x.value.n))),
       };
     }

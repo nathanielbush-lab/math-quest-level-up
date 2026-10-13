@@ -471,7 +471,7 @@ const solveLog: Skill = {
     tip: "Always plug answers back into the ORIGINAL equation. Combining logs can create fake solutions.",
   },
   why: [
-    { kind: "choice", prompt: "Why can solving log(x) + log(x − 3) = 1 produce an extraneous solution?", choices: ["Combining into log(x(x − 3)) allows negative x where x(x − 3) is positive, but log(x) itself isn't defined there.", "Because logs are always extraneous.", "Because the quadratic formula is unreliable.", "Because 1 isn't a log."], correct: 0, explain: "The combined equation has a bigger domain than the original. A negative x can make x(x − 3) positive even though log(x) is undefined." },
+    { kind: "choice", prompt: "Why can solving log(x) + log(x − 3) = 1 produce an extraneous solution?", choices: ["Combining into log(x(x − 3)) allows negative x where x(x − 3) is positive, but log(x) itself isn't defined there.", "Because logs are always extraneous.", "Because the quadratic formula is unreliable.", "Because 1 isn't a log."], correct: 0, explain: "The combined equation has a bigger domain than the original. A negative x can make x(x − 3) positive even though log(x) is not defined." },
     { kind: "written", prompt: "Explain how to solve log_5(2x + 3) = 2.", keyIdeas: ["rewrite as 5^2 = 2x + 3", "25 = 2x + 3", "x = 11", "check 2(11) + 3 = 25 > 0"], exemplar: "The log equation means 5 to the 2nd power equals 2x + 3. So 2x + 3 = 25, 2x = 22, x = 11. Checking: 2(11) + 3 = 25 is positive and log_5(25) = 2." },
   ],
   generate(r, lv) {

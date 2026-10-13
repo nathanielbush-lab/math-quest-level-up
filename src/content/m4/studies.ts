@@ -89,12 +89,12 @@ const POPS = [
 ];
 function sampleScene(method: string, P: (typeof POPS)[number], name: string): string {
   switch (method) {
-    case "srs": return `${name} numbers everyone on ${P.list} and uses a random number generator to choose 100 of them.`;
-    case "stratified": return `${name} separates ${P.pop} by ${P.groups} and randomly selects 25 people from each group.`;
-    case "cluster": return `${name} randomly selects ${P.cluster} and surveys every person in them.`;
-    case "systematic": return `${name} picks a random number from 1 to 15, then surveys that person and every 15th person among the ${P.line}.`;
-    case "convenience": return `${name} surveys the first 60 ${P.line} one morning.`;
-    default: return `${name} posts an online link and uses the responses from whoever chooses to answer.`;
+    case "srs": return `To survey ${P.pop}, ${name} numbers everyone on ${P.list} and uses a random number generator to choose 100 of them.`;
+    case "stratified": return `To survey ${P.pop}, ${name} separates them by ${P.groups} and randomly selects 25 people from each group.`;
+    case "cluster": return `To survey ${P.pop}, ${name} randomly selects ${P.cluster} and surveys every person in them.`;
+    case "systematic": return `To survey ${P.pop}, ${name} picks a random number from 1 to 15, then surveys that person and every 15th person among the ${P.line}.`;
+    case "convenience": return `To survey ${P.pop}, ${name} asks the first 60 ${P.line} one morning.`;
+    default: return `To survey ${P.pop}, ${name} posts an online link and uses the responses from whoever chooses to answer.`;
   }
 }
 
@@ -145,7 +145,7 @@ const sampling: Skill = {
       voluntary: "people chose for themselves whether to respond",
     };
     return {
-      prompt: `To study ${P.pop}: ${sampleScene(m, P, name)} What kind of sample is this?`,
+      prompt: `${sampleScene(m, P, name)} What kind of sample is this?`,
       answer: choice(r, METHODS[m], others.map((o) => [METHODS[o], `In a ${METHODS[o].toLowerCase()}, ${desc[o]}.`] as [string, string])),
       hints: ["Was chance used? If so, was it used on individuals, on groups, or within groups?", "Within every group → stratified. Whole groups → cluster. Every kth → systematic."],
       steps: [st("How were people chosen?", desc[m][0].toUpperCase() + desc[m].slice(1) + "."), st("Answer.", METHODS[m])],
@@ -397,7 +397,7 @@ const media: Skill = {
       dens.forEach((d, i) => { if (i !== best && d === dens[best]) dens[i] = d - 1; });
       best = dens.indexOf(Math.max(...dens));
       const counts = widths.map((w, i) => w * dens[i]);
-      const bins = widths.map((w, i) => ({ from: edges[i], to: edges[i + 1], count: counts[i] }));
+      const bins = widths.map((_, i) => ({ from: edges[i], to: edges[i + 1], count: counts[i] }));
       const label = (i: number) => `${edges[i]}–${edges[i + 1]}`;
       const tallest = counts.indexOf(Math.max(...counts));
       return {

@@ -68,7 +68,7 @@ const radians: Skill = {
       return {
         prompt: `Convert ${piText(n, d)} radians to degrees.`,
         answer: num(deg, { unit: "°" }),
-        hints: ["Multiply by {180/π}. The π's cancel.", `${piText(n, d)} · {180/π} = {${n === 1 ? "" : n} · 180/${d}}.`],
+        hints: ["Multiply by {180/π}. The π's cancel.", `${piText(n, d)} · {180/π} = {${n === 1 ? "180" : `${n} · 180`}/${d}}.`],
         steps: [st("Multiply by 180/π.", `${piText(n, d)} · {180/π} = {${n === 1 ? "180" : `${n} · 180`}/${d}}`), st("Compute.", `= ${deg}°`)],
         traps: traps(frac(deg), [trap(frac(180 * d, n), "You flipped the fraction. Multiply by {180/π}, so the 180 multiplies the top."), trap(Math.round((n / d) * Math.PI * 100) / 100, "That's the radian measure as a decimal, not degrees.")]),
       };
@@ -416,19 +416,21 @@ const model: Skill = {
       };
     }
     if (r.chance(0.5)) {
-      const k = r.pick([1, 2, 4, 5]);
-      const t = (Tm * k) / 12;
-      const v = A * Math.sin((2 * Math.PI * t) / Tm) + C;
-      const ans = Math.round(v * 100) / 100;
+      let t = r.int(1, Tm - 1);
+      if (t * 4 === Tm || t * 4 === 3 * Tm || t * 2 === Tm) t = Math.min(Tm - 1, t + 1);
+      const ang = piReduce(2 * t, Tm);
+      const sv = Math.sin((2 * Math.PI * t) / Tm);
+      const ans = Math.round((A * sv + C) * 100) / 100;
       return {
-        prompt: `${intro} The model is h(t) = ${A} sin(${piText(b.n, b.d)}t) + ${C}. How high are you after ${dn(t)} minutes? Round to the nearest hundredth.`,
+        prompt: `${intro} The model is h(t) = ${A} sin(${piText(b.n, b.d)}t) + ${C}. How high are you after ${t} minute${t === 1 ? "" : "s"}? Round to the nearest hundredth.`,
         answer: num(ans, { tolerance: 0.01, unit: " m" }),
-        hints: [`Substitute t = ${dn(t)}. Make sure your calculator is in radian mode.`, `${piText(b.n, b.d)} · ${dn(t)} = ${piText(k, 6)}, and sin(${piText(k, 6)}) = ${trigExact(Math.sin((k * Math.PI) / 6)).display}.`],
+        hints: [`Substitute t = ${t}. Make sure your calculator is in radian mode.`, `${piText(b.n, b.d)} · ${t} = ${piText(ang.n, ang.d)}, and sin(${piText(ang.n, ang.d)}) ≈ ${dn(sv, 4)}.`],
         steps: [
-          st("Substitute.", `h(${dn(t)}) = ${A} sin(${piText(b.n, b.d)} · ${dn(t)}) + ${C} = ${A} sin(${piText(k, 6)}) + ${C}`),
-          st("Evaluate.", `${A} · ${trigExact(Math.sin((k * Math.PI) / 6)).display} + ${C} ≈ ${dn(ans)} m`),
+          st("Substitute.", `h(${t}) = ${A} sin(${piText(b.n, b.d)} · ${t}) + ${C} = ${A} sin(${piText(ang.n, ang.d)}) + ${C}`),
+          st("Evaluate (radian mode).", `${A} · ${dn(sv, 4)} + ${C} ≈ ${dn(ans)} m`),
+          st("Make sense of it.", `${ans > C ? "Above" : "Below"} the center height of ${C} m, which fits being ${t} of ${Tm} minutes into the ride.`),
         ],
-        traps: trapsTol(ans, 0.01, [[A * Math.sin((2 * Math.PI * t) / Tm * (Math.PI / 180)) + C, "Your calculator is in degree mode. Switch to radians."], [A + C, "That's the maximum height, reached a quarter of the way around."]]),
+        traps: trapsTol(ans, 0.01, [[A * Math.sin(((2 * Math.PI * t) / Tm) * (Math.PI / 180)) + C, "Your calculator is in degree mode. Switch to radians."], [A + C, "That's the maximum height, reached a quarter of the way around."]]),
       };
     }
     const lo = r.int(1, 4), hi = lo + 2 * r.int(2, 5);
