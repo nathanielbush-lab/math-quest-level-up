@@ -1,0 +1,181 @@
+/* ---------- Color themes (bought in the shop) ----------
+   App.tsx sets <html data-mq-theme="<theme id>">; "" means the default Grape look.
+   `:root[data-mq-theme=…]` (0,2,0) beats styles.css's `:root` (0,1,0) in both modes, so every
+   variable set here for light mode is set again in the dark-mode block below.
+   Contrast (WCAG AA ≥ 4.5): --primary-ink on --primary, --primary on --bg/--surface/--primary-soft,
+   white on both hero stops, --hero-btn-ink on white. */
+
+/* The hero gradient starts at --hero-1 when a theme sets it (dark mode uses a deeper start so
+   the white hero text stays readable), otherwise at --primary as before. */
+:root .hero { background: linear-gradient(135deg, var(--hero-1, var(--primary)), var(--hero-2, #8a5cf0)); }
+
+:root[data-mq-theme="theme-ocean"] {
+  --primary: #1d67a8;
+  --primary-ink: #ffffff;
+  --primary-soft: #e2eff9;
+  --shade: #5ea3dd;
+  --hero-1: #1d67a8;
+  --hero-2: #0e7c86;
+  --hero-btn-ink: #17558c;
+}
+:root[data-mq-theme="theme-forest"] {
+  --primary: #2b7a4b;
+  --primary-ink: #ffffff;
+  --primary-soft: #e1f2e7;
+  --shade: #6bbf8c;
+  --hero-1: #2b7a4b;
+  --hero-2: #1d6b5a;
+  --hero-btn-ink: #215f3a;
+}
+:root[data-mq-theme="theme-sunset"] {
+  --primary: #bf4310;
+  --primary-ink: #ffffff;
+  --primary-soft: #fff0e6;
+  --shade: #f2935c;
+  --hero-1: #bf4310;
+  --hero-2: #c2335f;
+  --hero-btn-ink: #9c360b;
+}
+:root[data-mq-theme="theme-berry"] {
+  --primary: #b8246f;
+  --primary-ink: #ffffff;
+  --primary-soft: #fce4f0;
+  --shade: #e872ad;
+  --hero-1: #b8246f;
+  --hero-2: #7f2db0;
+  --hero-btn-ink: #951c5a;
+}
+:root[data-mq-theme="theme-midnight"] {
+  --primary: #2b3a8c;
+  --primary-ink: #ffffff;
+  --primary-soft: #e4e7f7;
+  --shade: #6f7fd6;
+  --hero-1: #2b3a8c;
+  --hero-2: #10173f;
+  --hero-btn-ink: #2b3a8c;
+}
+
+@media (prefers-color-scheme: dark) {
+  /* Default Grape: a deeper hero start so white text reads well on it (was white on #8f82ff ≈ 3:1). */
+  :root { --hero-1: #4f40c4; --hero-2: #6e3fd6; }
+  :root[data-mq-theme="theme-ocean"] {
+    --primary: #6cb4f0;
+    --primary-ink: #0d1620;
+    --primary-soft: #1a2d40;
+    --shade: #5ea3dd;
+    --hero-1: #1d5f99;
+    --hero-2: #0b6b73;
+  }
+  :root[data-mq-theme="theme-forest"] {
+    --primary: #62cc8e;
+    --primary-ink: #0e1a13;
+    --primary-soft: #173225;
+    --shade: #4fae78;
+    --hero-1: #246b42;
+    --hero-2: #1a5c4e;
+  }
+  :root[data-mq-theme="theme-sunset"] {
+    --primary: #ff9c66;
+    --primary-ink: #1d120c;
+    --primary-soft: #3d2518;
+    --shade: #e07a45;
+    --hero-1: #a83c0e;
+    --hero-2: #a52d55;
+  }
+  :root[data-mq-theme="theme-berry"] {
+    --primary: #ff7eb9;
+    --primary-ink: #1d0f17;
+    --primary-soft: #3d1a2e;
+    --shade: #d65d9a;
+    --hero-1: #9c2262;
+    --hero-2: #6c2a99;
+  }
+  :root[data-mq-theme="theme-midnight"] {
+    --primary: #9eabff;
+    --primary-ink: #0e1020;
+    --primary-soft: #232a4d;
+    --shade: #7d8be6;
+    --hero-1: #27337d;
+    --hero-2: #0d1233;
+    --bg: #11131d;
+    --surface: #1a1d2b;
+    --surface-2: #242838;
+    --line: #343a52;
+  }
+}
+
+/* ---------- Avatar ---------- */
+.mq-avatar { display: inline-grid; place-items: center; flex: none; border-radius: 50%; line-height: 1; font-weight: 800; user-select: none; }
+.mq-avatar.sm { width: 34px; height: 34px; font-size: 1.15rem; background: var(--primary-soft); border: 2px solid var(--primary); color: var(--primary); }
+.mq-avatar.lg { width: 56px; height: 56px; font-size: 2rem; background: rgba(255, 255, 255, 0.95); border: 3px solid rgba(255, 255, 255, 0.55); background-clip: padding-box; color: var(--hero-btn-ink, #3f31b8); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); }
+.mq-avatar.letter.sm { background: var(--primary); color: var(--primary-ink); font-size: 1rem; }
+.mq-avatar.letter.lg { font-size: 1.6rem; }
+
+/* ---------- Shop tab ---------- */
+.shop-balance { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.shop-balance .big-num { font-size: 1.6rem; font-weight: 800; }
+.shop-section { margin: 22px 0 8px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.shop-section h2 { margin: 0; }
+.shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.shop-grid.wide { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.shop-card { background: var(--surface); border: 2px solid var(--line); border-radius: var(--radius); padding: 12px; display: flex; flex-direction: column; gap: 6px; align-items: center; text-align: center; position: relative; }
+.shop-card.equipped { border-color: var(--primary); background: var(--primary-soft); }
+.shop-card.legendary { border-color: var(--shade-2); box-shadow: 0 0 0 3px var(--warn-soft) inset; padding-top: 28px; }
+.shop-card.legendary.equipped { border-color: var(--primary); }
+.shop-card .icon { font-size: 2.4rem; line-height: 1.2; }
+.shop-card .icon.letter { display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: var(--primary); color: var(--primary-ink); font-size: 1.6rem; font-weight: 800; }
+.shop-card .name { font-weight: 800; line-height: 1.2; }
+.shop-card .blurb { font-size: 0.85rem; color: var(--ink-2); line-height: 1.3; }
+.shop-card .price { font-weight: 800; font-size: 0.95rem; }
+.shop-card .tag { position: absolute; top: 6px; right: 6px; font-size: 0.7rem; font-weight: 800; padding: 1px 7px; border-radius: 99px; background: var(--warn-soft); color: var(--warn); }
+.shop-card .using { font-weight: 800; color: var(--primary); font-size: 0.95rem; }
+.shop-card .actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: auto; width: 100%; }
+.shop-card .actions .btn { padding: 7px 12px; font-size: 0.95rem; flex: 1 1 auto; }
+.shop-card .btn.short { font-size: 0.85rem; }
+.avatar-card .btn.short { white-space: nowrap; padding: 7px 6px; font-size: 0.8rem; }
+.shop-grid.powerups { grid-template-columns: minmax(0, 640px); }
+.shop-card.theme-card { align-items: stretch; text-align: left; }
+.shop-card.theme-card .head { display: flex; gap: 10px; align-items: center; }
+.swatch { width: 100%; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: flex-end; padding: 0 8px; }
+.swatch span { width: 18px; height: 18px; border-radius: 50%; background: #fff; display: inline-block; }
+.shop-card.powerup { flex-direction: row; text-align: left; align-items: center; gap: 14px; padding: 14px 16px; }
+.shop-card.powerup > .icon { font-size: 3rem; }
+.shop-card.powerup .info { flex: 1; display: grid; gap: 4px; }
+.shop-card.powerup .actions { width: auto; max-width: 210px; margin-top: 0; }
+.freeze-dots { display: inline-flex; gap: 4px; vertical-align: middle; }
+.freeze-dots span { font-size: 1.1rem; }
+.freeze-dots span.off { filter: grayscale(1); opacity: 0.3; }
+.shop-card .btn:focus-visible, .shop-dialog .btn:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+
+/* Theme preview bar (sticks to the top while she scrolls the shop) */
+.shop-preview { position: sticky; top: 8px; z-index: 20; margin-bottom: 16px; }
+.shop-preview .row { gap: 10px; }
+.shop-preview .sample { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; align-items: center; justify-content: flex-end; }
+.shop-preview .btn.on-hero { background: rgba(255, 255, 255, 0.16); color: #fff; border: 1px solid rgba(255, 255, 255, 0.6); }
+.shop-preview .btn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+/* Confirm dialog */
+.shop-overlay { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; background: rgba(20, 16, 40, 0.55); padding: 16px; animation: fadein 0.15s ease-out; }
+.shop-dialog { background: var(--surface); color: var(--ink); border-radius: 22px; padding: 24px; max-width: 380px; width: 100%; text-align: center; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); animation: badgepop 0.3s cubic-bezier(0.2, 1.4, 0.4, 1); }
+.shop-dialog .icon { font-size: 3.4rem; line-height: 1.2; }
+.shop-dialog h2 { margin: 6px 0; }
+.shop-dialog .row { justify-content: center; margin-top: 14px; }
+
+/* Celebration after a purchase */
+.shop-cheer { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 60; display: flex; gap: 12px; align-items: center; max-width: calc(100vw - 32px); background: var(--surface); color: var(--ink); border: 2px solid var(--primary); border-radius: 18px; padding: 10px 18px 10px 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); font-weight: 700; animation: pop 0.25s ease-out; }
+.shop-cheer .icon { font-size: 2.2rem; animation: wiggle 1s ease-in-out 0.2s; }
+.shop-cheer .sparkles { position: absolute; inset: -14px; pointer-events: none; }
+.shop-cheer .sparkles span { position: absolute; font-size: 1rem; animation: sparkle 1.1s ease-out forwards; opacity: 0; }
+@keyframes sparkle { 0% { opacity: 0; transform: scale(0.3); } 30% { opacity: 1; transform: scale(1.1); } 100% { opacity: 0; transform: translateY(-18px) scale(0.8); } }
+.shop-card.just-bought { animation: bounce 0.5s ease-out; }
+
+@media (max-width: 480px) {
+  .shop-grid { grid-template-columns: repeat(2, 1fr); }
+  .shop-grid.wide { grid-template-columns: 1fr; }
+  .shop-card.powerup { flex-wrap: wrap; }
+  .shop-card.powerup .actions { width: 100%; max-width: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shop-overlay, .shop-dialog, .shop-cheer, .shop-cheer .icon, .shop-card.just-bought { animation: none; }
+  .shop-cheer .sparkles { display: none; }
+}
