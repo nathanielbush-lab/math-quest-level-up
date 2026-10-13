@@ -127,11 +127,11 @@ const add: Skill = {
       return {
         prompt: `${minus ? "Subtract" : "Add"}: {${a}/${P(p).slice(1, -1)}} ${op} {${b}/${P(q).slice(1, -1)}}. Write the result as {mx + n/${den}}.`,
         answer: { kind: "multi", fields: [{ value: frac(m), pre: "m =" }, { value: frac(n), pre: "n =" }] },
-        hints: [`Common denominator: ${den}. Multiply the first fraction's top and bottom by ${P(q)}, and the second's by ${P(p)}.`, `Numerator: ${c1(a)}${P(q)} ${op} ${c1(b)}${P(p)}. Distribute${minus ? " (the minus hits both terms)" : ""} and combine.`],
+        hints: [`Common denominator: ${den}. Multiply the first fraction's top and bottom by ${P(q)}, and the second's by ${P(p)}.`, `Numerator: ${cf(a)}${P(q)} ${op} ${cf(b)}${P(p)}. Distribute${minus ? " (the minus hits both terms)" : ""} and combine.`],
         steps: [
-          st("Rewrite with the common denominator.", `{${c1(a)}${P(q)}/${den}} ${op} {${c1(b)}${P(p)}/${den}}`),
-          st("Distribute.", `${c1(a)}x${cst(a * q)} ${op} (${c1(b)}x${cst(b * p)})`),
-          st("Combine like terms.", `${minus ? `${c1(a)}x${cst(a * q)} − ${c1(b)}x${cst(-b * p)}` : `${c1(a)}x${cst(a * q)} + ${c1(b)}x${cst(b * p)}`} = ${poly([m, n])}`),
+          st("Rewrite with the common denominator.", `{${cf(a)}${P(q)}/${den}} ${op} {${cf(b)}${P(p)}/${den}}`),
+          st("Distribute.", `${cf(a)}x${cst(a * q)} ${op} (${cf(b)}x${cst(b * p)})`),
+          st("Combine like terms.", `${minus ? `${cf(a)}x${cst(a * q)} − ${cf(b)}x${cst(-b * p)}` : `${cf(a)}x${cst(a * q)} + ${cf(b)}x${cst(b * p)}`} = ${poly([m, n])}`),
           st("Result.", `{${poly([m, n])}/${den}}, so m = ${ms(m)} and n = ${ms(n)}`),
         ],
       };
@@ -466,7 +466,7 @@ const context: Skill = {
   },
 };
 
-const c1 = (n: number) => (n === 1 ? "" : String(n));
+const cf = (n: number) => (n === 1 ? "" : String(n));
 
 function dn2(x: number): string {
   return String(Number(x.toFixed(4)));
