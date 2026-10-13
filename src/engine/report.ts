@@ -377,7 +377,7 @@ function attentionItems(state: AppState, wk: WeekRange, practice: AttemptEvent[]
     });
   }
 
-  // 2. The same skill kept showing up in the mistake journal.
+  // 2. The same skill kept showing up in the Mistake replay.
   for (const id of new Set(weekMistakes.map((m) => m.skillId))) {
     if (flagged.has(id) || !SKILL_BY_ID[id]) continue;
     const list = mistakesFor(id);
@@ -477,7 +477,7 @@ function winsFor(g: Glance, ups: LevelUp[], practice: AttemptEvent[], tests: Tes
   const reviews = practice.filter((e) => e.mode === "review" && firstTry(e)).length;
   if (reviews >= 3) out.push({ icon: "🧠", text: `Remembered ${reviews} review questions from earlier lessons.` });
   const fixed = practice.filter((e) => e.mode === "mistake" && e.ok).length;
-  if (fixed) out.push({ icon: "🛠️", text: `Fixed ${plural(fixed, "old mistake")} from the mistake journal.` });
+  if (fixed) out.push({ icon: "🛠️", text: `Fixed ${plural(fixed, "old mistake")} from the Mistake replay.` });
   const passed = explanations.filter((e) => e.status === "pass");
   if (passed.length) out.push({ icon: "✍️", text: `Wrote ${plural(passed.length, "explanation")} that ${passed.length === 1 ? "was" : "were"} marked “got it”.` });
   for (const t of tests) if ((t.change ?? 0) > 0) out.push({ icon: "📈", text: `${t.label}: up ${t.change} points from last time (${t.pct}%).` });

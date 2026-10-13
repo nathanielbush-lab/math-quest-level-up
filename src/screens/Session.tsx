@@ -80,7 +80,7 @@ export function Session({ state, mutate, type, skillId, onExit, toast }: {
   if (!item) return null;
 
   const phases = type === "daily" ? (["warmup", "learn", "challenge"] as const) : type === "mistakes" ? (["warmup"] as const) : (["learn"] as const);
-  const phaseName = { warmup: type === "mistakes" ? "Mistake journal" : "Warm-up", learn: "Learn", challenge: "Challenge", done: "Done" };
+  const phaseName = { warmup: type === "mistakes" ? "Mistake replay" : "Warm-up", learn: "Main quest", challenge: "Boss level", done: "Done" };
 
   return (
     <div>

@@ -188,7 +188,7 @@ function HistoryList({ results }: { results: AssessmentResult[] }) {
                 {topicScores(r.items).map((t) => (
                   <div key={t.topic.id} className="hist-topic">{t.topic.title}: <strong>{t.right}/{t.total}</strong></div>
                 ))}
-                {missed.length > 0 && <p className="muted" style={{ margin: "6px 0 0" }}>{missed.length} question{missed.length === 1 ? "" : "s"} to learn from{r.kind === "checkpoint" ? "" : " (the missed ones went into your mistake journal)"}.</p>}
+                {missed.length > 0 && <p className="muted" style={{ margin: "6px 0 0" }}>{missed.length} question{missed.length === 1 ? "" : "s"} to learn from{r.kind === "checkpoint" ? "" : " (the missed ones went into your Mistake replay)"}.</p>}
               </div>
             </details>
           </li>
@@ -775,8 +775,8 @@ function Results({ kind, done, timed, go, onExit, openTopic }: {
                   <SolutionSteps steps={x.problem.steps} stepwise={false} />
                 </div>
               ))}
-              {kind !== "checkpoint" && <p className="small muted">The ones you missed are in your 🛠️ mistake journal, so you'll get to try them again with new numbers.</p>}
-              {kind === "checkpoint" && <p className="small muted">Missed ones are in your 🛠️ mistake journal too.</p>}
+              {kind !== "checkpoint" && <p className="small muted">The ones you missed are in your Mistake replay, so you'll get to try them again with new numbers.</p>}
+              {kind === "checkpoint" && <p className="small muted">Missed ones are in your Mistake replay too.</p>}
             </div>
           )}
         </div>

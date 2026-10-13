@@ -170,7 +170,7 @@ const features: Skill = {
     const correct = `x > ${ms(h)}`;
     return {
       prompt: `What is the domain of g(x) = ${gD}?`,
-      answer: choice(r, correct, [[`x > ${ms(-h)}`, `Solve ${xm(h)} > 0 carefully.`], [`x ≥ ${ms(h)}`, `log of 0 is undefined, so x = ${ms(h)} is not allowed.`], ["All real numbers", "The log only accepts positive inputs."], [`x > ${ms(k)}`, `The${cst(k)} shifts the graph vertically; it doesn't affect the domain.`]]),
+      answer: choice(r, correct, [[`x > ${ms(-h)}`, `Solve ${xm(h)} > 0 carefully.`], [`x ≥ ${ms(h)}`, `The log of 0 doesn't exist, so x = ${ms(h)} is not allowed.`], ["All real numbers", "The log only accepts positive inputs."], ...(k ? [[`x > ${ms(k)}`, `The${cst(k)} shifts the graph vertically; it doesn't affect the domain.`] as [string, string]] : [])]),
       hints: ["The input of a logarithm must be positive.", `Solve ${xm(h)} > 0.`],
       steps: [st("Set the input positive.", `${xm(h)} > 0`), st("Solve.", correct)],
     };
@@ -268,7 +268,7 @@ const logEval: Skill = {
     tip: "Rewrite the log as a question: “base to what power gives this number?”",
   },
   why: [
-    { kind: "choice", prompt: "Why is log_5(1) = 0 for every base, not just 5?", choices: ["Any nonzero base to the power 0 is 1.", "Because 1 is the smallest positive number.", "log of 1 is undefined."], correct: 0, explain: "b^0 = 1, so the exponent that gives 1 is always 0." },
+    { kind: "choice", prompt: "Why is log_b(1) = 0 for every base b?", choices: ["Any nonzero base to the power 0 is 1.", "Because 1 is the smallest positive number.", "log of 1 is undefined."], correct: 0, explain: "b^0 = 1, so the exponent that gives 1 is always 0." },
     { kind: "written", prompt: "Explain why log_2(−8) is undefined.", keyIdeas: ["log_2(−8) asks 2 to what power is −8", "2 to any power is positive", "so no exponent works"], exemplar: "log_2(−8) asks for the exponent y with 2^y = −8. But 2 raised to any real power is positive, so no exponent gives −8, and the log is undefined." },
   ],
   generate(r, lv) {

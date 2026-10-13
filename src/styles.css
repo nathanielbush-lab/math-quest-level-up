@@ -486,3 +486,6 @@ details.card-key[open] summary { margin-bottom: 10px; }
   .tab { padding: 8px 12px; font-size: 0.95rem; }
   .player-card h1 { font-size: 1.35rem; }
 }
+/* A soft focus ring that matches the accent instead of the browser's default black outline. */
+.btn:focus-visible, .choice:focus-visible, .tab:focus-visible, .course-switch button:focus-visible { outline: 3px solid color-mix(in srgb, var(--primary) 45%, transparent); outline-offset: 2px; }
+.btn:focus:not(:focus-visible) { outline: none; }

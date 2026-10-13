@@ -237,7 +237,7 @@ function Mistakes({ state }: { state: AppState }) {
   const rows = [...by.entries()].sort((a, b) => b[1].length - a[1].length);
   return (
     <div>
-      <p className="muted small">Questions the student missed or needed help with. Open ones come back in warm-ups and the mistake journal with fresh numbers.</p>
+      <p className="muted small">Questions the student missed or needed help with. Open ones come back in warm-ups and the Mistake replay with fresh numbers.</p>
       {!rows.length && <p className="muted">Nothing here yet.</p>}
       {rows.map(([skillId, list]) => (
         <div key={skillId} className="card tight">
