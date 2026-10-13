@@ -722,7 +722,7 @@ function Results({ kind, done, timed, go, onExit, openTopic }: {
                   {openTopic && <button className="btn ghost" onClick={() => openTopic(t.topic.id)}>Practice this topic</button>}
                 </div>
               ))}
-              {!openTopic && <div className="small muted" style={{ marginTop: 6 }}>Find {weakest.length === 1 ? "it" : "them"} on <strong>My Map</strong> to practice.</div>}
+              {!openTopic && <div className="small muted" style={{ marginTop: 6 }}>Find {weakest.length === 1 ? "it" : "them"} in <strong>Units</strong> to practice.</div>}
             </div>
           )}
         </div>

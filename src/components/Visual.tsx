@@ -739,7 +739,13 @@ function Geo({ points, polygons = [], segments = [], circles = [], angles = [], 
   }
   if (!Number.isFinite(minX)) { minX = 0; maxX = 1; minY = 0; maxY = 1; }
   if (grid) {
-    minX = Math.floor(minX); maxX = Math.ceil(maxX); minY = Math.floor(minY); maxY = Math.ceil(maxY);
+    // Coordinate figures: show the axes (include the origin) and a one-unit margin so labels have room.
+    minX = Math.floor(Math.min(minX, 0)) - 1; maxX = Math.ceil(Math.max(maxX, 0)) + 1;
+    minY = Math.floor(Math.min(minY, 0)) - 1; maxY = Math.ceil(Math.max(maxY, 0)) + 1;
+    // Keep the grid roughly square so shapes aren't squashed.
+    const span = Math.max(maxX - minX, maxY - minY);
+    minX -= Math.floor((span - (maxX - minX)) / 2); maxX = minX + span;
+    minY -= Math.floor((span - (maxY - minY)) / 2); maxY = minY + span;
   }
   if (maxX - minX < 1e-9) { minX -= 0.5; maxX += 0.5; }
   if (maxY - minY < 1e-9) { minY -= 0.5; maxY += 0.5; }

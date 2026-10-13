@@ -63,7 +63,7 @@ export function BadgeCelebration({ badge, more, onClose }: { badge: Badge; more:
         <div className="badge-big">{badge.icon}</div>
         <h2 id="badge-title" style={{ margin: "4px 0" }}>{badge.name}</h2>
         <p className="muted" style={{ marginTop: 4 }}>You earned it: {badge.how.charAt(0).toLowerCase() + badge.how.slice(1)}.</p>
-        <p className="small muted">It's on your trophy shelf (the Trophies tab on the home page).</p>
+        <p className="small muted">It's in the Badges tab on the home page.</p>
         <button ref={btn} className="btn primary big" onClick={onClose}>{more > 0 ? `Nice (${more} more) →` : "Nice"}</button>
       </div>
     </div>
@@ -100,7 +100,7 @@ export function TrophyPeek({ state, onOpen }: { state: AppState; onOpen: () => v
   );
 }
 
-/** The Trophies tab: every earned badge, the next one, and every locked badge with how to earn it. */
+/** The Badges tab: every earned badge, the next one, and every locked badge with how to earn it. */
 export function TrophyRoom({ state }: { state: AppState }) {
   const earned = BADGES.filter((b) => state.badges.includes(b.id));
   return (

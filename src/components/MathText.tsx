@@ -17,8 +17,8 @@ export function renderMath(text: string): ReactNode[] {
         </span>
       );
     }
-    if (p.startsWith("**") && p.endsWith("**")) return <strong key={i}>{p.slice(2, -2)}</strong>;
-    if (p.startsWith("*") && p.endsWith("*") && p.length > 2) return <em key={i}>{p.slice(1, -1)}</em>;
+    if (p.startsWith("**") && p.endsWith("**")) return <strong key={i}>{renderMath(p.slice(2, -2))}</strong>;
+    if (p.startsWith("*") && p.endsWith("*") && p.length > 2) return <em key={i}>{renderMath(p.slice(1, -1))}</em>;
     if (p.startsWith("^(")) return <sup key={i}>{p.slice(2, -1).replace(/-/g, "−")}</sup>;
     if (p.startsWith("^")) return <sup key={i}>{p.slice(1).replace("-", "−")}</sup>;
     if (p.startsWith("_(")) return <sub key={i}>{p.slice(2, -1)}</sub>;

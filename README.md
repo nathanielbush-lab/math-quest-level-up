@@ -32,7 +32,7 @@ Everything runs in the browser. There's no account and no server, and progress i
 Students type numbers (12, −3, 0.75, 3/4), choose from options, click points, or **type expressions**: `(x+2)(x-3)`, `2x^2-3x+1`, `3sqrt(2)`, `y = 2x + 1`. Expressions are checked by **mathematical equivalence**, so any correct form counts unless the question asks for a specific one (factored, expanded/standard, vertex form, or an exact value with √ or π). A "reads as" preview shows how the typing was understood, and symbol keys help on phones.
 
 ### How the adaptivity works
-- **Skill map:** each course is split into units and small skills. Each skill lists the skills it depends on, and a skill unlocks only when its prerequisites are solid.
+- **Skill map:** 334 skills in 53 units: Math 1 (9 units, 69 skills), Math 2 (10 units, 65), Math 3 (9 units, 66), Math 4 (12 units, 66) and Pre-Calculus (13 units, 68), plus 28 boss-level challenges. Every skill is tagged with its NC standard codes, and every standard in each course is covered. Each skill lists the skills it depends on, and a skill unlocks only when its prerequisites are solid.
 - **Levels:** *Exploring → Practicing → Independent → Can explain & apply*. Independent means right again on a **later day**; *Can explain & apply* adds a "why does it work?" question and a written explanation.
 - **Stepping back:** after repeated misses, the app checks the skill's prerequisites, switches to a shaky one if needed, and comes back once it's solid.
 - **Never on one mistake:** a single wrong answer never drops a level.

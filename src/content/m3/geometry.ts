@@ -491,7 +491,16 @@ const design: Skill = {
     { kind: "written", prompt: "A can must hold 355 cm^3. Explain why a very tall, thin can and a very short, wide can both use a lot of aluminum.", keyIdeas: ["surface area S = 2πr^2 + 2πrh", "tall thin: small r forces a huge h, so the side area is large", "short wide: large r makes the top and bottom (2πr^2) large; the best can is in between"], exemplar: "With fixed volume, a tiny radius forces a huge height, so the side (2πrh) needs lots of metal. A huge radius makes the top and bottom (2πr^2) enormous. The material is smallest somewhere in between, which you can find from a graph of S(r)." },
   ],
   generate(r, lv): Problem {
-    const W = r.pick([10, 12, 14, 16]), L = W + r.pick([2, 4, 6, 8]);
+    // Pick a sheet whose best whole-number cut is unique (14 × 16 ties at x = 2 and x = 3).
+    const tied = (w: number, l: number) => {
+      const vols = Array.from({ length: w / 2 - 1 }, (_, i) => (i + 1) * (l - 2 * (i + 1)) * (w - 2 * (i + 1)));
+      return vols.filter((v) => v === Math.max(...vols)).length > 1;
+    };
+    let W: number, L: number;
+    do {
+      W = r.pick([10, 12, 14, 16]);
+      L = W + r.pick([2, 4, 6, 8]);
+    } while (tied(W, L));
     const V = (x: number) => x * (L - 2 * x) * (W - 2 * x);
     if (lv === 1) {
       const x = r.int(1, W / 2 - 1);

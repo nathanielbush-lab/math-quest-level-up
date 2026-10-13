@@ -145,8 +145,11 @@ export function answerText(a: Answer): string {
           const sep = !pre || pre.endsWith("(") || pre.endsWith("^") ? "" : " ";
           return `${pre}${sep}${v}${f.post ?? ""}`;
         })
-        .join(" ")
+        // "x = 6, y = 5" or "top left 3, top right −13" when every box is its own labelled value;
+        // otherwise the pieces form one expression ("(3, 4)").
+        .join(a.fields.every((f) => /[=a-zA-Z]\s*$/.test(f.pre ?? "")) ? ", " : " ")
         .replace(/\s+/g, " ")
+        .replace(/\s+([,)])/g, "$1")
         .trim();
     case "choice":
       return a.choices[a.correct];
