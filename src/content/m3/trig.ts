@@ -121,7 +121,7 @@ const unitCircleSkill: Skill = {
     if (lv === 1) [n, d] = r.pick([[0, 1], [1, 6], [1, 4], [1, 3], [1, 2], [1, 1], [3, 2]] as [number, number][]);
     else {
       d = r.pick([6, 4, 3]);
-      const options = Array.from({ length: 2 * d }, (_, i) => i).filter((i) => i % (d / (d === 6 ? 1 : 1)) !== 0 || true).filter((i) => piReduce(i, d).d === d);
+      const options = Array.from({ length: 2 * d }, (_, i) => i).filter((i) => piReduce(i, d).d === d);
       n = r.pick(options);
       if (lv === 3) n += r.pick([-2 * d, 2 * d]);
     }
@@ -485,7 +485,7 @@ const identify: Skill = {
       [eq(a, otherF, b, h), fn === "sin" ? "At x = 0 the graph is on its midline, so it's a sine." : "At x = 0 the graph is at a maximum or minimum, so it's a cosine."],
       [eq(a, fn, wrongB, h), "Check the period: measure one full cycle and use b = 2π ÷ period."],
       [h !== 0 ? eq(a, fn, b, -h) : eq(a, fn, b, 2), "Check the midline: the middle height of the wave."],
-      [eq(a === 2 ? 3 : 2 * Math.sign(a), fn, b, h), "Check the amplitude: the distance from the midline to the top."],
+      [eq(a > 0 ? (a === 2 ? 3 : 2) : a === -2 ? -3 : -2, fn, b, h), "Check the amplitude: the distance from the midline to the top."],
     ];
     const xMax = b === 0.5 ? 4 * Math.PI : 2 * Math.PI;
     const per = b === 0.5 ? "4π" : b === 1 ? "2π" : piPlain(2, b);

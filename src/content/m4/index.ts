@@ -6,6 +6,7 @@ import trig from "./trig";
 import sinusoids from "./sinusoids";
 import regression from "./regression";
 import number from "./number";
+import studies from "./studies";
 
 const topics: Topic[] = [
   { id: "m4-functions", course: "m4", unit: 1, strand: "algebra", family: "functions", title: "Composition, Inverses & Piecewise", standards: "NC.M4.AF.1, AF.4", blurb: "Chain functions together, undo them, and build rules that change partway.", icon: "fn" },
@@ -14,8 +15,9 @@ const topics: Topic[] = [
   { id: "m4-sinusoids", course: "m4", unit: 4, strand: "algebra", family: "trig", title: "Sinusoidal Models", standards: "NC.M4.AF.2.3", blurb: "Amplitude, period, shifts and midlines of waves, tides and Ferris wheels.", icon: "wave" },
   { id: "m4-regression", course: "m4", unit: 5, strand: "geo-stats", family: "stats", title: "Regression & Residuals", standards: "NC.M4.AF.5", blurb: "Pick, use and judge nonlinear models with residuals.", icon: "fit" },
   { id: "m4-number", course: "m4", unit: 6, strand: "algebra", family: "number", title: "Complex Numbers, Matrices & Vectors", standards: "NC.M4.N.1–N.2", blurb: "Compute with complex numbers, matrices and vectors.", icon: "i" },
+  { id: "m4-studies", course: "m4", unit: 7, strand: "geo-stats", family: "stats", title: "Statistical Studies", standards: "NC.M4.SP.1", blurb: "Ask good questions, sample and experiment fairly, and read data and graphs critically.", icon: "survey" },
 ];
-const skills: Skill[] = [...functions, ...logs, ...trig, ...sinusoids, ...regression, ...number];
+const skills: Skill[] = [...functions, ...logs, ...trig, ...sinusoids, ...regression, ...number, ...studies];
 
 const content: CourseContent = { topics, skills };
 export default content;

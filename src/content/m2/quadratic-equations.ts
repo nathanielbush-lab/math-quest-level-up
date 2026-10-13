@@ -397,11 +397,11 @@ const model: Skill = {
       };
     }
     if (kind === "ball") {
-      const t1 = r.int(2, 5), t0 = r.int(1, 2);
+      const t1 = r.int(2, 5), t0 = r.int(1, Math.min(2, t1 - 1));
       // h = −16(t − t1)(t + t0)
       const b = 16 * (t1 - t0), c = 16 * t1 * t0;
       return {
-        prompt: `A ball is launched from a ${c}-ft platform. Its height is h(t) = −16t^2 + ${b}t + ${c}. After how many seconds does it hit the ground?`,
+        prompt: `A ball is launched from ${String(c).startsWith("8") ? "an" : "a"} ${c}-ft platform. Its height is h(t) = −16t^2 + ${b}t + ${c}. After how many seconds does it hit the ground?`,
         answer: num(t1, { unit: " s" }),
         hints: ["The ball hits the ground when h(t) = 0.", `Factor out −16: −16(t^2 − ${b / 16}t − ${c / 16}) = 0.`],
         steps: [st("Set the height to 0.", `−16t^2 + ${b}t + ${c} = 0`), st("Factor out −16.", `−16(t^2 − ${b / 16 === 1 ? "" : b / 16}t − ${c / 16}) = 0`.replace("− 0t ", "")), st("Factor.", `−16(t − ${t1})(t + ${t0}) = 0`), st("Choose the sensible answer.", `t = ${t1} or t = −${t0}. Time after launch is positive: t = ${t1} s.`)],
