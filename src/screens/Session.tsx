@@ -95,7 +95,8 @@ export function Session({ state, mutate, type, skillId, onExit, toast }: {
           {(ctx.marks ?? []).slice(-14).map((m, i) => <span key={i} className={m} />)}
           {item.kind !== "done" && <span className="cur" />}
         </div>
-        {state.settings.calculator && <button className="btn ghost" onClick={() => setCalc((c) => !c)} aria-label="calculator"><Icon name="calc" /></button>}
+        <button className="btn ghost" onClick={() => setCalc((c) => !c)} aria-label="calculator" aria-pressed={calc}><Icon name="calc" /></button>
+        <a className="btn ghost hide-narrow" href="https://www.desmos.com/calculator" target="_blank" rel="noreferrer" title="Opens Desmos in a new tab">Graphing calculator</a>
         <button className="btn ghost" aria-label="Stop for now" onClick={() => (item.kind === "done" || confirm("Stop for now? Your progress so far is saved.") ? onExit() : null)}><Icon name="x" /></button>
       </div>
       {calc && <Calculator onClose={() => setCalc(false)} />}

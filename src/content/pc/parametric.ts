@@ -34,12 +34,13 @@ const eliminate: Skill = {
       // t = (x − b)/a, y = c(x − b)/a + d
       const m = frac(c, a);
       const mE = m.d === 1 ? String(m.n) : `(${m.n}/${m.d})`;
+      const tT = a === 1 ? shiftText(b) : a === -1 ? `−(${shiftText(b)})` : a < 0 ? `−{${shiftText(b)}/${-a}}` : `{${shiftText(b)}/${a}}`;
       const mT = m.d === 1 ? (m.n === 1 ? "" : m.n === -1 ? "−" : ms(m.n)) : `${m.n < 0 ? "−" : ""}{${Math.abs(m.n)}/${m.d}}`;
       return {
         prompt: `Eliminate the parameter: x = ${linear(a, b, "t")}, y = ${linear(c, d, "t")}. Write y in terms of x.`,
         answer: expr(`${mE}(x${pE(-b)})${pE(d)}`, { lhs: "y", display: `${mT}(${shiftText(b)})${cst(d)}` }),
-        hints: ["Solve the x-equation for t.", `t = ${a === 1 ? shiftText(b) : `{${shiftText(b)}/${ms(a)}}`}. Substitute it into the y-equation.`],
-        steps: [st("Solve for t.", `t = ${a === 1 ? shiftText(b) : `{${shiftText(b)}/${ms(a)}}`}`), st("Substitute into y.", `y = ${ms(c)} · ${a === 1 ? `(${shiftText(b)})` : `{${shiftText(b)}/${ms(a)}}`}${cst(d)}`), st("Simplify.", `y = ${mT}(${shiftText(b)})${cst(d)}`)],
+        hints: ["Solve the x-equation for t.", `t = ${tT}. Substitute it into the y-equation.`],
+        steps: [st("Solve for t.", `t = ${tT}`), st("Substitute into y.", `y = ${c === 1 ? "" : c === -1 ? "−" : `${ms(c)} · `}${a === 1 || (c !== 1 && a < 0) ? `(${tT})` : tT}${cst(d)}`), st("Simplify.", `y = ${mT}(${shiftText(b)})${cst(d)}`)],
       };
     }
     if (lv === 2) {

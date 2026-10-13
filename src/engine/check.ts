@@ -82,8 +82,10 @@ function stripLhs(text: string, lhs?: string): string {
   const t = normalizeInput(text);
   const k = t.indexOf("=");
   if (k < 0) return t;
-  const left = t.slice(0, k).replace(/\s+/g, "");
-  const want = (lhs ?? "").replace(/\s+/g, "");
+  // Compare without spaces, underscores or subscript parentheses, so "an =", "a_n =" and "a_(n) =" all match "a_n".
+  const squash = (x: string) => x.replace(/[\s_]+/g, "").replace(/\(([a-z0-9+\-]+)\)$/i, "$1");
+  const left = squash(t.slice(0, k));
+  const want = squash(lhs ?? "");
   if (lhs && left === want) return t.slice(k + 1);
   // "x = 5" for a one-variable value, or "y = …" when no lhs was set: accept a lone letter on the left.
   if (/^[a-zA-Z]$/.test(left) || (lhs && /^[a-zA-Z]\([a-zA-Z]\)$/.test(left))) return t.slice(k + 1);
