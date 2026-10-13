@@ -222,24 +222,37 @@ const close = (a: number, b: number, rel = 1e-7) => Math.abs(a - b) <= rel * Mat
 /** Deterministic sample values, avoiding small integers where many expressions are special. */
 const SAMPLES = [0.37, -1.29, 2.71, -2.43, 1.618, 3.14, -0.81, 0.93, 4.2, -3.57, 1.07, 2.2];
 
+/** Larger positive values, for expressions only defined far from 0 (log(x − 7), √(x − 12)). */
+const WIDE = [5.37, 7.91, 11.3, 16.7, 23.1, 37.4, 52.9, 81.2, 120.5, 300.3];
+
 /** Do the two expressions agree everywhere they're both defined (checked at sample points)? */
 export function equivalent(a: Node, b: Node, vars: string[]): boolean {
   if (!vars.length) {
     const x = evalExpr(a, {}), y = evalExpr(b, {});
     return Number.isFinite(x) && Number.isFinite(y) && close(x, y, 1e-9);
   }
+  const first = agreeAt(a, b, vars, SAMPLES, true);
+  if (first < 0) return false;
+  if (first >= 4) return true;
+  // Few defined points near 0: try larger positive values too.
+  const second = agreeAt(a, b, vars, WIDE, false);
+  return second >= 0 && first + second >= 4;
+}
+
+/** Number of sample points where both are defined and agree, or −1 if they ever disagree. */
+function agreeAt(a: Node, b: Node, vars: string[], samples: number[], mixSigns: boolean): number {
   let agree = 0;
-  for (let k = 0; k < SAMPLES.length; k++) {
+  for (let k = 0; k < samples.length; k++) {
     const env: Record<string, number> = {};
-    vars.forEach((v, j) => { env[v] = SAMPLES[(k + j * 5) % SAMPLES.length] * (j % 2 ? -1 : 1) + j * 0.11; });
+    vars.forEach((v, j) => { env[v] = samples[(k + j * 5) % samples.length] * (mixSigns && j % 2 ? -1 : 1) + j * 0.11; });
     const x = evalExpr(a, env), y = evalExpr(b, env);
     const fx = Number.isFinite(x), fy = Number.isFinite(y);
     if (!fx && !fy) continue;
-    if (fx !== fy) return false;
-    if (!close(x, y)) return false;
+    if (fx !== fy) return -1;
+    if (!close(x, y)) return -1;
     agree++;
   }
-  return agree >= 4;
+  return agree;
 }
 
 // ---------- Form checks ----------

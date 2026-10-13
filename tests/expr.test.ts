@@ -61,3 +61,12 @@ describe("expression reader", () => {
     expect(prettyExpr("(x+1)*(x-2)")).toBe("(x + 1)(x − 2)");
   });
 });
+
+describe("expressions defined only far from zero", () => {
+  it("checks log and root answers with large shifts", () => {
+    expect(eqv("log_2(x-7)+3", "3+log_2(x-7)")).toBe(true);
+    expect(eqv("log_2(x-7)+3", "log_2(x-6)+3")).toBe(false);
+    expect(eqv("sqrt(x-12)", "(x-12)^(1/2)")).toBe(true);
+    expect(eqv("sqrt(x-12)", "sqrt(x-11)")).toBe(false);
+  });
+});

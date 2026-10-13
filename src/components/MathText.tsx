@@ -12,8 +12,8 @@ export function renderMath(text: string): ReactNode[] {
       const k = inner.indexOf("/");
       return (
         <span className="frac" key={i}>
-          <span>{inner.slice(0, k)}</span>
-          <span>{inner.slice(k + 1)}</span>
+          <span>{renderMath(inner.slice(0, k))}</span>
+          <span>{renderMath(inner.slice(k + 1))}</span>
         </span>
       );
     }

@@ -12,6 +12,7 @@ import conics from "./conics";
 import complexMatrices from "./complex-matrices";
 import vectors from "./vectors";
 import parametric from "./parametric";
+import recursive from "./recursive";
 
 const topics: Topic[] = [
   { id: "pc-compose-inverse", course: "pc", unit: 1, strand: "algebra", family: "functions", title: "Composition & Inverses", standards: "PC.F.5.1–F.5.7", blurb: "Chain functions together, take them apart, and undo them.", icon: "∘" },
@@ -26,8 +27,9 @@ const topics: Topic[] = [
   { id: "pc-complex-matrices", course: "pc", unit: 10, strand: "algebra", family: "number", title: "Complex Numbers & Matrices", standards: "PC.N.1.1–N.1.2, PC.N.2.1–N.2.5", blurb: "Compute with a + bi, and add, scale and multiply matrices.", icon: "i" },
   { id: "pc-vectors", course: "pc", unit: 11, strand: "geo-stats", family: "geometry", title: "Vectors", standards: "PC.N.3.1–N.3.2", blurb: "Quantities with size and direction: components, sums and real-world resultants.", icon: "→" },
   { id: "pc-parametric", course: "pc", unit: 12, strand: "geo-stats", family: "functions", title: "Parametric Equations", standards: "PC.A.2.4, PC.F.7.1–F.7.2", blurb: "Describe motion with x(t) and y(t): drones, robots and fly balls.", icon: "⤴" },
+  { id: "pc-recursive", course: "pc", unit: 13, strand: "algebra", family: "functions", title: "Recursive Functions", standards: "PC.F.6.1–F.6.2", blurb: "Build each term from the last: sequences, savings and medicine doses.", icon: "↻" },
 ];
-const skills: Skill[] = [...composeInverse, ...transformations, ...rational, ...explog, ...unitCircle, ...trigGraphs, ...trigEquations, ...triangles, ...conics, ...complexMatrices, ...vectors, ...parametric];
+const skills: Skill[] = [...composeInverse, ...transformations, ...rational, ...explog, ...unitCircle, ...trigGraphs, ...trigEquations, ...triangles, ...conics, ...complexMatrices, ...vectors, ...parametric, ...recursive];
 
 const content: CourseContent = { topics, skills };
 export default content;
