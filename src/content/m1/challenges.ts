@@ -3,7 +3,7 @@ import { choice, expr, num, trap, traps, NAMES } from "../helpers";
 import { frac } from "../../lib/rational";
 import { st } from "../steps";
 import type { Challenge, Problem, Visual } from "../types";
-import { f, fiveNum, pt, sortNums } from "./util";
+import { article, f, fiveNum, fracText, pt, sortNums } from "./util";
 
 // ---------- 1. Phone plan showdown (systems, inequalities) ----------
 
@@ -74,7 +74,7 @@ const launch: Challenge = {
     const visual: Visual = { type: "plot", xMin: 0, xMax: land + 0.5, yMin: 0, yMax: Math.ceil(hPeak / 20) * 20 + 20, xStep: 1, yStep: 20, curves: [{ expr: `-16x^2+${b}x+${c}`, domain: [0, land] }] };
     const parts: Problem[] = [
       {
-        prompt: `A ${club} launches a model rocket from a ${c}-foot platform. Its height is h(t) = −16t^2 + ${b}t + ${c} feet after t seconds. What is h(0), and what does it mean?`,
+        prompt: `A ${club} launches a model rocket from ${article(String(c))} ${c}-foot platform. Its height is h(t) = −16t^2 + ${b}t + ${c} feet after t seconds. What is h(0), and what does it mean?`,
         visual,
         answer: choice(r, `${c}: the launch height`, [[`${b}: the launch height`, "h(0) is the constant term."], [`0: the rocket starts on the ground`, `Substitute t = 0: h(0) = ${c}.`], [`${c}: the maximum height`, "The maximum comes later, at the vertex."]]),
         hints: ["Substitute t = 0.", "At t = 0 the rocket hasn't moved yet."],
@@ -251,7 +251,7 @@ const parkDesign: Challenge = {
         prompt: "What is the most specific name for ABCD?",
         answer: choice(r, "Rectangle", [["Square", `The sides are ${ab} and ${bc}, not all equal.`], ["Rhombus", "The sides aren't all equal."], ["Trapezoid", "Both pairs of opposite sides are parallel."]]),
         hints: ["Compare the slopes of AB and BC.", "Compare the side lengths."],
-        steps: [st("Slopes.", `AB: ${uy}/${ux}; BC: −${ux}/${uy}. Product −1, so the corners are right angles.`), st("Sides.", `${ab} ≠ ${bc}, so it's a rectangle, not a square.`)],
+        steps: [st("Slopes.", `AB: ${fracText(frac(uy, ux))}; BC: −${fracText(frac(ux, uy))}. Product −1, so the corners are right angles.`), st("Sides.", `${ab} ≠ ${bc}, so it's a rectangle, not a square.`)],
       },
       {
         prompt: "What is the area of the park, in square meters?",

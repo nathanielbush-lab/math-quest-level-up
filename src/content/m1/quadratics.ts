@@ -5,7 +5,7 @@ import { frac, gcd, type Frac } from "../../lib/rational";
 import type { Rng } from "../../lib/rng";
 import { st } from "../steps";
 import type { Answer, Skill, Visual } from "../types";
-import { f, fracMark, pt } from "./util";
+import { article, f, fracMark, pt } from "./util";
 
 const T = "m1-quadratics";
 
@@ -467,7 +467,7 @@ const context: Skill = {
     const nm = r.pick(NAMES);
     const peakT = frac(land - s, 2), peakH = -16 * ((land - s) / 2 - land) * ((land - s) / 2 + s);
     const ask = lv === 1 ? "land" : lv === 2 ? r.pick(["land", "max"]) : "max";
-    const prompt0 = `${nm} launches a water balloon straight up from the roof of a ${c}-foot building. Its height after t seconds is h(t) = −16t^2 + ${b}t + ${c}.`;
+    const prompt0 = `${nm} launches a water balloon straight up from the roof of ${article(String(c))} ${c}-foot building. Its height after t seconds is h(t) = −16t^2 + ${b}t + ${c}.`;
     if (ask === "land") return {
       prompt: `${prompt0} After how many seconds does it hit the ground?`,
       answer: num(land),

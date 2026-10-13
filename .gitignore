@@ -5,3 +5,4 @@ dist-single
 .DS_Store
 tests/zz-dump.test.ts
 tests/zz-visual-audit.test.ts
+tests/zz-*
