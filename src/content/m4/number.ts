@@ -105,7 +105,7 @@ const complexMult: Skill = {
         prompt: `Multiply ${cx(0, b)}(${cx(c, d)}). Write the answer as a + bi.`,
         answer: cxAnswer(re, im),
         hints: ["Distribute to both terms inside.", `${cx(0, b)} · ${sn(d)}i = ${b * d}i^2. Replace i^2 with −1.`],
-        steps: [st("Distribute.", `${cx(0, b)} · ${sn(c)} + ${cx(0, b)} · ${d < 0 ? `(${cx(0, d)})` : cx(0, d)} = ${cx(0, b * c)} ${b * d < 0 ? "−" : "+"} ${Math.abs(b * d)}i^2`), st("Replace i^2 with −1.", `${Math.abs(b * d)}i^2 ${b * d < 0 ? "→ −(−" : "→ (−"}${Math.abs(b * d)}) contributes ${ms(re)} to the real part.`), st("Answer.", cx(re, im))],
+        steps: [st("Distribute.", `${cx(0, b)} · ${sn(c)} + ${cx(0, b)} · ${d < 0 ? `(${cx(0, d)})` : cx(0, d)} = ${cx(0, b * c)} ${b * d < 0 ? "−" : "+"} ${Math.abs(b * d)}i^2`), st("Replace i^2 with −1.", `${ms(b * d)}i^2 = ${ms(b * d)}(−1) = ${ms(re)}, so the result is ${ms(re)} + ${sn(im)}i`), st("Answer.", cx(re, im))],
       };
     }
     if (lv === 2) {
@@ -129,7 +129,7 @@ const complexMult: Skill = {
       return {
         prompt: `Multiply (${cx(a, b)})(${cx(a, -b)}). Write the answer as a + bi.`,
         answer: cxAnswer(a * a + b * b, 0),
-        hints: ["These are conjugates: the middle terms cancel.", `The result is a^2 + b^2 = ${ms(a)}^2 + ${ms(b)}^2... careful with signs: (${ms(b)}i)(${ms(-b)}i) = ${ms(-b * b)}i^2.`],
+        hints: ["These are conjugates: the middle terms cancel.", `The last terms: (${ms(b)}i)(${ms(-b)}i) = ${ms(-b * b)}i^2 = +${b * b}. The result is a^2 + b^2.`],
         steps: [st("Distribute.", `${a * a} ${-a * b < 0 ? "−" : "+"} ${Math.abs(a * b)}i ${a * b < 0 ? "−" : "+"} ${Math.abs(a * b)}i ${-b * b < 0 ? "−" : "+"} ${b * b}i^2`), st("The i terms cancel.", `${ms(-a * b)}i + ${sn(a * b)}i = 0`), st("Replace i^2 with −1.", `−${b * b}i^2 = +${b * b}`), st("Answer.", `${a * a} + ${b * b} = ${a * a + b * b} (so the imaginary part is 0)`)],
       };
     }
@@ -234,7 +234,7 @@ const matrixMult: Skill = {
     }
     const A = rm2(r, -5, 6), B = rm2(r, -5, 6);
     const P = [0, 1].map((i) => [0, 1].map((j) => A[i][0] * B[0][j] + A[i][1] * B[1][j])) as M2;
-    const entry = (i: number, j: number) => `${ms(A[i][0])}·${sn(B[0][j])} + ${ms(A[i][1])}·${sn(B[1][j])} = ${ms(A[i][0] * B[0][j])} + ${sn(A[i][1] * B[1][j])} = ${ms(P[i][j])}`;
+    const entry = (i: number, j: number) => `${ms(A[i][0])}·${sn(B[0][j])} + ${sn(A[i][1])}·${sn(B[1][j])} = ${ms(A[i][0] * B[0][j])} + ${sn(A[i][1] * B[1][j])} = ${ms(P[i][j])}`;
     if (lv === 1) {
       const i = r.int(0, 1), j = r.int(0, 1);
       const pos = CORNERS[2 * i + j];

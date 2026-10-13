@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { SKILL_BY_ID, skillsInTopic } from "../src/content";
+import { ORDERED, SKILL_BY_ID, TOPICS, ancestors, skillsInTopic } from "../src/content";
+
+// Tests use whatever skills the courses define, so they keep working as content changes.
+const FIRST = ORDERED.find((s) => !s.prereqs.length)!.id;
 import { MAX_FREEZES, WEEK_BONUS, bumpStreak, checkWeeklyGoal, currentStreak, recordAttempt, recordWhyChoice, setWrittenStatus } from "../src/engine/mastery";
 import { placementAnswer, startPlacement } from "../src/engine/placement";
 import { afterAnswer, frontier, nextItem, startSession, type Item } from "../src/engine/session";
@@ -16,7 +19,7 @@ function answer(ok: boolean, assisted = false) {
 
 describe("mastery", () => {
   it("moves Exploring → Practicing → ready, and needs a later day for Independent", () => {
-    const id = "g5.equiv";
+    const id = FIRST;
     const day1 = new Date(2026, 9, 12, 10);
     recordAttempt(state, { skillId: id, ok: false, assisted: false, mode: "learn" }, day1);
     expect(state.skills[id].level).toBe(1);
@@ -35,7 +38,7 @@ describe("mastery", () => {
   });
 
   it("needs both explanations and a later recheck for Can explain & apply", () => {
-    const id = "g5.equiv";
+    const id = FIRST;
     const d1 = new Date(2026, 9, 12), d2 = new Date(2026, 9, 13), d5 = new Date(2026, 9, 16);
     for (let i = 0; i < 6; i++) recordAttempt(state, { skillId: id, ok: true, assisted: false, mode: "learn" }, d1);
     recordAttempt(state, { skillId: id, ok: true, assisted: false, mode: "review" }, d2);
@@ -47,7 +50,7 @@ describe("mastery", () => {
   });
 
   it("does not demote on a single review miss, but does on two in a row", () => {
-    const id = "g5.equiv";
+    const id = FIRST;
     const d1 = new Date(2026, 9, 12), d2 = new Date(2026, 9, 13), d3 = new Date(2026, 9, 20);
     for (let i = 0; i < 6; i++) recordAttempt(state, { skillId: id, ok: true, assisted: false, mode: "learn" }, d1);
     recordAttempt(state, { skillId: id, ok: true, assisted: false, mode: "review" }, d2);
@@ -62,8 +65,8 @@ describe("mastery", () => {
   });
 
   it("assisted answers don't make a skill ready", () => {
-    for (let i = 0; i < 10; i++) recordAttempt(state, { skillId: "g5.equiv", ok: true, assisted: true, mode: "learn" });
-    expect(state.skills["g5.equiv"].ready).toBe(false);
+    for (let i = 0; i < 10; i++) recordAttempt(state, { skillId: FIRST, ok: true, assisted: true, mode: "learn" });
+    expect(state.skills[FIRST].ready).toBe(false);
   });
 });
 
@@ -93,8 +96,8 @@ describe("session", () => {
 
   it("steps back to a prerequisite when she keeps missing, then returns", () => {
     // Make the first skill's prerequisites look known so the session focuses on a skill that has prerequisites.
-    const target = "g6.ns.div-fractions";
-    for (const id of ["g5.equiv", "g5.multiply", "g6.ns.div-groups"]) state.skills[id] = { ...newSkillState(), ready: true, level: 2, p: 0.85 };
+    const target = ORDERED.find((s) => s.prereqs.length > 0)!.id;
+    for (const id of ancestors(target)) state.skills[id] = { ...newSkillState(), ready: true, level: 2, p: 0.85 };
     const ctx = startSession(state, "topic", { skillId: target });
     let sawProbe = false;
     let sawStepBack = false;
@@ -126,9 +129,10 @@ describe("session", () => {
 
 describe("placement", () => {
   it("marks skills up to the highest passed one as known", () => {
-    const ctx = startPlacement("g6-ns");
-    const skills = skillsInTopic("g6-ns").map((s) => s.id);
-    const knowsUpTo = 6;
+    const topic = [...TOPICS].sort((a, b) => skillsInTopic(b.id).length - skillsInTopic(a.id).length)[0].id;
+    const ctx = startPlacement(topic);
+    const skills = skillsInTopic(topic).map((s) => s.id);
+    const knowsUpTo = Math.min(6, skills.length - 2);
     let guard = 0;
     while (!ctx.done && guard++ < 30) placementAnswer(state, ctx, skills.indexOf(ctx.skills[ctx.mid]) <= knowsUpTo);
     expect(ctx.done).toBe(true);

@@ -1,5 +1,12 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { SKILLS, SKILL_BY_ID } from "../src/content";
+import { CHALLENGES } from "../src/content/challenges";
+import { ORDERED, SKILLS, SKILL_BY_ID, TOPICS, TOPIC_BY_ID } from "../src/content";
+
+// Use whatever skills and units the courses define, so the tests survive content changes.
+const [S1, S2, S3, S4] = ORDERED.slice(0, 4).map((s) => s.id);
+const T1 = SKILL_BY_ID[S1].topic;
+const CH = CHALLENGES[0]?.id ?? "a-challenge";
+const [T2, T3, T4] = TOPICS.map((t) => t.id).filter((t) => t !== T1);
 import { RULES, badgesThisWeek, buildReport, eventDay, inWeek, levelUps, pace, reportStats, skillRows, summarizeTest, weekOptions, weekRange } from "../src/engine/report";
 import { newSkillState, newState, type AppState, type AttemptEvent } from "../src/engine/state";
 
@@ -42,13 +49,13 @@ describe("weeks", () => {
   });
 
   it("puts a late-Sunday event and an early-Monday event in different weeks", () => {
-    state.events.push(ev(at(11, 23, 50), "g5.equiv"), ev(at(12, 0, 10), "g5.addsub", { ok: false, tries: 2, assisted: true }));
+    state.events.push(ev(at(11, 23, 50), S1), ev(at(12, 0, 10), S2, { ok: false, tries: 2, assisted: true }));
     expect(eventDay(at(11, 23, 50))).toBe("2026-10-11");
     const thisWeek = buildReport(state, 0, NOW);
     const lastWeek = buildReport(state, 1, NOW);
-    expect(thisWeek.practiced.map((r) => r.id)).toEqual(["g5.addsub"]);
+    expect(thisWeek.practiced.map((r) => r.id)).toEqual([S2]);
     expect(thisWeek.glance.firstTryPct).toBe(0);
-    expect(lastWeek.practiced.map((r) => r.id)).toEqual(["g5.equiv"]);
+    expect(lastWeek.practiced.map((r) => r.id)).toEqual([S1]);
     expect(lastWeek.glance.firstTryPct).toBe(100);
   });
 });
@@ -80,7 +87,7 @@ describe("empty weeks", () => {
 
   it("falls back to session counts for weeks before detailed events", () => {
     session("2026-10-06", "daily", 25, 12);
-    state.events.push(ev(at(13), "g5.equiv"));
+    state.events.push(ev(at(13), S1));
     const r = buildReport(state, 1, NOW);
     expect(r.hasDetail).toBe(false);
     expect(r.glance.answered).toBe(12);
@@ -96,12 +103,12 @@ describe("at a glance", () => {
     session("2026-10-13");
     session("2026-10-14");
     state.events.push(
-      ev(at(12), "g5.equiv"),
-      ev(at(12), "g5.equiv", { ok: true, tries: 1, assisted: true }),
-      ev(at(13), "g5.equiv", { ok: true, assisted: true, hints: 2 }),
-      ev(at(14), "g5.addsub", { ok: false, tries: 2, assisted: true, hints: 1, tutor: true }),
+      ev(at(12), S1),
+      ev(at(12), S1, { ok: true, tries: 1, assisted: true }),
+      ev(at(13), S1, { ok: true, assisted: true, hints: 2 }),
+      ev(at(14), S2, { ok: false, tries: 2, assisted: true, hints: 1, tutor: true }),
     );
-    state.tutorChats.push({ id: "c1", date: "2026-10-14", skillId: "g5.addsub", prompt: "{1/2} + {1/3}", messages: [{ role: "student", text: "help" }, { role: "tutor", text: "What's a common denominator?" }, { role: "student", text: "6?" }] });
+    state.tutorChats.push({ id: "c1", date: "2026-10-14", skillId: S2, prompt: "{1/2} + {1/3}", messages: [{ role: "student", text: "help" }, { role: "tutor", text: "What's a common denominator?" }, { role: "student", text: "6?" }] });
     state.streak = { count: 4, freezes: 1, best: 6, lastDay: "2026-10-14" };
     const g = buildReport(state, 0, NOW).glance;
     expect(g.quests).toBe(3);
@@ -122,15 +129,16 @@ describe("at a glance", () => {
 
   it("builds the practiced table sorted by questions, with averages", () => {
     const rows = skillRows([
-      ev(at(12), "g5.addsub", { secs: 10 }),
-      ev(at(12), "g5.equiv", { secs: 20, hints: 1, assisted: true }),
-      ev(at(12), "g5.equiv", { secs: 41 }),
-      ev(at(12), "recipe", { mode: "challenge" }),
+      ev(at(12), S2, { secs: 10 }),
+      ev(at(12), S1, { secs: 20, hints: 1, assisted: true }),
+      ev(at(12), S1, { secs: 41 }),
+      ev(at(12), CH, { mode: "challenge" }),
     ]);
-    expect(rows.map((r) => r.id)).toEqual(["g5.equiv", "g5.addsub", "recipe"]);
+    expect(rows[0].id).toBe(S1);
+    expect(rows.slice(1).map((r) => r.id).sort()).toEqual([S2, CH].sort());
     expect(rows[0]).toMatchObject({ questions: 2, firstTry: 1, firstTryPct: 50, hints: 1, hinted: 1, avgSecs: 31 });
-    expect(rows[0].icon).toBe("🧱");
-    expect(rows[2].title).toMatch(/^Challenge: /);
+    expect(rows[0].icon).toBe(TOPIC_BY_ID[T1].icon);
+    if (CHALLENGES.length) expect(rows.find((r) => r.id === CH)!.title).toMatch(/^Challenge: /);
   });
 });
 
@@ -140,14 +148,14 @@ describe("progress", () => {
     const b = { ...newSkillState(), level: 2 as const, dates: { exploring: "2026-10-12", practicing: "2026-10-14" } };
     const c = { ...newSkillState(), level: 2 as const, ready: true, placed: true, dates: { exploring: "2026-10-12", practicing: "2026-10-12" } };
     const d = { ...newSkillState(), level: 2 as const, dates: { exploring: "2026-10-01", practicing: "2026-10-11" } };
-    state.skills = { "g5.equiv": a, "g5.addsub": b, "g5.multiply": c, "g5.decimals": d };
+    state.skills = { [S1]: a, [S2]: b, [S3]: c, [S4]: d };
     const ups = levelUps(state, weekRange(0, NOW));
     expect(ups.map((u) => [u.skillId, u.levelName, u.placed])).toEqual([
-      ["g5.equiv", "Independent", false],
-      ["g5.multiply", "Practicing", true],
-      ["g5.addsub", "Practicing", false],
+      [S1, "Independent", false],
+      [S3, "Practicing", true],
+      [S2, "Practicing", false],
     ]);
-    expect(ups[0].topic).toBe("Fraction foundations");
+    expect(ups[0].topic).toBe(TOPIC_BY_ID[T1].title);
   });
 
   it("says on track or behind against the target date", () => {
@@ -173,51 +181,51 @@ describe("needs attention", () => {
   const ids = (s: AppState) => buildReport(s, 0, NOW).attention.map((a) => a.id);
 
   it("flags a low first-try rate only with enough questions", () => {
-    state.events.push(ev(at(12), "g5.addsub", { ok: false, tries: 2, assisted: true, secs: 40 }), ev(at(12), "g5.addsub", { ok: true, tries: 1, assisted: true, secs: 40 }), ev(at(12), "g5.addsub", { secs: 40 }));
+    state.events.push(ev(at(12), S2, { ok: false, tries: 2, assisted: true, secs: 40 }), ev(at(12), S2, { ok: true, tries: 1, assisted: true, secs: 40 }), ev(at(12), S2, { secs: 40 }));
     expect(ids(state)).toEqual([]);
-    state.events.push(ev(at(13), "g5.addsub", { ok: false, tries: 2, assisted: true, secs: 40 }));
-    expect(ids(state)).toEqual(["low-g5.addsub"]);
+    state.events.push(ev(at(13), S2, { ok: false, tries: 2, assisted: true, secs: 40 }));
+    expect(ids(state)).toEqual([`low-${S2}`]);
     // Exactly half is fine.
-    state.events.push(ev(at(13), "g5.addsub", { secs: 40 }));
-    expect(ids(state)).toEqual(["low-g5.addsub"]);
-    state.events.push(ev(at(13), "g5.addsub", { secs: 40 }));
+    state.events.push(ev(at(13), S2, { secs: 40 }));
+    expect(ids(state)).toEqual([`low-${S2}`]);
+    state.events.push(ev(at(13), S2, { secs: 40 }));
     expect(ids(state)).toEqual([]);
   });
 
   it("attaches this week's mistakes as examples and folds repeated mistakes into the same item", () => {
-    for (let i = 0; i < 4; i++) state.events.push(ev(at(13), "g5.addsub", { ok: false, tries: 2, assisted: true, secs: 50 }));
-    for (const [i, d] of ["2026-10-09", "2026-10-13", "2026-10-13", "2026-10-14"].entries()) state.mistakes.push({ id: `m${i}`, skillId: "g5.addsub", level: 1, prompt: `{1/2} + {1/${i + 3}}`, given: "2/5", correct: "5/6", date: d, resolved: false });
+    for (let i = 0; i < 4; i++) state.events.push(ev(at(13), S2, { ok: false, tries: 2, assisted: true, secs: 50 }));
+    for (const [i, d] of ["2026-10-09", "2026-10-13", "2026-10-13", "2026-10-14"].entries()) state.mistakes.push({ id: `m${i}`, skillId: S2, level: 1, prompt: `{1/2} + {1/${i + 3}}`, given: "2/5", correct: "5/6", date: d, resolved: false });
     const r = buildReport(state, 0, NOW);
-    expect(r.attention.map((a) => a.id)).toEqual(["low-g5.addsub"]);
+    expect(r.attention.map((a) => a.id)).toEqual([`low-${S2}`]);
     expect(r.attention[0].examples).toHaveLength(2);
     expect(r.attention[0].examples![0].prompt).toBe("1/2 + 1/6");
   });
 
   it("flags the same mistake coming back three times", () => {
-    for (let i = 0; i < 3; i++) state.mistakes.push({ id: `m${i}`, skillId: "g5.equiv", level: 1, prompt: "p", given: "1", correct: "2", date: "2026-10-13", resolved: i === 0 });
-    expect(ids(state)).toEqual(["repeat-g5.equiv"]);
+    for (let i = 0; i < 3; i++) state.mistakes.push({ id: `m${i}`, skillId: S1, level: 1, prompt: "p", given: "1", correct: "2", date: "2026-10-13", resolved: i === 0 });
+    expect(ids(state)).toEqual([`repeat-${S1}`]);
     state.mistakes.pop();
     expect(ids(state)).toEqual([]);
   });
 
   it("flags heavy hint use", () => {
     // 4 hints over 4 questions; the two without hints were first-try, so 50% isn't "low".
-    for (let i = 0; i < 4; i++) state.events.push(ev(at(12), "g5.equiv", { assisted: i < 2, hints: i < 2 ? 2 : 0 }));
+    for (let i = 0; i < 4; i++) state.events.push(ev(at(12), S1, { assisted: i < 2, hints: i < 2 ? 2 : 0 }));
     expect(ids(state)).toEqual(["hints"]);
   });
 
   it("flags fast wrong answers but ignores tests", () => {
-    state.events.push(ev(at(12), "g5.equiv", { ok: false, tries: 2, assisted: true, secs: 3 }), ev(at(12), "g5.addsub", { ok: false, tries: 2, assisted: true, secs: 5 }));
-    state.events.push(ev(at(12), "g5.multiply", { mode: "placement", ok: false, tries: 1, assisted: true, secs: 2 }));
+    state.events.push(ev(at(12), S1, { ok: false, tries: 2, assisted: true, secs: 3 }), ev(at(12), S2, { ok: false, tries: 2, assisted: true, secs: 5 }));
+    state.events.push(ev(at(12), S3, { mode: "placement", ok: false, tries: 1, assisted: true, secs: 2 }));
     expect(ids(state)).toEqual([]);
-    state.events.push(ev(at(12), "g5.decimals", { ok: false, tries: 2, assisted: true, secs: 7 }));
+    state.events.push(ev(at(12), S4, { ok: false, tries: 2, assisted: true, secs: 7 }));
     expect(ids(state)).toEqual(["rushing"]);
     expect(buildReport(state, 0, NOW).attention[0].detail).toMatch(/^3 wrong answers came in under 8 seconds/);
     expect(RULES.rushSecs).toBe(8);
   });
 
   it("points out explanations waiting for review", () => {
-    state.explanations.push({ id: "x", skillId: "g5.equiv", prompt: "Why?", keyIdeas: [], exemplar: "", response: "because", date: "2026-10-13", status: "pending" });
+    state.explanations.push({ id: "x", skillId: S1, prompt: "Why?", keyIdeas: [], exemplar: "", response: "because", date: "2026-10-13", status: "pending" });
     expect(ids(state)).toEqual(["pending-explanations"]);
     // Not in the report for a week before it was written.
     expect(buildReport(state, 1, NOW).attention.map((a) => a.id)).not.toContain("pending-explanations");
@@ -227,19 +235,19 @@ describe("needs attention", () => {
 describe("wins, tests and badges", () => {
   it("celebrates the goal, new levels and an improved checkpoint", () => {
     for (const d of ["2026-10-12", "2026-10-13", "2026-10-14"]) session(d);
-    state.skills["g5.equiv"] = { ...newSkillState(), level: 3, dates: { exploring: "2026-09-01", practicing: "2026-09-02", independent: "2026-10-13" } };
+    state.skills[S1] = { ...newSkillState(), level: 3, dates: { exploring: "2026-09-01", practicing: "2026-09-02", independent: "2026-10-13" } };
     state.badges = ["independent-1"];
-    const item = (ok: boolean, topic = "g5") => ({ skillId: "g5.equiv", topic, ok, prompt: "p", given: "g", correct: "c", secs: 20 });
+    const item = (ok: boolean, topic = T1) => ({ skillId: S1, topic, ok, prompt: "p", given: "g", correct: "c", secs: 20 });
     state.assessments.push(
       { id: "a1", kind: "checkpoint", date: "2026-09-14", minutes: 20, items: [item(true), item(false), item(false), item(false)] },
-      { id: "a2", kind: "checkpoint", date: "2026-10-13", minutes: 18, items: [item(true), item(true), item(true), item(false, "g6-ns")] },
+      { id: "a2", kind: "checkpoint", date: "2026-10-13", minutes: 18, items: [item(true), item(true), item(true), item(false, T2)] },
     );
     const r = buildReport(state, 0, NOW);
     expect(r.wins.map((w) => w.icon)).toEqual(expect.arrayContaining(["🎯", "🦉", "📈"]));
     expect(r.badges).toEqual(["independent-1"]);
     expect(r.tests).toHaveLength(1);
     expect(r.tests[0]).toMatchObject({ right: 3, total: 4, pct: 75, change: 50 });
-    expect(r.tests[0].weakest.map((w) => w.title)).toEqual(["Fractions, decimals and number lines"]);
+    expect(r.tests[0].weakest.map((w) => w.title)).toEqual([TOPIC_BY_ID[T2].title]);
   });
 
   it("only dates badges it can actually date", () => {
@@ -251,18 +259,18 @@ describe("wins, tests and badges", () => {
 
   it("summarizes a screener with skips", () => {
     const t = summarizeTest({ id: "s", kind: "screener-quick", date: "2026-10-13", minutes: 12, items: [
-      { skillId: "a", topic: "g7-ns", ok: false, skipped: true, prompt: "", given: "", correct: "", secs: 0 },
-      { skillId: "a", topic: "g7-ns", ok: false, prompt: "", given: "", correct: "", secs: 9 },
-      { skillId: "b", topic: "g6-rp", ok: true, prompt: "", given: "", correct: "", secs: 9 },
-      { skillId: "b", topic: "g6-rp", ok: false, prompt: "", given: "", correct: "", secs: 9 },
+      { skillId: "a", topic: T3, ok: false, skipped: true, prompt: "", given: "", correct: "", secs: 0 },
+      { skillId: "a", topic: T3, ok: false, prompt: "", given: "", correct: "", secs: 9 },
+      { skillId: "b", topic: T4, ok: true, prompt: "", given: "", correct: "", secs: 9 },
+      { skillId: "b", topic: T4, ok: false, prompt: "", given: "", correct: "", secs: 9 },
     ] });
     expect(t).toMatchObject({ right: 1, total: 4, skipped: 1, pct: 25, label: "Screener practice (quick)" });
-    expect(t.weakest.map((w) => w.topic)).toEqual(["g7-ns", "g6-rp"]);
+    expect(t.weakest.map((w) => w.topic)).toEqual([T3, T4]);
     expect(t.change).toBeUndefined();
   });
 
   it("lists this week's explanations and tutor chats", () => {
-    state.explanations.push({ id: "x", skillId: "g5.equiv", prompt: "Why?", keyIdeas: [], exemplar: "", response: "because", date: "2026-10-13", status: "pass", gradedBy: "claude", rounds: [{ response: "a", verdict: "almost", feedback: "f" }, { response: "b", verdict: "got_it", feedback: "g" }] });
+    state.explanations.push({ id: "x", skillId: S1, prompt: "Why?", keyIdeas: [], exemplar: "", response: "because", date: "2026-10-13", status: "pass", gradedBy: "claude", rounds: [{ response: "a", verdict: "almost", feedback: "f" }, { response: "b", verdict: "got_it", feedback: "g" }] });
     state.tutorChats.push({ id: "c", date: "2026-10-04", prompt: "p", messages: [] });
     const r = buildReport(state, 0, NOW);
     expect(r.explanations).toEqual([{ id: "x", skillTitle: expect.any(String), date: "2026-10-13", status: "pass", rounds: 2, gradedBy: "claude" }]);
@@ -274,12 +282,12 @@ describe("wins, tests and badges", () => {
 describe("stats for Claude", () => {
   it("contains aggregated numbers only: no name, no student writing", () => {
     session("2026-10-13");
-    state.events.push(ev(at(13), "g5.addsub", { ok: false, tries: 2, assisted: true }));
-    state.mistakes.push({ id: "m", skillId: "g5.addsub", level: 1, prompt: "SECRET-PROMPT", given: "SECRET-GIVEN", correct: "5/6", date: "2026-10-13", resolved: false });
-    state.explanations.push({ id: "x", skillId: "g5.equiv", prompt: "Why?", keyIdeas: [], exemplar: "", response: "SECRET-RESPONSE", date: "2026-10-13", status: "pending" });
+    state.events.push(ev(at(13), S2, { ok: false, tries: 2, assisted: true }));
+    state.mistakes.push({ id: "m", skillId: S2, level: 1, prompt: "SECRET-PROMPT", given: "SECRET-GIVEN", correct: "5/6", date: "2026-10-13", resolved: false });
+    state.explanations.push({ id: "x", skillId: S1, prompt: "Why?", keyIdeas: [], exemplar: "", response: "SECRET-RESPONSE", date: "2026-10-13", status: "pending" });
     state.tutorChats.push({ id: "c", date: "2026-10-13", prompt: "SECRET-CHAT-PROMPT", messages: [{ role: "student", text: "SECRET-CHAT" }] });
     const json = JSON.stringify(reportStats(buildReport(state, 0, NOW)));
     expect(json).not.toMatch(/Robin|SECRET/);
-    expect(json).toContain(SKILL_BY_ID["g5.addsub"].title);
+    expect(json).toContain(SKILL_BY_ID[S2].title);
   });
 });

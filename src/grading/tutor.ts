@@ -266,7 +266,9 @@ function numberLeak(reply: string, forms: string[], inProblem: boolean): boolean
   const body = all.map((f) => esc(f).replace(/ /g, "\\s")).join("|");
   const money = String.raw`\$?\s?`;
   const val = String.raw`${BEFORE}${money}(?:${body})${AFTER}`;
-  if (new RegExp(`${STRONG_LEAD}${val}`).test(reply)) return true;
+  // "The answer is y = −2": an optional "y =" / "f(x) =" / "x =" between the lead and the number.
+  const lhs = String.raw`(?:[a-z](?:\([a-z]\))?\s*=\s*)?`;
+  if (new RegExp(`${STRONG_LEAD}${lhs}${val}`).test(reply)) return true;
   if (new RegExp(`${BEFORE}${money}(?:${body})(?![\\d/]|[.,]\\d)\\s*(?:%|[a-z]+)?${CONFIRM_AFTER}`).test(reply)) return true;
   if (!inProblem && new RegExp(`${WEAK_LEAD}\\s*${val}`).test(reply)) return true;
   return false;

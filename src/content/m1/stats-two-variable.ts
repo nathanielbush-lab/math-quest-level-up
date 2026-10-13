@@ -1,6 +1,6 @@
 // Unit 5: Two-variable statistics (NC.M1.S-ID.6, 6a, 6b, 6c, 7, 8, 9).
-import { choice, num, trap, NAMES } from "../helpers";
-import { frac, fromDecimal } from "../../lib/rational";
+import { choice, num, trap, traps } from "../helpers";
+import { fromDecimal } from "../../lib/rational";
 import type { Rng } from "../../lib/rng";
 import { st } from "../steps";
 import type { Skill, Visual } from "../types";
@@ -15,13 +15,13 @@ const eqText = (m: number, b: number, v = "x") => `${f(m)}${v}${b < 0 ? " − " 
 
 type Pt = { x: number; y: number };
 
-interface Ctx { x: string; y: string; xs: [number, number]; m: [number, number]; b: [number, number]; xu: string; yu: string; slopeMean: string; intMean: string; noZero?: string }
+interface Ctx { x: string; y: string; xn: string; yn: string; xs: [number, number]; m: [number, number]; b: [number, number]; xu: string; yu: string; slopeMean: string; intMean: string; noZero?: string }
 
 const CTXS: Ctx[] = [
-  { x: "Hours studied", y: "Test score", xs: [0, 10], m: [3, 6], b: [45, 60], xu: "hour of studying", yu: "points", slopeMean: "the predicted test score goes up about M points for each additional hour studied", intMean: "a student who studies 0 hours is predicted to score about B" },
-  { x: "Temperature (°F, above 50)", y: "Smoothies sold", xs: [0, 40], m: [1.5, 3], b: [10, 30], xu: "degree", yu: "smoothies", slopeMean: "about M more smoothies are predicted to sell for each 1-degree increase", intMean: "at 50°F, about B smoothies are predicted to sell" },
-  { x: "Age of car (years)", y: "Value (hundreds of $)", xs: [0, 12], m: [-14, -8], b: [200, 260], xu: "year", yu: "hundred dollars", slopeMean: "the predicted value drops about M hundred dollars for each year of age", intMean: "a brand-new car (0 years) is predicted to be worth about B hundred dollars" },
-  { x: "Hours of screen time per day", y: "Hours of sleep", xs: [1, 9], m: [-0.6, -0.3], b: [9, 10], xu: "hour of screen time", yu: "hours of sleep", slopeMean: "predicted sleep goes down about M hours for each additional hour of screen time", intMean: "someone with 0 hours of screen time is predicted to sleep about B hours" },
+  { x: "Hours studied", y: "Test score", xn: "hours studied", yn: "test score", xs: [0, 10], m: [3, 6], b: [45, 60], xu: "hour of studying", yu: "points", slopeMean: "the predicted test score goes up about M points for each additional hour studied", intMean: "a student who studies 0 hours is predicted to score about B" },
+  { x: "Temperature (°F, above 50)", y: "Smoothies sold", xn: "degrees above 50°F", yn: "smoothies sold", xs: [0, 40], m: [1.5, 3], b: [10, 30], xu: "degree", yu: "smoothies", slopeMean: "about M more smoothies are predicted to sell for each 1-degree increase", intMean: "at 50°F, about B smoothies are predicted to sell" },
+  { x: "Age of car (years)", y: "Value (hundreds of $)", xn: "a car's age in years", yn: "its value in hundreds of dollars", xs: [0, 12], m: [-14, -8], b: [200, 260], xu: "year", yu: "hundred dollars", slopeMean: "the predicted value drops about M hundred dollars for each year of age", intMean: "a brand-new car (0 years) is predicted to be worth about B hundred dollars" },
+  { x: "Hours of screen time per day", y: "Hours of sleep", xn: "daily hours of screen time", yn: "hours of sleep", xs: [1, 9], m: [-0.6, -0.3], b: [9, 10], xu: "hour of screen time", yu: "hours of sleep", slopeMean: "predicted sleep goes down about M hours for each additional hour of screen time", intMean: "someone with 0 hours of screen time is predicted to sleep about B hours" },
 ];
 
 function scatterData(r: Rng, n: number, m: number, b: number, noise: number, x0 = 1, x1 = 12): Pt[] {
@@ -117,7 +117,7 @@ const regression: Skill = {
       const x = r.int(c.xs[0] + 1, c.xs[1]);
       const y = r2(m * x + b);
       return {
-        prompt: `For data on ${c.x.toLowerCase()} (x) and ${c.y.toLowerCase()} (y), the regression line is ŷ = ${eqText(m, b)}. Predict y when x = ${x}.`,
+        prompt: `For data on ${c.xn} (x) and ${c.yn} (y), the regression line is ŷ = ${eqText(m, b)}. Predict y when x = ${x}.`,
         answer: num(fromDecimal(y), { tolerance: 0.01 }),
         hints: [`Substitute ${x} for x.`, `Multiply ${f(m)} × ${x}, then add ${f(b)}.`],
         steps: [st("Substitute.", `ŷ = ${f(m)}(${x}) + ${f(b)}`), st("Evaluate.", `${f(r2(m * x))} + ${f(b)} = ${f(y)}`)],
@@ -129,7 +129,7 @@ const regression: Skill = {
       const target = r1(m * x + b);
       const sol = r1((target - b) / m);
       return {
-        prompt: `The regression line ŷ = ${eqText(m, b)} models ${c.y.toLowerCase()} (y) from ${c.x.toLowerCase()} (x). For what x does the model predict y = ${f(target)}? Round to the nearest tenth.`,
+        prompt: `The regression line ŷ = ${eqText(m, b)} models ${c.yn} (y) from ${c.xn} (x). For what x does the model predict y = ${f(target)}? Round to the nearest tenth.`,
         answer: num(fromDecimal(sol), { tolerance: 0.1 }),
         hints: [`Set ${f(target)} = ${eqText(m, b)}.`, `Subtract ${f(b)}, then divide by ${f(m)}.`],
         steps: [st("Set up.", `${f(target)} = ${eqText(m, b)}`), st(`Subtract ${f(b)}.`, `${f(r1(target - b))} = ${f(m)}x`), st(`Divide by ${f(m)}.`, `x ≈ ${f(sol)}`)],
@@ -138,7 +138,7 @@ const regression: Skill = {
     }
     // Level 3: fit with technology, then predict.
     const xs = [1, 2, 3, 4, 5, 6];
-    const mm = r.int(2, 6) * r.sign(), bb = r.int(20, 40);
+    const mm = r.int(2, 6) * r.sign(), bb = mm < 0 ? r.int(55, 75) : r.int(20, 40);
     const pts = xs.map((x) => ({ x, y: mm * x + bb + r.int(-3, 3) }));
     const fit = lsrl(pts);
     const ms2 = r2(fit.m), bs2 = r2(fit.b);
@@ -186,10 +186,10 @@ const interpret: Skill = {
       const askSlope = lv === 1 ? true : r.chance(0.5);
       const right = askSlope ? slopeRight : intRight;
       const wrongs: [string, string][] = askSlope
-        ? [[intRight, "That's the meaning of the intercept."], [`${c.y.toLowerCase()} is always exactly ${f(Math.abs(m))} more than ${c.x.toLowerCase()}`, "The slope is a rate of change, not a difference between x and y."], [`the predicted ${c.y.toLowerCase()} is ${f(Math.abs(m))} when x is 1`, "That's not what slope measures: it's the change in ŷ per 1 unit of x."]]
-        : [[slopeRight, "That's the meaning of the slope."], [`the ${c.x.toLowerCase()} is ${f(b)} when y is 0`, "The intercept is a y-value at x = 0."], [`${c.y.toLowerCase()} increases by ${f(b)} each time`, "A constant in the model is a starting value, not a rate."]];
+        ? [[intRight, "That's the meaning of the intercept."], [`${c.yn} is always exactly ${f(Math.abs(m))} more than ${c.xn}`, "The slope is a rate of change, not a difference between x and y."], [`the predicted ${c.yn} is ${f(Math.abs(m))} when x is 1`, "That's not what slope measures: it's the change in ŷ per 1 unit of x."]]
+        : [[slopeRight, "That's the meaning of the slope."], [`the ${c.xn} is ${f(b)} when y is 0`, "The intercept is a y-value at x = 0."], [`${c.yn} increases by ${f(b)} each time`, "A constant in the model is a starting value, not a rate."]];
       return {
-        prompt: `A model for ${c.y.toLowerCase()} (y) based on ${c.x.toLowerCase()} (x) is ${eq}. What does the ${askSlope ? `slope, ${f(m)},` : `y-intercept, ${f(b)},`} mean?`,
+        prompt: `A model for ${c.yn} (y) based on ${c.xn} (x) is ${eq}. What does the ${askSlope ? `slope, ${f(m)},` : `y-intercept, ${f(b)},`} mean?`,
         answer: choice(r, right.charAt(0).toUpperCase() + right.slice(1), wrongs.map(([w, fbk]) => [w.charAt(0).toUpperCase() + w.slice(1), fbk] as [string, string])),
         hints: [askSlope ? "Slope = change in ŷ for each increase of 1 in x." : "The y-intercept is the predicted value when x = 0.", "Use the units of the context."],
         steps: [st(askSlope ? "Slope." : "Intercept.", askSlope ? `${f(m)} ${c.yu} per ${c.xu}.` : `When x = 0, ŷ = ${f(b)}.`), st("In context.", right + ".")],
@@ -201,7 +201,7 @@ const interpret: Skill = {
     const yq = r2(m * xq + b);
     const right = far ? `Not reliable: x = ${xq} is far outside the data (x from ${lo} to ${hi}), so it's extrapolation` : `Reasonably reliable: x = ${xq} is inside the data's range (interpolation)`;
     return {
-      prompt: `The model ${eq} was built from data with x-values from ${lo} to ${hi} (x = ${c.x.toLowerCase()}). It predicts ŷ = ${f(yq)} when x = ${xq}. How reliable is this prediction?`,
+      prompt: `The model ${eq} was built from data with x-values from ${lo} to ${hi} (x = ${c.xn}). It predicts ŷ = ${f(yq)} when x = ${xq}. How reliable is this prediction?`,
       answer: choice(r, right, far
         ? [[`Reliable: the model works for any x`, "A model only reflects the range of the data it came from."], [`Reasonably reliable: x = ${xq} is inside the data's range (interpolation)`, `${xq} is outside ${lo} to ${hi}.`], ["Not reliable: predictions from a regression line are never useful", "Inside the data range, predictions are reasonable."]]
         : [[`Not reliable: x = ${xq} is far outside the data, so it's extrapolation`, `${xq} is between ${lo} and ${hi}.`], ["Not reliable: predictions from a regression line are never useful", "Inside the data range, predictions are reasonable."], ["Exactly correct: the actual value will be " + f(yq), "Predictions are estimates; actual values vary around the line."]]),
@@ -248,7 +248,7 @@ const residuals: Skill = {
         answer: num(fromDecimal(res)),
         hints: [`Predicted: ŷ = ${f(m)}(${x}) + ${b}.`, "Residual = actual − predicted."],
         steps: [st("Predicted value.", `ŷ = ${f(m)}(${x}) + ${b} = ${f(pred)}`), st("Residual.", `${f(actual)} − ${f(pred)} = ${f(res)}`), st("Meaning.", res > 0 ? "The point is above the line." : "The point is below the line.")],
-        traps: [trap(fromDecimal(-res), "Residual is actual minus predicted, not predicted minus actual."), trap(fromDecimal(pred), "That's the predicted value. Subtract it from the actual value.")],
+        traps: traps(fromDecimal(res), [trap(fromDecimal(-res), "Residual is actual minus predicted, not predicted minus actual."), trap(fromDecimal(pred), "That's the predicted value. Subtract it from the actual value.")]),
       };
     }
     return {
@@ -256,7 +256,7 @@ const residuals: Skill = {
       answer: num(fromDecimal(actual)),
       hints: ["Residual = actual − predicted, so actual = predicted + residual.", `Predicted at x = ${x}: ${f(m)}(${x}) + ${b}.`],
       steps: [st("Predicted value.", `ŷ = ${f(pred)}`), st("Actual = predicted + residual.", `${f(pred)} + ${res < 0 ? `(${f(res)})` : f(res)} = ${f(actual)}`)],
-      traps: [trap(fromDecimal(pred - res), "Actual = predicted + residual. You subtracted.")],
+      traps: traps(fromDecimal(actual), [trap(fromDecimal(pred - res), "Actual = predicted + residual. You subtracted.")]),
     };
   },
 };
@@ -347,13 +347,13 @@ const correlation: Skill = {
       const val = r.pick([0.92, 0.85, 0.35, 0.18]) * sign;
       const strength = Math.abs(val) > 0.7 ? "strong" : Math.abs(val) > 0.3 ? "weak" : "very weak";
       const dir = sign > 0 ? "positive" : "negative";
-      const right = `A ${strength} ${dir} linear relationship: as ${c.x.toLowerCase()} increases, ${c.y.toLowerCase()} tends to ${sign > 0 ? "increase" : "decrease"}`;
+      const right = `A ${strength} ${dir} linear relationship: as ${c.xn} increases, ${c.yn} tends to ${sign > 0 ? "increase" : "decrease"}`;
       return {
-        prompt: `For data on ${c.x.toLowerCase()} and ${c.y.toLowerCase()}, r = ${f(val)}. Which interpretation is correct?`,
+        prompt: `For data on ${c.xn} and ${c.yn}, r = ${f(val)}. Which interpretation is correct?`,
         answer: choice(r, right, [
-          [`A ${strength} ${sign > 0 ? "negative" : "positive"} linear relationship: as ${c.x.toLowerCase()} increases, ${c.y.toLowerCase()} tends to ${sign > 0 ? "decrease" : "increase"}`, "The sign of r gives the direction."],
+          [`A ${strength} ${sign > 0 ? "negative" : "positive"} linear relationship: as ${c.xn} increases, ${c.yn} tends to ${sign > 0 ? "decrease" : "increase"}`, "The sign of r gives the direction."],
           [`A ${strength === "strong" ? "weak" : "strong"} ${dir} linear relationship`, "Strength comes from how close |r| is to 1."],
-          [`${c.x} causes ${c.y.toLowerCase()} to ${sign > 0 ? "increase" : "decrease"}`, "Correlation alone doesn't show causation."],
+          [`${c.x} causes ${c.yn} to ${sign > 0 ? "increase" : "decrease"}`, "Correlation alone doesn't show causation."],
         ]),
         hints: ["The sign of r tells the direction.", "|r| near 1 is strong; near 0 is weak."],
         steps: [st("Direction.", `r is ${dir}.`), st("Strength.", `|r| = ${f(Math.abs(val))}, so ${strength}.`)],
@@ -441,9 +441,9 @@ const expModel: Skill = {
   ],
   generate(r, lv) {
     const ctx = r.pick([
-      { what: "followers", per: "week", a: [200, 400], g: [1.08, 1.25] },
-      { what: "bacteria (thousands)", per: "hour", a: [5, 20], g: [1.2, 1.5] },
-      { what: "value of a laptop (dollars)", per: "year", a: [800, 1200], g: [0.7, 0.88] },
+      { what: "followers", subj: "The number of followers", per: "week", a: [200, 400], g: [1.08, 1.25] },
+      { what: "bacteria (thousands)", subj: "The number of bacteria", per: "hour", a: [5, 20], g: [1.2, 1.5] },
+      { what: "the value of a laptop (dollars)", subj: "The laptop's value", per: "year", a: [800, 1200], g: [0.7, 0.88] },
     ]);
     const a = Math.round(ctx.a[0] + r.next() * (ctx.a[1] - ctx.a[0]));
     const b = r2(ctx.g[0] + r.next() * (ctx.g[1] - ctx.g[0]));
@@ -455,17 +455,16 @@ const expModel: Skill = {
         answer: num(fromDecimal(y), { tolerance: Math.max(0.15, y * 0.002) }),
         hints: [`Substitute x = ${x}: ${a}(${f(b)})^${x}.`, "Raise the base to the power first, then multiply by " + a + "."],
         steps: [st("Substitute.", `ŷ = ${a}(${f(b)})^${x}`), st("Evaluate.", `(${f(b)})^${x} ≈ ${f(Math.round(b ** x * 10000) / 10000)}, × ${a} ≈ ${f(y)}`)],
-        traps: trapsTol(y, Math.max(0.15, y * 0.002), [trap(fromDecimal(r1((a * b) ** x > 1e9 ? 0 : a * b * x)), "Exponents mean repeated multiplication by b, not multiplying by x."), trap(fromDecimal(r1(a + b * x)), "This is an exponential model, not a linear one.")]),
+        traps: trapsTol(y, Math.max(0.15, y * 0.002), [trap(fromDecimal(r1(a * b * x)), "The exponent means multiplying by b repeatedly, not multiplying by x.")]),
       };
     }
     if (lv === 2) {
       const pct = Math.round(Math.abs(b - 1) * 100);
       const grow = b > 1;
-      const right = `${ctx.what.split(" (")[0].replace(/^value of a/, "The value of a")} ${grow ? "increase" : "decrease"}${ctx.what.startsWith("value") ? "s" : ""} by about ${pct}% per ${ctx.per}`;
-      const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+      const right = `${ctx.subj} ${grow ? "increases" : "decreases"} by about ${pct}% per ${ctx.per}`;
       return {
         prompt: `An exponential model for ${ctx.what} after x ${ctx.per}s is ŷ = ${a}(${f(b)})^x. What does ${f(b)} tell you?`,
-        answer: choice(r, cap(right), [[cap(`${ctx.what.split(" (")[0]} ${grow ? "decrease" : "increase"} by about ${pct}% per ${ctx.per}`), grow ? "b > 1 means growth." : "b < 1 means decay."], [cap(`${ctx.what.split(" (")[0]} change by ${f(b)} each ${ctx.per}`), "b is a multiplier, not an amount added."], [cap(`${ctx.what.split(" (")[0]} start at ${f(b)}`), `The starting value is a = ${a}.`]]),
+        answer: choice(r, right, [[`${ctx.subj} ${grow ? "decreases" : "increases"} by about ${pct}% per ${ctx.per}`, grow ? "b > 1 means growth." : "b < 1 means decay."], [`${ctx.subj} changes by ${f(b)} each ${ctx.per}`, "b is a multiplier, not an amount added."], [`${ctx.subj} starts at ${f(b)}`, `The starting value is a = ${a}.`]]),
         hints: ["b is the factor the quantity is multiplied by each period.", "b = 1 + rate for growth, or 1 − rate for decay."],
         steps: [st("Compare b with 1.", `${f(b)} ${grow ? ">" : "<"} 1, so it's ${grow ? "growth" : "decay"}.`), st("Find the percent.", `|${f(b)} − 1| = ${f(r2(Math.abs(b - 1)))} = ${pct}% per ${ctx.per}.`)],
       };
@@ -483,7 +482,5 @@ const expModel: Skill = {
     };
   },
 };
-
-void frac;
 
 export default [scatterDescribe, regression, interpret, residuals, residualPlot, correlation, causation, expModel];

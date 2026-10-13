@@ -1,5 +1,5 @@
 // Unit 5: Modeling with functions: solving f(x) = g(x), combining functions, systems, and justifying steps.
-import { choice, cst, expr, linear, money, ms, num, poly, polyExpr, sn } from "../helpers";
+import { choice, cst, expr, linear, ms, num, poly, polyExpr } from "../helpers";
 import { frac } from "../../lib/rational";
 import { st } from "../steps";
 import type { Skill } from "../types";
@@ -326,7 +326,7 @@ const justify: Skill = {
     }
     if (lv === 2) {
       if (r.chance(0.5)) {
-        const a = r.pick([2, 3, 4, 5]), b = r.pick([2, 3]), n = r.int(2, 5);
+        const b = r.pick([2, 3]), a = r.pick(b === 2 ? [3, 4, 5] : [2, 4, 5]), n = r.int(2, 5);
         const c = a * b ** n;
         const errAt = r.int(1, 3);
         const s1 = errAt === 1 ? `${a * b}^x = ${c}` : `${b}^x = ${b ** n}`;
@@ -399,10 +399,6 @@ const justify: Skill = {
     }
   },
 };
-
-// Keep a reference to helpers used only in some branches.
-void sn;
-void money;
 
 const skills: Skill[] = [intersect, tableApprox, combine, writeSystem, justify];
 export default skills;

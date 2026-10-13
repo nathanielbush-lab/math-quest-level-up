@@ -76,7 +76,7 @@ const polyOps: Skill = {
       return {
         prompt: `${sub ? "Subtract" : "Add"}: (${poly(p)}) ${sub ? "−" : "+"} (${poly(q)})`,
         answer: expr(polyExpr(res), { form: "expanded", display: poly(res) }),
-        hints: [sub ? "Distribute the minus sign: change the sign of every term in the second polynomial." : "Combine like terms: x^2 with x^2, x with x, numbers with numbers.", `x^2 terms: ${p[0]} ${sub ? "−" : "+"} ${sn(q[0])}; x terms: ${p[1]} ${sub ? "−" : "+"} ${sn(q[1])}; constants: ${p[2]} ${sub ? "−" : "+"} ${sn(q[2])}.`],
+        hints: [sub ? "Distribute the minus sign: change the sign of every term in the second polynomial." : "Combine like terms: x^2 with x^2, x with x, numbers with numbers.", `x^2 terms: ${ms(p[0])} ${sub ? "−" : "+"} ${sn(q[0])}; x terms: ${ms(p[1])} ${sub ? "−" : "+"} ${sn(q[1])}; constants: ${ms(p[2])} ${sub ? "−" : "+"} ${sn(q[2])}.`],
         steps: [
           ...(sub ? [st("Distribute the minus sign.", `${poly(p)} ${poly(q.map((c) => -c)).startsWith("−") ? poly(q.map((c) => -c)).replace(/^−/, "− ") : "+ " + poly(q.map((c) => -c))}`)] : []),
           st("Combine like terms.", poly(res)),
@@ -92,7 +92,7 @@ const polyOps: Skill = {
       return {
         prompt: sq ? `Expand: (${poly([a, b])})^2` : `Multiply: (${poly([a, b])})(${poly([c, d])})`,
         answer: expr(polyExpr(out), { form: "expanded", display: poly(out) }),
-        hints: [sq ? `Write it as (${poly([a, b])})(${poly([a, b])}) and distribute; don't just square each term.` : "Distribute each term of the first binomial to both terms of the second (FOIL).", `First: ${a * B[0]}x^2; outer + inner: ${a * B[1]}x + ${b * B[0]}x; last: ${b * B[1]}.`],
+        hints: [sq ? `Write it as (${poly([a, b])})(${poly([a, b])}) and distribute; don't just square each term.` : "Distribute each term of the first binomial to both terms of the second (FOIL).", `First: ${term2(a * B[0], "x^2")}; outer + inner: ${term2(a * B[1], "x")} and ${term2(b * B[0], "x")}; last: ${ms(b * B[1])}.`],
         steps: [st("Distribute.", `${term2(a * B[0], "x^2")} ${signed(a * B[1], "x")} ${signed(b * B[0], "x")} ${signed(b * B[1], "")}`), st("Combine like terms.", poly(out))],
       };
     }
@@ -224,7 +224,7 @@ const vertexForm: Skill = {
       return {
         prompt: `Find the vertex of f(x) = ${vform(a, h, k)}.`,
         answer: pointAns(h, k),
-        hints: ["Match it to a(x − h)^2 + k.", `${binom(h)} = (x − ${sn(h)}), so h = ${ms(h)}.`],
+        hints: ["Match it to a(x − h)^2 + k.", h > 0 ? `${binom(h)} matches (x − h), so h = ${h}.` : `${binom(h)} = (x − (${ms(h)})), so h = ${ms(h)}.`],
         steps: [st("Match to vertex form.", `a = ${ms(a)}, h = ${ms(h)}, k = ${ms(k)}`), st("Vertex.", `${pt(h, k)}, a ${a > 0 ? "minimum" : "maximum"}`)],
       };
     }
@@ -232,7 +232,7 @@ const vertexForm: Skill = {
       return {
         prompt: `Write f(x) = ${vform(a, h, k)} in standard form ax^2 + bx + c.`,
         answer: expr(polyExpr(std), { form: "expanded", lhs: "f(x)", display: poly(std) }),
-        hints: [`Square the binomial first: ${binom(h)}^2 = ${poly([1, -2 * h, h * h])}.`, `Then multiply by ${ms(a)} and add ${ms(k)}.`],
+        hints: [`Square the binomial first: ${binom(h)}^2 = ${poly([1, -2 * h, h * h])}.`, `${a !== 1 ? `Then multiply by ${ms(a)} and ` : "Then "}${k < 0 ? `subtract ${-k}` : `add ${k}`}.`],
         steps: [st("Square the binomial.", `${binom(h)}^2 = ${poly([1, -2 * h, h * h])}`), ...(a !== 1 ? [st(`Multiply by ${ms(a)}.`, poly([a, -2 * a * h, a * h * h]))] : []), st(`${k < 0 ? "Subtract" : "Add"} ${Math.abs(k)}.`, poly(std))],
       };
     }
@@ -366,7 +366,7 @@ const maxMin: Skill = {
         visual: { type: "plot", xMin: 0, xMax: Math.ceil(2 * tMax + 1), yMin: 0, yMax: Math.ceil((hMax + 10) / 10) * 10, curves: [{ expr: `-16x^2+${v}x+${h0}`, domain: [0, 2 * tMax + 0.3], label: "h(t)" }] },
         answer: { kind: "multi", fields: [{ value: frac(tMax), pre: "t =", post: " s" }, { value: frac(hMax), pre: "max height =", post: " ft" }] },
         hints: ["The maximum is at the vertex: t = −b ÷ (2a).", `t = −${v} ÷ (2 · −16) = ${tMax}. Substitute that into h(t).`],
-        steps: [st("Find the time of the vertex.", `t = {−${v}/2(−16)} = ${tMax} s`), st("Evaluate h at that time.", `h(${tMax}) = −16(${tMax})^2 + ${v}(${tMax})${h0 ? ` + ${h0}` : ""} = ${-16 * tMax * tMax} + ${v * tMax}${h0 ? ` + ${h0}` : ""} = ${hMax}`), st("Answer.", `Maximum height ${hMax} ft at t = ${tMax} s.`)],
+        steps: [st("Find the time of the vertex.", `t = {−${v}/2(−16)} = ${tMax} s`), st("Evaluate h at that time.", `h(${tMax}) = −16(${tMax})^2 + ${v}(${tMax})${h0 ? ` + ${h0}` : ""} = ${ms(-16 * tMax * tMax)} + ${v * tMax}${h0 ? ` + ${h0}` : ""} = ${hMax}`), st("Answer.", `Maximum height ${hMax} ft at t = ${tMax} s.`)],
       };
     }
     const base = r.pick([120, 160, 200, 240, 300]), drop = r.pick([2, 4, 5, 10]);
@@ -376,7 +376,7 @@ const maxMin: Skill = {
     const rev = pBest * (base - drop * pBest);
     return {
       prompt: `A shop selling ${item} models its revenue as R(p) = p(${base} − ${drop}p) dollars when the price is p dollars. What price maximizes revenue, and what is the maximum revenue?`,
-      answer: { kind: "multi", fields: [{ value: frac(pBest), pre: "price = $" }, { value: frac(rev), pre: "revenue = $" }] },
+      answer: { kind: "multi", fields: [{ value: frac(pBest), pre: "price =", post: " dollars" }, { value: frac(rev), pre: "revenue =", post: " dollars" }] },
       hints: [`The zeros are p = 0 and p = ${pz} (when ${base} − ${drop}p = 0).`, `The vertex is halfway between the zeros: p = ${pBest}. Then find R(${pBest}).`],
       steps: [st("Find the zeros.", `p = 0 or ${base} − ${drop}p = 0, so p = ${pz}`), st("The vertex is halfway between.", `p = {0 + ${pz}/2} = ${pBest}`), st("Find the revenue.", `R(${pBest}) = ${pBest}(${base} − ${drop * pBest}) = ${pBest} · ${base - drop * pBest} = ${rev}`), st("Interpret.", `Charging $${pBest} gives the most revenue, $${rev}.`)],
     };
@@ -429,7 +429,7 @@ const transform: Skill = {
       return {
         prompt: `The graph of f(x) = x^2 is ${desc}. Write the equation of the new function g(x).`,
         answer: expr(value, { lhs: "g(x)", display: vform(a, h, k) }),
-        hints: [`Right ${Math.abs(h)} means replace x with (x ${h > 0 ? "−" : "+"} ${Math.abs(h)}). Up/down adds to the output.`, `Put it together as a(x − h)^2 + k with a = ${ms(a)}, h = ${ms(h)}, k = ${ms(k)}.`],
+        hints: [`${h > 0 ? "Right" : "Left"} ${Math.abs(h)} means replace x with (x ${h > 0 ? "−" : "+"} ${Math.abs(h)}). Up/down adds to the output.`, `Put it together as a(x − h)^2 + k with a = ${ms(a)}, h = ${ms(h)}, k = ${ms(k)}.`],
         steps: [st("Horizontal shift.", `x^2 → ${binom(h)}^2`), ...(a !== 1 ? [st("Stretch/reflect.", `multiply by ${ms(a)}: ${vform(a, h, 0)}`)] : []), st("Vertical shift.", `g(x) = ${vform(a, h, k)}`)],
       };
     }
@@ -494,7 +494,7 @@ const build: Skill = {
         visual: quadPlot(coefs, [{ x: h, y: k, label: pt(h, k) }, { x: px, y: py, label: pt(px, py) }]),
         answer: expr(vexpr(a, h, k), { lhs: "y", form: "vertex", display: vform(a, h, k) }),
         hints: [`Start with y = a${binom(h)}^2${cstS(k)}.`, `Substitute ${pt(px, py)}: ${ms(py)} = a(${ms(px)} ${h >= 0 ? "−" : "+"} ${Math.abs(h)})^2${cstS(k)}. Solve for a.`],
-        steps: [st("Use vertex form.", `y = a${binom(h)}^2${cstS(k)}`), st("Substitute the point.", `${ms(py)} = a(${ms(dx)})^2${cstS(k)} = ${dx * dx}a${cstS(k)}`), st("Solve for a.", `${dx * dx}a = ${py - k}, so a = ${ms(a)}`), st("Write the equation.", `y = ${vform(a, h, k)}`)],
+        steps: [st("Use vertex form.", `y = a${binom(h)}^2${cstS(k)}`), st("Substitute the point.", `${ms(py)} = a(${ms(dx)})^2${cstS(k)} = ${dx * dx === 1 ? "" : dx * dx}a${cstS(k)}`), st("Solve for a.", `${dx * dx === 1 ? "" : dx * dx}a = ${ms(py - k)}, so a = ${ms(a)}`), st("Write the equation.", `y = ${vform(a, h, k)}`)],
       };
     }
     const p = r.int(-5, 2), q = p + r.int(2, 7);
