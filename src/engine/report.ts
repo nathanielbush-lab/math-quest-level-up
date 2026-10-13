@@ -456,7 +456,7 @@ function attentionItems(state: AppState, wk: WeekRange, practice: AttemptEvent[]
       id: "quiet-week",
       icon: "📅",
       title: "A lighter week",
-      detail: `${plural(quests, "daily quest")} of the ${state.settings.weeklyGoal} planned.`,
+      detail: `${plural(quests, "daily run")} of the ${state.settings.weeklyGoal} planned.`,
       suggestion: `Busy weeks happen. Picking set days and a regular time (for example, right after a snack) makes it easier to keep going; short sessions count too.`,
     });
   }
@@ -465,7 +465,7 @@ function attentionItems(state: AppState, wk: WeekRange, practice: AttemptEvent[]
 
 function winsFor(g: Glance, ups: LevelUp[], practice: AttemptEvent[], tests: TestSummary[], explanations: ExplanationRow[], isCurrent: boolean): Win[] {
   const out: Win[] = [];
-  if (g.goalMet) out.push({ icon: "🎯", text: g.quests >= g.goal ? `Met the weekly goal: ${g.quests} of ${g.goal} daily quests.` : "Met the weekly goal." });
+  if (g.goalMet) out.push({ icon: "🎯", text: g.quests >= g.goal ? `Met the weekly goal: ${g.quests} of ${g.goal} daily runs.` : "Met the weekly goal." });
   const learned = ups.filter((u) => !u.placed);
   const atLeast = (lv: number) => learned.filter((u) => u.level >= lv);
   if (atLeast(4).length) out.push({ icon: "🎤", text: `Can now explain and apply ${atLeast(4).map((u) => u.title).join(", ")}.` });

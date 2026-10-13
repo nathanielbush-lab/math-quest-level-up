@@ -1,4 +1,4 @@
-// The star shop: spend stars on avatars, color themes and streak freezes.
+// The shop: spend XP on avatars, accent colors and streak freezes.
 import { useEffect, useRef, useState } from "react";
 import { AVATARS, DEFAULT_AVATAR, FREEZE_ID, POWERUPS, SHOP_BY_ID, THEMES, themeAttr, type ShopItem } from "../content/shop";
 import { MAX_FREEZES, FREEZE_EVERY } from "../engine/mastery";
@@ -114,16 +114,16 @@ export function ShopTab({ state, mutate }: { state: AppState; mutate: Mutate }) 
       <div className="card shop-balance">
         <div className="grow">
           <div>
-            <span className="big-num">⭐ {fmt(balance)}</span> <strong>stars to spend</strong>
+            <span className="big-num mono">{fmt(balance)} XP</span> <strong>to spend</strong>
             <span className="muted"> · {fmt(state.xp)} earned in all</span>
           </div>
-          <div className="muted small">Earn stars by answering questions, doing challenges and finishing your daily quest. Spending stars never changes your progress.</div>
+          <div className="muted small">Earn XP by answering questions, beating boss levels and finishing your daily run. Spending XP never lowers your rank or changes your progress.</div>
         </div>
       </div>
 
       <div className="shop-section">
         <h2>Avatars</h2>
-        <span className="muted small">Your buddy shows up next to your name. ✨ Legendary ones take a few weeks of stars!</span>
+        <span className="muted small">Your avatar shows up next to your name. Legendary ones take a few weeks of XP.</span>
       </div>
       <div className="shop-grid" role="list" aria-label="Avatars">
         {AVATARS.map((it) => (
@@ -137,10 +137,10 @@ export function ShopTab({ state, mutate }: { state: AppState; mutate: Mutate }) 
       )}
 
       <div className="shop-section">
-        <h2>Color themes</h2>
+        <h2>Accent colors</h2>
         <span className="muted small">Changes the colors of the whole app. Press “Try it” to see it first.</span>
       </div>
-      <div className="shop-grid wide" role="list" aria-label="Color themes">
+      <div className="shop-grid wide" role="list" aria-label="Accent colors">
         {THEMES.map((it) => (
           <ItemCard key={it.id} item={it} state={state} onBuy={askBuy} onUse={use} previewing={preview === it.id} onPreview={togglePreview} justBought={cheer?.item.id === it.id} />
         ))}
@@ -204,7 +204,7 @@ function ItemCard({
     );
   else if (check.ok)
     action = (
-      <button className="btn primary" aria-label={`Buy ${item.name} for ${item.price} stars`} onClick={() => onBuy(item.id)}>
+      <button className="btn primary" aria-label={`Buy ${item.name} for ${item.price} XP`} onClick={() => onBuy(item.id)}>
         Buy
       </button>
     );
@@ -216,12 +216,12 @@ function ItemCard({
     );
   else if (check.reason === "short")
     action = (
-      <button className="btn short" disabled aria-label={`${item.name} costs ${item.price} stars. You need ${check.need} more.`}>
-        Need {fmt(check.need)} more ⭐
+      <button className="btn short" disabled aria-label={`${item.name} costs ${item.price} XP. You need ${check.need} more.`}>
+        Need {fmt(check.need)} more XP
       </button>
     );
 
-  const price = owned ? (item.price === 0 ? <span className="price muted">Free</span> : <span className="price muted">Yours</span>) : <span className="price">⭐ {fmt(item.price)}</span>;
+  const price = owned ? (item.price === 0 ? <span className="price muted">Free</span> : <span className="price muted">Yours</span>) : <span className="price mono">{fmt(item.price)} XP</span>;
 
   if (item.kind === "powerup") {
     return (
@@ -299,10 +299,10 @@ function PreviewBar({ item, state, onBuy, onStop }: { item: ShopItem; state: App
       <div className="sample">
         {check.ok ? (
           <button className="btn primary" onClick={onBuy}>
-            Buy for {fmt(item.price)} ⭐
+            Buy for {fmt(item.price)} XP
           </button>
         ) : check.reason === "short" ? (
-          <span className="small" style={{ fontWeight: 700 }}>Need {fmt(check.need)} more ⭐</span>
+          <span className="small" style={{ fontWeight: 700 }}>Need {fmt(check.need)} more XP</span>
         ) : null}
         <button className="btn on-hero" onClick={onStop}>
           Stop trying
@@ -339,10 +339,10 @@ function ConfirmBuy({ item, state, onBuy, onCancel }: { item: ShopItem; state: A
       <div className="shop-dialog" role="dialog" aria-modal="true" aria-labelledby="shop-confirm-title" aria-describedby="shop-confirm-desc" ref={dialog} onKeyDown={onKey}>
         <div className="icon" aria-hidden="true">{item.icon}</div>
         <h2 id="shop-confirm-title">
-          Spend {fmt(item.price)} ⭐ on {item.icon} {item.name}?
+          Spend {fmt(item.price)} XP on {item.icon} {item.name}?
         </h2>
         <p className="muted" id="shop-confirm-desc">
-          {what} You'll have {fmt(Math.max(0, left))} ⭐ left.
+          {what} You'll have {fmt(Math.max(0, left))} XP left.
         </p>
         <div className="row">
           <button className="btn primary big" onClick={onBuy} disabled={!check.ok}>
@@ -367,7 +367,7 @@ function CheerToast({ cheer }: { cheer: Cheer }) {
         : item.id === FREEZE_ID
           ? `Streak freeze saved! You have ${cheer.freezes}.`
           : `You got ${item.name}!`;
-  const sparkles = ["✨", "⭐", "🎉", "✨", "⭐", "💫"];
+  const sparkles = ["✦", "⚡", "✦", "◆", "⚡", "✦"];
   return (
     <div className="shop-cheer" role="status">
       <span className="sparkles" aria-hidden="true">
@@ -376,7 +376,7 @@ function CheerToast({ cheer }: { cheer: Cheer }) {
         ))}
       </span>
       <span className="icon" aria-hidden="true">{item.icon}</span>
-      <span>Yay! 🎉 {text}</span>
+      <span>Unlocked. {text}</span>
     </div>
   );
 }

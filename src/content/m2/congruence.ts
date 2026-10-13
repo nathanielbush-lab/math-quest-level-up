@@ -2,7 +2,7 @@
 import { choice, ms, num, trap, traps } from "../helpers";
 import { frac } from "../../lib/rational";
 import { st } from "../steps";
-import type { Skill, Visual } from "../types";
+import type { Problem, Skill, Visual } from "../types";
 import type { Rng } from "../../lib/rng";
 import { DEG, PRIME, type P } from "./util";
 import { MOVES } from "./transformations";
@@ -41,7 +41,7 @@ function mirrorRight(t: P[], gap = 3): P[] {
 
 /** Rotate a triangle 180° and place it to the right. */
 function turnRight(t: P[], gap = 3): P[] {
-  const maxX = Math.max(...t.map((p) => p.x)), minX = Math.min(...t.map((p) => p.x));
+  const maxX = Math.max(...t.map((p) => p.x));
   const maxY = Math.max(...t.map((p) => p.y));
   return t.map((p) => ({ x: Math.round((maxX + gap + (maxX - p.x)) * 1000) / 1000 + 0, y: Math.round((maxY - p.y) * 1000) / 1000 + 0 }));
 }
@@ -74,8 +74,8 @@ const rigidCongruence: Skill = {
       [{ x: 2, y: 1 }, { x: 5, y: 2 }, { x: 1, y: 4 }],
       [{ x: 1, y: 1 }, { x: 3, y: 4 }, { x: 5, y: 2 }],
     ]);
-    const [ox, oy] = [r.int(-2, 0), r.int(-1, 1)];
-    const t = base.map((p) => ({ x: p.x + ox, y: p.y + oy }));
+    const [sx, sy] = [r.sign(), r.sign()];
+    const t = base.map((p) => ({ x: p.x * sx, y: p.y * sy }));
     const opts: { key: string; text: string; fn: (p: P) => P }[] = [
       { key: "rx", text: "A reflection across the x-axis", fn: MOVES.rx.fn },
       { key: "ry", text: "A reflection across the y-axis", fn: MOVES.ry.fn },
@@ -96,8 +96,8 @@ const rigidCongruence: Skill = {
     } else img = t.map((p) => { const q = opts.find((o) => o.key === correct)!.fn(p); return { x: q.x + 0, y: q.y + 0 }; });
     const vis: Visual = { type: "geo", grid: true, showLabels: true, points: { A: t[0], B: t[1], C: t[2], D: img[0], E: img[1], F: img[2] }, polygons: [["A", "B", "C"], ["D", "E", "F"]] };
     const corrText = correct === "none" ? noneText : opts.find((o) => o.key === correct)!.text;
-    const wrongs = opts.filter((o) => o.key !== correct).filter((o) => { const q = o.fn(t[0]); return !(q.x === img[0].x && q.y === img[0].y); });
-    const wrong: [string, string][] = r.shuffle(wrongs).slice(0, 3).map((o) => { const q = o.fn(t[0]); return [o.text, `That sends A${`(${ms(t[0].x)}, ${ms(t[0].y)})`} to (${ms(q.x + 0)}, ${ms(q.y + 0)}), not to D.`] as [string, string]; });
+    const wrongs = opts.filter((o) => o.key !== correct).filter((o) => !t.every((p, i) => { const q = o.fn(p); return q.x === img[i].x && q.y === img[i].y; }));
+    const wrong: [string, string][] = r.shuffle(wrongs).slice(0, 3).map((o) => { const k = t.findIndex((p, i) => { const z = o.fn(p); return z.x !== img[i].x || z.y !== img[i].y; }); const z = o.fn(t[k]); return [o.text, `That sends ${"ABC"[k]}(${ms(t[k].x)}, ${ms(t[k].y)}) to (${ms(z.x + 0)}, ${ms(z.y + 0)}), not to ${"DEF"[k]}.`] as [string, string]; });
     if (lv === 3 && correct !== "none") wrong.push([noneText, "Check the side lengths: they match, so a rigid motion can work. Look for it."]);
     const AB = Math.hypot(t[1].x - t[0].x, t[1].y - t[0].y), DE = Math.hypot(img[1].x - img[0].x, img[1].y - img[0].y);
     return {
@@ -184,10 +184,10 @@ const corresponding: Skill = {
     const ask = `${name2[idx(p)]}${name2[idx(q)]}`;
     const x = r.int(3, 9);
     const m1 = r.int(2, 4), m2 = m1 + r.int(1, 3);
-    const c1 = r.int(-5, 9), len = m2 * x + (c1 - m2 * x + m1 * x) - m1 * x + m1 * x; // keep simple: len = m1*x + c1
+    let c1 = r.int(-5, 9);
+    if (c1 === 0) c1 = 4;
     const L = m1 * x + c1;
     const c2 = L - m2 * x;
-    void len;
     const e1 = `${m1}x${c1 < 0 ? " − " + -c1 : c1 > 0 ? " + " + c1 : ""}`;
     const e2 = `${m2}x${c2 < 0 ? " − " + -c2 : c2 > 0 ? " + " + c2 : ""}`;
     return {
@@ -197,7 +197,7 @@ const corresponding: Skill = {
       hints: [`${p}${q} and ${ask} are corresponding sides, so they are equal: ${e1} = ${e2}.`, `Solve for x, then put x back into ${e1}.`],
       steps: [
         st("Corresponding sides are congruent.", `${e1} = ${e2}`),
-        st("Solve for x.", `${ms(c1 - c2)} = ${m2 - m1}x, so x = ${x}`),
+        st("Solve for x.", `${ms(c1 - c2)} = ${m2 - m1 === 1 ? "" : m2 - m1}x, so x = ${x}`),
         st("Find the length.", `${p}${q} = ${m1}(${x})${c1 < 0 ? " − " + -c1 : c1 > 0 ? " + " + c1 : ""} = ${L}`),
       ],
       traps: traps(frac(L), [trap(x, `x = ${x}, but the question asks for the length ${p}${q}. Substitute x back in.`)]),
@@ -215,6 +215,15 @@ const CRIT_WHY: Record<Crit, string> = {
   AAS: "Two pairs of angles and a side that is not between them match.",
   HL: "They are right triangles with congruent hypotenuses and one pair of congruent legs.",
   none: "The marked parts don't fit any criterion. SSA (two sides and a non-included angle) and AAA don't guarantee congruence.",
+};
+
+const CRIT_NEED: Record<Crit, string> = {
+  SSS: "three pairs of congruent sides",
+  SAS: "two pairs of sides and the angle between them",
+  ASA: "two pairs of angles and the side between them",
+  AAS: "two pairs of angles and a side that is not between them",
+  HL: "right triangles with congruent hypotenuses and one pair of congruent legs",
+  none: "",
 };
 
 const criteria: Skill = {
@@ -305,13 +314,13 @@ const criteria: Skill = {
       vis = { type: "geo", showLabels: true, points: pts, polygons: [["A", "B", "M"], ["D", "C", "M"]], segments: segs, angles: angs };
       return finishCrit(r, crit, vis, "ΔAMB ≅ ΔDMC", note, false);
     }
-    return finishCrit(r, crit, vis, "ΔABC ≅ ΔDEF", note ? "" : "", false, note);
+    return finishCrit(r, crit, vis, "ΔABC ≅ ΔDEF", "", false, note);
   },
 };
 
 function finishCrit(r: Rng, crit: Crit, vis: Visual, stmt: string, note: string, shared: boolean, kind = "") {
   const all: Crit[] = ["SSS", "SAS", "ASA", "AAS", "HL", "none"];
-  const fb = (c: Crit) => (c === "none" ? "There is enough marked to use a criterion. Look again at which parts match, including shared sides or vertical angles." : c === "HL" ? "HL only applies to right triangles." : `${c} would need ${CRIT_WHY[c].toLowerCase().replace(/\.$/, "")}. That's not what is marked.`);
+  const fb = (c: Crit) => (c === "none" ? "There is enough marked to use a criterion. Look again at which parts match, including shared sides or vertical angles." : c === "HL" ? "HL only applies to right triangles." : `${c} needs ${CRIT_NEED[c]}. That's not what is marked.`);
   const extra = stmt === "ΔAMB ≅ ΔDMC" ? "∠AMB ≅ ∠DMC because they are vertical angles." : shared ? "BD ≅ BD by the reflexive property (a shared side counts for both triangles)." : "";
   return {
     prompt: `Which criterion, if any, proves ${stmt}? ${note}`.trim(),
@@ -386,12 +395,12 @@ const parallelAngles: Skill = {
     if (lv === 1) {
       const vis = transversal(th, [`${v1}°`, "x°"], [pair.a[1], pair.b[1]], [pair.a[0], pair.b[0]]);
       return {
-        prompt: `Lines ℓ and m are parallel (ℓ on the bottom, m on top). Find x.`,
+        prompt: `The two horizontal lines are parallel. Find x.`,
         visual: vis,
         answer: num(v2),
         hints: ["Name the relationship between the two marked angles.", `They are ${pair.rel}, so they are ${pair.equal ? "congruent" : "supplementary (they add to 180°)"}.`],
         steps: [st("Identify the angle pair.", `The angles are ${pair.rel}.`), st(pair.equal ? "They are congruent." : "They are supplementary.", pair.equal ? `x = ${v1}` : `x = 180 − ${v1} = ${v2}`)],
-        traps: traps(frac(v2), [trap(pair.equal ? 180 - v1 : v1, pair.equal ? `These angles are ${pair.rel}, which are congruent, not supplementary.` : `${pair.rel[0].toUpperCase() + pair.rel.slice(1)} add to 180°, they aren't equal.`), trap(90 - v1, "Parallel-line angles are congruent or add to 180°, not 90°.")]),
+        traps: traps(frac(v2), [trap(pair.equal ? 180 - v1 : v1, pair.equal ? `These angles are ${pair.rel}, which are congruent, not supplementary.` : `${pair.rel[0].toUpperCase() + pair.rel.slice(1)} add to 180°, they aren't equal.`), ...(v1 < 90 ? [trap(90 - v1, "Parallel-line angles are congruent or add to 180°, not 90°.")] : [])]),
       };
     }
     // Build expressions with a whole-number solution.
@@ -419,7 +428,7 @@ const parallelAngles: Skill = {
       steps: [
         st("Identify the angle pair.", `${pair.rel[0].toUpperCase() + pair.rel.slice(1)}, so they are ${pair.equal ? "congruent" : "supplementary"}.`),
         st("Write an equation.", eq),
-        st("Solve.", pair.equal ? `${a1 - a2 > 0 ? `${a1 - a2}x = ${b2 - b1}` : `${ms(b1 - b2)} = ${a2 - a1}x`}, so x = ${x}` : `${a1 + a2}x ${b1 + b2 < 0 ? "−" : "+"} ${Math.abs(b1 + b2)} = 180, so ${a1 + a2}x = ${180 - b1 - b2} and x = ${x}`),
+        st("Solve.", pair.equal ? `${a1 - a2 > 0 ? `${a1 - a2 === 1 ? "" : a1 - a2}x = ${b2 - b1}` : `${ms(b1 - b2)} = ${a2 - a1 === 1 ? "" : a2 - a1}x`}, so x = ${x}` : `${a1 + a2}x ${b1 + b2 < 0 ? "−" : "+"} ${Math.abs(b1 + b2)} = 180, so ${a1 + a2}x = ${180 - b1 - b2} and x = ${x}`),
         st("Check.", `${e1.replace("x", `(${x})`)} = ${v1}° and ${e2.replace("x", `(${x})`)} = ${v2}°${pair.equal ? "" : `; ${v1} + ${v2} = 180`} ✓`),
       ],
       traps: askAngle ? traps(frac(v1), [trap(x, `x = ${x}; now substitute it to find the angle.`), trap(v2 === v1 ? 180 - v1 : v2, "That's the other angle.")]) : traps(frac(x), [trap(v1, "That's the angle measure. The question asks for x.")]),
@@ -446,15 +455,15 @@ const bisectors: Skill = {
     { kind: "choice", prompt: "Why is every point on the perpendicular bisector of AB equidistant from A and B?", choices: ["Reflecting across the bisector swaps A and B but keeps the point fixed, so the two distances match.", "Because the point is the midpoint of AB.", "Because all points are equidistant from A and B.", "Because the bisector is parallel to AB."], correct: 0, explain: "A reflection is a rigid motion, so it preserves the distance from P to A, which becomes the distance from P to B." },
     { kind: "written", prompt: "P is the same distance from A as from B. Explain where P must lie and why.", keyIdeas: ["P lies on the perpendicular bisector of AB (the converse)", "triangles PMA and PMB are congruent by SSS, where M is the midpoint", "so ∠PMA = ∠PMB, which forms a linear pair, so each is 90°"], exemplar: "P must be on the perpendicular bisector of AB. If M is the midpoint, then PA = PB, MA = MB and PM is shared, so triangles PMA and PMB are congruent by SSS. That makes ∠PMA ≅ ∠PMB, and since they form a straight line, each is 90°. So PM is the perpendicular bisector." },
   ],
-  generate(r, lv) {
+  generate(r, lv): Problem {
     const angle = lv === 3 && r.chance(0.5);
     if (angle) {
       const x = r.int(3, 9);
       const a1 = r.int(2, 4), a2 = a1 + r.int(1, 3);
-      const d = r.int(8, 20) + a2 * 0;
-      const b1 = d + 0 - a1 * x, b2 = d - a2 * x;
-      void b1;
-      const D = a1 * x + (d - a1 * x);
+      let d = r.int(8, 20);
+      if (d === a1 * x || d === a2 * x) d += 1;
+      const b2 = d - a2 * x;
+      const D = d;
       const k1 = d - a1 * x;
       const e1 = `${a1}x ${k1 < 0 ? "−" : "+"} ${Math.abs(k1)}`, e2 = `${a2}x ${b2 < 0 ? "−" : "+"} ${Math.abs(b2)}`;
       const B = { x: 0, y: 0 }, A = { x: 8, y: 0 }, C = { x: 8 * Math.cos(70 * DEG), y: 8 * Math.sin(70 * DEG) };
@@ -514,7 +523,7 @@ const bisectors: Skill = {
       visual: { type: "geo", showLabels: true, points: { A, B, M, P: Pp }, segments: [{ from: "A", to: "B" }, { from: "P", to: "M" }, { from: "P", to: "A", label: e1 }, { from: "P", to: "B", label: e2 }, { from: "A", to: "M", tick: 1 }, { from: "M", to: "B", tick: 1 }], angles: [{ at: "M", from: "B", to: "P", right: true }] },
       answer: num(L),
       hints: ["Points on a perpendicular bisector are equidistant from the endpoints, so PA = PB.", `Solve ${e1} = ${e2}, then substitute x into ${e1}.`],
-      steps: [st("Use the perpendicular bisector theorem.", `PA = PB, so ${e1} = ${e2}.`), st("Solve for x.", `${a1 > a2 ? `${a1 - a2}x = ${k2 - k1}` : `${k1 - k2} = ${a2 - a1}x`}, so x = ${x}`), st("Find PA.", `PA = ${a1}(${x}) ${k1 < 0 ? "−" : "+"} ${Math.abs(k1)} = ${L}`), st("Check.", `PB = ${a2}(${x}) ${k2 < 0 ? "−" : "+"} ${Math.abs(k2)} = ${L} ✓`)],
+      steps: [st("Use the perpendicular bisector theorem.", `PA = PB, so ${e1} = ${e2}.`), st("Solve for x.", `${a1 > a2 ? `${a1 - a2 === 1 ? "" : a1 - a2}x = ${k2 - k1}` : `${k1 - k2} = ${a2 - a1 === 1 ? "" : a2 - a1}x`}, so x = ${x}`), st("Find PA.", `PA = ${a1}(${x}) ${k1 < 0 ? "−" : "+"} ${Math.abs(k1)} = ${L}`), st("Check.", `PB = ${a2}(${x}) ${k2 < 0 ? "−" : "+"} ${Math.abs(k2)} = ${L} ✓`)],
       traps: traps(frac(L), [trap(x, "That's x. Substitute it to find PA.")]),
     };
   },
@@ -714,6 +723,7 @@ interface ProofT {
   prove: string;
   rows: [string, string][];
   visual: Visual;
+  decoys: string[];
 }
 const PROOFS: ProofT[] = [
   {
@@ -726,6 +736,7 @@ const PROOFS: ProofT[] = [
       ["ΔAMC ≅ ΔBMD", "SAS"],
     ],
     visual: { type: "geo", showLabels: true, points: { A: { x: -4, y: 2 }, B: { x: 4, y: -2 }, C: { x: -3, y: -3 }, D: { x: 3, y: 3 }, M: { x: 0, y: 0 } }, polygons: [["A", "M", "C"], ["B", "M", "D"]], segments: [{ from: "A", to: "B" }, { from: "C", to: "D" }] },
+    decoys: ["AM ≅ CM and BM ≅ DM", "∠AMC ≅ ∠AMD", "∠MAC ≅ ∠MDB", "AC ≅ CD"],
   },
   {
     given: "AB ≅ CB and BD bisects ∠ABC.",
@@ -738,6 +749,7 @@ const PROOFS: ProofT[] = [
       ["ΔABD ≅ ΔCBD", "SAS"],
     ],
     visual: { type: "geo", showLabels: true, points: { A: { x: -3, y: 0 }, B: { x: 0, y: 5 }, C: { x: 3, y: 0 }, D: { x: 0, y: 0 } }, polygons: [["A", "B", "C"]], segments: [{ from: "B", to: "D" }, { from: "A", to: "B", tick: 1 }, { from: "C", to: "B", tick: 1 }] },
+    decoys: ["AD ≅ BD", "∠BAD ≅ ∠ABD", "∠ABD ≅ ∠BDC", "AB ≅ AD"],
   },
   {
     given: "AB ∥ DC and AB ≅ DC.",
@@ -750,6 +762,7 @@ const PROOFS: ProofT[] = [
       ["ΔABC ≅ ΔCDA", "SAS"],
     ],
     visual: { type: "geo", showLabels: true, points: { A: { x: 0, y: 0 }, B: { x: 6, y: 0 }, C: { x: 8, y: 4 }, D: { x: 2, y: 4 } }, polygons: [["A", "B", "C", "D"]], segments: [{ from: "A", to: "C" }] },
+    decoys: ["∠BAC ≅ ∠BCA", "∠ABC ≅ ∠DCA", "AB ≅ AC", "AD ≅ AC"],
   },
   {
     given: "AB ≅ AC and M is the midpoint of BC.",
@@ -763,6 +776,7 @@ const PROOFS: ProofT[] = [
       ["∠B ≅ ∠C", "Corresponding parts of congruent triangles are congruent (CPCTC)"],
     ],
     visual: { type: "geo", showLabels: true, points: { A: { x: 0, y: 5 }, B: { x: -3, y: 0 }, C: { x: 3, y: 0 }, M: { x: 0, y: 0 } }, polygons: [["A", "B", "C"]], segments: [{ from: "A", to: "M" }] },
+    decoys: ["AB ≅ BC", "∠BAM ≅ ∠B", "AB ≅ AM", "BM ≅ AM"],
   },
   {
     given: "∠A ≅ ∠D, ∠B ≅ ∠E, and BC ≅ EF.",
@@ -774,6 +788,7 @@ const PROOFS: ProofT[] = [
       ["AC ≅ DF", "Corresponding parts of congruent triangles are congruent (CPCTC)"],
     ],
     visual: { type: "geo", showLabels: true, points: { A: { x: 0, y: 0 }, B: { x: 6, y: 0 }, C: { x: 2, y: 4 }, D: { x: 9, y: 0 }, E: { x: 15, y: 0 }, F: { x: 11, y: 4 } }, polygons: [["A", "B", "C"], ["D", "E", "F"]] },
+    decoys: ["ΔABC ≅ ΔEDF", "ΔABC ≅ ΔDFE", "ΔACB ≅ ΔDEF", "AC ≅ EF"],
   },
   {
     given: "Line ℓ through B is parallel to AC, making ∠1 (left of B) and ∠2 (right of B) with sides BA and BC.",
@@ -785,6 +800,7 @@ const PROOFS: ProofT[] = [
       ["m∠A + m∠ABC + m∠C = 180°", "Substitution"],
     ],
     visual: { type: "geo", showLabels: true, points: { A: { x: 0, y: 0 }, C: { x: 8, y: 0 }, B: { x: 3, y: 4 }, P: { x: -1, y: 4 }, Q: { x: 7, y: 4 } }, polygons: [["A", "B", "C"]], segments: [{ from: "P", to: "Q" }], angles: [{ at: "B", from: "P", to: "A", label: "1" }, { at: "B", from: "C", to: "Q", label: "2" }] },
+    decoys: ["∠1 ≅ ∠C and ∠2 ≅ ∠A", "∠1 ≅ ∠2", "m∠1 + m∠2 = 90°", "m∠A + m∠C = 180°"],
   },
 ];
 const REASONS = ["Given", "Definition of midpoint", "Vertical angles are congruent", "SAS", "SSS", "ASA", "AAS", "Reflexive property", "Definition of angle bisector", "Alternate interior angles are congruent", "Corresponding angles are congruent", "Corresponding parts of congruent triangles are congruent (CPCTC)", "Angles that form a straight line add to 180°", "Substitution", "Linear pairs are supplementary"];
@@ -818,14 +834,14 @@ const proofSteps: Skill = {
       const cands = pf.rows.map((_, i) => i).filter((i) => pf.rows[i][1] !== "Given" && i !== finalIdx);
       k = r.pick(cands.length ? cands : [pf.rows.length - 1]);
     } else if (lv === 2) k = finalIdx >= 0 ? finalIdx : pf.rows.length - 1;
-    else k = r.int(1, pf.rows.length - 1);
+    else {
+      const cands = pf.rows.map((_, i) => i).filter((i) => pf.rows[i][1] !== "Given" && i < pf.rows.length - 1);
+      k = r.pick(cands);
+    }
     const table = pf.rows.map((row, i) => (i === k ? (askStatement ? ["?", row[1]] : [row[0], "?"]) : row));
-    const visual: Visual = pf.visual;
     if (askStatement) {
       const correct = pf.rows[k][0];
-      const pool = [...PROOFS.flatMap((p) => p.rows.map((x) => x[0]))].filter((s) => s !== correct);
-      const sameFig = pool.filter((s) => pf.rows.some((x) => x[0] === s) || /[ABCDM]/.test(s));
-      const wrong = r.shuffle(sameFig.filter((s) => !pf.rows.some((x) => x[0] === s))).slice(0, 3).map((s) => [s, "That statement doesn't follow from the reason given, or isn't about this figure."] as [string, string]);
+      const wrong = r.shuffle(pf.decoys).slice(0, 3).map((x) => [x, `“${pf.rows[k][1]}” doesn't give you that statement here. Check it against the figure and the earlier steps.`] as [string, string]);
       return {
         prompt: `Given: ${pf.given} Prove: ${pf.prove}. Which statement belongs in step ${k + 1}?`,
         visual: { type: "table", headers: ["Step", "Statement", "Reason"], rows: table.map((row, i) => [i + 1, row[0], row[1]]) },
@@ -842,8 +858,6 @@ const proofSteps: Skill = {
       answer: choice(r, correct, wrong),
       hints: [`What fact or theorem lets you say “${pf.rows[k][0]}”? Look at what earlier steps give you.`, ["SAS", "SSS", "ASA", "AAS"].includes(correct) ? "List the three pairs of parts proved congruent so far, in order around the triangle." : "Is it a definition (midpoint, bisector), a property (reflexive), or a theorem (vertical angles, parallel lines, CPCTC)?"],
       steps: [st(`Step ${k + 1}.`, `${pf.rows[k][0]}: ${correct}.`), st("Whole proof.", pf.rows.map((x, i) => `(${i + 1}) ${x[0]}: ${x[1]}`).join("; "))],
-      // Shown with the figure in the lesson; the table is the problem's visual.
-      ...(visual ? {} : {}),
     };
   },
 };

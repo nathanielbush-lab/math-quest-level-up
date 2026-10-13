@@ -163,10 +163,10 @@ function TutorChatBox({ problem, wrongAnswers, hintsShown, onUsed, skillId, ctx 
           {error && (
             <div className="feedback warn tutor-error" role="alert">
               {error}
-              {detail && <details className="small" style={{ marginTop: 4 }}><summary>Details for a grown-up</summary>{detail}</details>}
+              {detail && <details className="small" style={{ marginTop: 4 }}><summary>Technical details</summary>{detail}</details>}
             </div>
           )}
-          {capped && !busy && <div className="feedback info tutor-cap">💪 {CAP_TEXT}</div>}
+          {capped && !busy && <div className="feedback info tutor-cap">{CAP_TEXT}</div>}
           {resting && !capped && !busy && <div className="feedback info tutor-cap">😴 {RESTING}</div>}
           {canSend && turns.length === 0 && (
             <div className="tutor-chips">

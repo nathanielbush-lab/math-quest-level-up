@@ -64,7 +64,7 @@ export function BadgeCelebration({ badge, more, onClose }: { badge: Badge; more:
         <h2 id="badge-title" style={{ margin: "4px 0" }}>{badge.name}</h2>
         <p className="muted" style={{ marginTop: 4 }}>You earned it: {badge.how.charAt(0).toLowerCase() + badge.how.slice(1)}.</p>
         <p className="small muted">It's on your trophy shelf (the Trophies tab on the home page).</p>
-        <button ref={btn} className="btn primary big" onClick={onClose}>{more > 0 ? `Awesome! (${more} more) →` : "Awesome! 🎉"}</button>
+        <button ref={btn} className="btn primary big" onClick={onClose}>{more > 0 ? `Nice (${more} more) →` : "Nice"}</button>
       </div>
     </div>
   );
@@ -72,7 +72,7 @@ export function BadgeCelebration({ badge, more, onClose }: { badge: Badge; more:
 
 function NextBadgeRow({ state }: { state: AppState }) {
   const next = nextBadge(state);
-  if (!next) return <div className="small muted">You've earned every badge! 🎉</div>;
+  if (!next) return <div className="small muted">You've earned every badge.</div>;
   return (
     <div className="next-badge">
       <span className="shelf-badge locked">{next.badge.icon}</span>

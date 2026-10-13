@@ -33,7 +33,7 @@ export function LessonCard({ skill, recap, readAloud, onDone }: { skill: Skill; 
       <p className="bigidea" style={{ marginTop: 12 }}><MathText text={lesson.bigIdea} /></p>
       {lesson.explain.map((t, i) => <MathText key={i} as="p" text={t} />)}
       {lesson.visual && <Visual v={lesson.visual} />}
-      {lesson.tip && <p className="tip">⭐ <MathText text={lesson.tip} /></p>}
+      {lesson.tip && <p className="tip"><strong>Tip:</strong> <MathText text={lesson.tip} /></p>}
       <div className="row"><span className="grow" /><button className="btn primary big" {...btn}>Show me an example →</button></div>
     </div>
   );
@@ -99,7 +99,7 @@ export interface ExplainOutcome {
   rounds: PriorRound[];
 }
 
-const VERDICT_LEAD: Record<GradeResult["verdict"], string> = { got_it: "🌟 Great explanation! ", almost: "Almost there! ", not_yet: "Good start! " };
+const VERDICT_LEAD: Record<GradeResult["verdict"], string> = { got_it: "Strong explanation. ", almost: "Almost there! ", not_yet: "Good start! " };
 
 /**
  * Write → feedback → revise, for as many rounds as it takes (at most MAX_ROUNDS).
@@ -209,7 +209,7 @@ export function ExplainCard({
         </div>
       )}
       {!wrap && stopped && model_ && <div className="wrapup"><p><strong>Here's one way to say it:</strong> <MathText text={model_} /></p></div>}
-      {saved && <div className="feedback info">{error ? error + " " : ""}Saved! A grown-up will read it and give you feedback.</div>}
+      {saved && <div className="feedback info">{error ? error + " " : ""}Saved. Your teacher or parent can read it in the Teacher corner.</div>}
       {finished && (
         <div className="row"><span className="grow" /><button className="btn primary" onClick={saved ? () => onDone({ response: text, grade: null, error: error ?? undefined, rounds: [] }) : finish} autoFocus>Continue →</button></div>
       )}

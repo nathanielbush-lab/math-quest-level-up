@@ -8,13 +8,13 @@ export interface TourStep {
 }
 
 export const HOME_TOUR: TourStep[] = [
-  { title: "Welcome to Level Up! 🧭", text: "Here's a quick look around. It takes 30 seconds. (Press Enter or click Next.)" },
-  { target: "[data-tour=quest]", title: "Today's quest", text: "Every day has three parts: a warm-up, something new to learn, and a challenge. Press the big button to start. About 30 minutes in all." },
-  { target: "[data-tour=nextbadge]", title: "Badges", text: "You earn badges as you go. This shows the one you're closest to next." },
-  { target: "[data-tour=tabs]", title: "Tabs", text: "My Map shows every topic and how far you've come. Trophies has all your badges. Missions has big real-world projects that unlock as you learn." },
-  { target: "[data-tour=stats]", title: "Stars and streaks", text: "⭐ Stars add up for everything you do. 🔥 shows how many days in a row you've done a quest." },
-  { target: "[data-tour=parent]", title: "For your teacher or grown-up", text: "The Teacher button is for your teacher or grown-up, to see your progress and change settings." },
-  { title: "You're ready! 🚀", text: "Mistakes are part of learning. Hints and step-by-step solutions are always there to help. You can see this tour again with the ❓ button at the top." },
+  { title: "Welcome to Level Up", text: "A 30-second look around. (Press Enter or click Next.)" },
+  { target: "[data-tour=stats]", title: "Rank and XP", text: "Every question earns XP. XP raises your rank (it never goes down), and you can spend it in the Shop." },
+  { target: "[data-tour=course]", title: "Your course", text: "Pick the course you're taking. New learning comes from that course; reviews keep everything you've already learned fresh." },
+  { target: "[data-tour=quest]", title: "Today's run", text: "A warm-up of quick reviews, a main quest with something new, then a boss-level problem. About 25 minutes." },
+  { target: "[data-tour=tabs]", title: "Tabs", text: "Units shows every unit in your course and your progress. Badges has what you've earned. Shop has avatars, colors and streak freezes." },
+  { target: "[data-tour=parent]", title: "Teacher corner", text: "Progress reports and settings for a teacher or parent. You can open it too." },
+  { title: "You're set", text: "Hints, worked solutions and an \"I'm stuck\" tutor are there when you need them. Replay this tour with the ? button at the top." },
 ];
 
 /** A spotlight walk-through: dims the page, highlights one element, and explains it. */

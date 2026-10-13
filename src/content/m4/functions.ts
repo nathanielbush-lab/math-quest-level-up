@@ -116,7 +116,7 @@ const composeAlgebra: Skill = {
       steps.push(st("Square the inside expression.", `${gIn}^2 = ${gIn}${gIn} = ${poly(sq)}`));
       const parts: string[] = [`${f[0] === 1 ? "" : f[0] === -1 ? "−" : ms(f[0])}(${poly(sq)}) = ${poly(sq.map((c) => c * f[0]))}`];
       if (f[1] !== 0) parts.push(`${ms(f[1])}${gIn} = ${poly(g.map((c) => c * f[1]))}`);
-      steps.push(st("Distribute the coefficients.", parts.join(" and ")));
+      if (f[0] !== 1 || f[1] !== 0) steps.push(st("Distribute the coefficients.", parts.join(" and ")));
     } else {
       steps.push(st("Distribute.", `${ms(f[0])}${gIn} = ${poly(g.map((c) => c * f[0]))}`));
     }
@@ -180,7 +180,8 @@ const composeReps: Skill = {
     const F = (x: number) => fv[x - 1], G = (x: number) => gv[x - 1];
     const vis: Visual = { type: "table", headers: ["x", ...xs.map(String)], rows: [["f(x)", ...fv], ["g(x)", ...gv]] };
     if (lv === 1) {
-      const a = r.pick(xs);
+      const pool = xs.filter((x) => G(x) !== x && F(x) !== x);
+      const a = r.pick(pool.length ? pool : xs);
       const outerF = r.chance(0.5);
       const [O, I, oN, iN] = outerF ? [F, G, "f", "g"] : [G, F, "g", "f"];
       const mid = I(a), ans = O(mid);
@@ -245,7 +246,7 @@ const composeModel: Skill = {
         answer: num(ans, { pre: "$" }),
         hints: [`Inside first: S(${x}) is the sale price.`, `S(${x}) = ${k} × ${x} = ${kx}. Now subtract the coupon: C(${kx}).`],
         steps: [st("Apply the sale (inside function).", `S(${x}) = ${k}(${x}) = ${money(kx)}`), st("Apply the coupon to that result.", `C(${kx}) = ${kx} − ${c} = ${money(ans)}`), st("Answer.", `C(S(${x})) = ${money(ans)}`)],
-        traps: traps(frac(ans), [trap(kxc, "That's S(C(x)): the coupon was used first. Here the sale comes first."), trap(x - c - p, `The sale is ${p}%, not $${p}.`)]),
+        traps: traps(frac(ans), [trap(kxc, "That's S(C(x)): the coupon was used first. Here the sale comes first."), ...(x - p - c > 0 ? [trap(x - p - c, `The sale is ${p}%, not $${p}.`)] : [])]),
       };
     }
     if (lv === 2) {
@@ -307,12 +308,12 @@ const inverse: Skill = {
         return {
           prompt: `Find the inverse of f(x) = ${linear(m, b)}. Type f^-1(x).`,
           answer: expr(val, { lhs: "f^-1(x)", display: disp }),
-          hints: ["Write y = f(x), then swap x and y.", `x = ${m}y${cst(b)}. Solve for y: ${b > 0 ? "subtract" : "add"} ${Math.abs(b)}, then divide by ${ms(m)}.`],
+          hints: ["Write y = f(x), then swap x and y.", `x = ${ms(m)}y${cst(b)}. Solve for y: ${b > 0 ? "subtract" : "add"} ${Math.abs(b)}, then divide by ${ms(m)}.`],
           steps: [
             st("Write y and swap x and y.", `y = ${linear(m, b)} becomes x = ${linear(m, b, "y")}`),
-            st(`${b > 0 ? "Subtract" : "Add"} ${Math.abs(b)} on both sides.`, `x${cst(-b)} = ${m}y`),
+            st(`${b > 0 ? "Subtract" : "Add"} ${Math.abs(b)} on both sides.`, `x${cst(-b)} = ${ms(m)}y`),
             st(`Divide by ${ms(m)}.`, `y = ${disp}, so f^-1(x) = ${disp}`),
-            st("Verify with composition.", `f(f^-1(x)) = ${m}(${disp})${cst(b)} = (x${cst(-b)})${cst(b)} = x ✓`),
+            st("Verify with composition.", `f(f^-1(x)) = ${ms(m)}(${disp})${cst(b)} = (x${cst(-b)})${cst(b)} = x ✓`),
           ],
         };
       }
@@ -361,7 +362,7 @@ const inverse: Skill = {
         st("Square both sides.", `${binom(k)}^2 = y${cst(-h)}`),
         st("Solve for y.", `f^-1(x) = ${disp}, for x ≥ ${ms(k)}`),
         st("Why the domain is restricted.", `f only outputs values ≥ ${ms(k)}, so the inverse only takes inputs x ≥ ${ms(k)}. That keeps f^-1 on one side of its vertex, so it's one-to-one.`),
-        st("Verify with composition.", `f(f^-1(x)) = √(${disp}${cst(-h)})${cst(k)} = √(${binom(k)}^2)${cst(k)} = (x${cst(-k)})${cst(k)} = x for x ≥ ${ms(k)} ✓`),
+        st("Verify with composition.", `f(f^-1(x)) = ${h === 0 ? "" : `√(${disp}${cst(-h)})${cst(k)} = `}√(${binom(k)}^2)${cst(k)} = (x${cst(-k)})${cst(k)} = x for x ≥ ${ms(k)} ✓`),
       ],
     };
   },
@@ -482,6 +483,11 @@ const piecewiseGraph: Skill = {
       if (m2 === m1) m2 = -m2;
       if (m2 * c + b2 === m1 * c + b1) b2 += 2;
       right = linPiece(m2, b2);
+    } else if (lv === 3) {
+      const k = left.f(c) + r.pick([-3, -2, 2, 3]);
+      right = r.chance(0.5)
+        ? { disp: `√${binom(c).startsWith("(") ? binom(c) : `(${binom(c)})`}${cst(k)}`, typed: `sqrt(${binomExpr(c)})${cE(k)}`, f: (x) => Math.sqrt(x - c) + k }
+        : { disp: `2^(${binom(c).replace(/[()]/g, "")})${cst(k)}`, typed: `2^(${binomExpr(c).replace(/[()]/g, "")})${cE(k)}`, f: (x) => 2 ** (x - c) + k };
     } else {
       const k = left.f(c) + r.pick([-3, -2, 2, 3]);
       right = r.chance(0.5)
@@ -491,7 +497,7 @@ const piecewiseGraph: Skill = {
     const leftIncl = r.chance(0.5);
     const xMin = c - 5, xMax = c + 5;
     const sample: number[] = [];
-    for (let x = xMin; x <= xMax; x += 0.5) sample.push(x <= c ? left.f(x) : right.f(x));
+    for (let x = xMin; x <= xMax; x += 0.5) sample.push(x <= c ? left.f(x) : Math.min(right.f(x), 12));
     sample.push(left.f(c), right.f(c));
     const yMin = Math.max(Math.floor(Math.min(...sample)) - 1, -12), yMax = Math.min(Math.ceil(Math.max(...sample)) + 1, 12);
     const vis: Visual = {
@@ -517,11 +523,11 @@ const piecewiseGraph: Skill = {
       hints: [
         `Look at the left piece first: is it a line? Find its slope and y-intercept.`,
         `At x = ${C}, the closed dot is on the ${leftIncl ? "left" : "right"} piece, so that piece uses ${leftIncl ? "≤" : "≥"}.`,
-        lv > 1 ? `The right piece is a parabola with vertex (${C}, ${ms(right.f(c))}).` : `The right piece passes through (${C}, ${ms(right.f(c))}) and (${ms(c + 1)}, ${ms(right.f(c + 1))}).`,
+        lv === 2 ? `The right piece is a parabola with vertex (${C}, ${ms(right.f(c))}).` : lv === 3 ? `The right piece starts at (${C}, ${ms(right.f(c))}) and passes through (${ms(c + 1)}, ${ms(right.f(c + 1))}). Is it a square root or an exponential curve?` : `The right piece passes through (${C}, ${ms(right.f(c))}) and (${ms(c + 1)}, ${ms(right.f(c + 1))}).`,
       ],
       steps: [
         st("Left piece.", `It's a line with slope ${ms(m1)} through (${C}, ${ms(left.f(c))}): ${left.disp}.`),
-        st("Right piece.", lv === 1 ? `A line through (${C}, ${ms(right.f(c))}) and (${ms(c + 1)}, ${ms(right.f(c + 1))}): ${right.disp}.` : `A parabola opening ${right.f(c + 1) > right.f(c) ? "up" : "down"} with vertex (${C}, ${ms(right.f(c))}): ${right.disp}.`),
+        st("Right piece.", lv === 1 ? `A line through (${C}, ${ms(right.f(c))}) and (${ms(c + 1)}, ${ms(right.f(c + 1))}): ${right.disp}.` : lv === 3 ? `${right.disp.startsWith("√") ? "A square-root curve" : "An exponential curve (it doubles its distance above the asymptote each step)"} starting at (${C}, ${ms(right.f(c))}) through (${ms(c + 1)}, ${ms(right.f(c + 1))})${right.disp.startsWith("√") ? ` and (${ms(c + 4)}, ${ms(right.f(c + 4))})` : ""}: ${right.disp}.` : `A parabola opening ${right.f(c + 1) > right.f(c) ? "up" : "down"} with vertex (${C}, ${ms(right.f(c))}): ${right.disp}.`),
         st("The break point.", `The closed dot at x = ${C} is on the ${leftIncl ? "left" : "right"} piece, so the left interval is ${L} and the right is ${R}.`),
         st("Answer.", `f(x) = ${correct}`),
       ],

@@ -164,7 +164,7 @@ function Glance({ r }: { r: WeeklyReportData }) {
     <section className="card wr-section">
       <h3>At a glance</h3>
       <div className="wr-stats">
-        <Stat label="Daily quests" value={`${g.quests} of ${g.goal}${g.goalMet ? " ✓" : ""}`} sub={g.goalMet ? "Weekly goal met" : r.isCurrent ? `${Math.max(0, g.goal - g.quests)} more to reach the goal` : "Weekly goal"} tone={g.goalMet ? "good" : undefined} />
+        <Stat label="Daily runs" value={`${g.quests} of ${g.goal}${g.goalMet ? " ✓" : ""}`} sub={g.goalMet ? "Weekly goal met" : r.isCurrent ? `${Math.max(0, g.goal - g.quests)} more to reach the goal` : "Weekly goal"} tone={g.goalMet ? "good" : undefined} />
         <Stat label="Time practicing" value={`${g.minutes} min`} sub={`${plural(g.sessions, "session")} on ${plural(g.activeDays, "day")}`} />
         <Stat label="Questions answered" value={String(g.answered)} sub={g.firstTryPct !== null ? `${g.firstTryPct}% right first try without help` : "First-try data not recorded yet"} />
         <Stat label="Hints used" value={String(g.hints)} sub={g.answered && r.hasDetail ? `${(g.hints / g.answered).toFixed(1)} per question` : undefined} />

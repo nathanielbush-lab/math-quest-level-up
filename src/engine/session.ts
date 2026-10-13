@@ -163,7 +163,7 @@ export function nextItem(state: AppState, ctx: SessionCtx): Item {
       return nextItem(state, ctx);
     }
     ctx.phase = "learn";
-    if (ctx.warmupTotal) return { kind: "message", title: "Warm-up done!", text: "Now let's learn something new.", tone: "info" };
+    if (ctx.warmupTotal) return { kind: "message", title: "Warm-up done", text: "On to the main quest.", tone: "info" };
   }
 
   if (ctx.phase === "learn") {
@@ -208,7 +208,7 @@ export function nextItem(state: AppState, ctx: SessionCtx): Item {
     if (ctx.focusCount >= 10 && !ctx.stack.length) {
       ctx.focusesDone.push(id);
       ctx.focus = null;
-      return { kind: "message", title: "Good effort!", text: `We'll come back to “${SKILL_BY_ID[id].title}” next time. Practice spread over days helps it stick.`, tone: "info" };
+      return { kind: "message", title: "Good effort", text: `We'll come back to “${SKILL_BY_ID[id].title}” next time. Practice spread over days helps it stick.`, tone: "info" };
     }
     const guided = ctx.guidedPending === id;
     ctx.guidedPending = null;
@@ -324,7 +324,7 @@ export function afterAnswer(state: AppState, ctx: SessionCtx, item: Extract<Item
     ctx.focusCount = 0;
     const ss = state.skills[back];
     if (ss) ss.recent = ss.recent.map((a) => ({ ...a, mode: a.mode === "learn" ? ("probe" as AttemptMode) : a.mode }));
-    ctx.queue.push({ kind: "message", title: "Building block solid! 💪", text: `Back to “${SKILL_BY_ID[back].title}”. You've got more tools now.`, tone: "celebrate" });
+    ctx.queue.push({ kind: "message", title: "Building block solid", text: `Back to “${SKILL_BY_ID[back].title}”. You've got more tools now.`, tone: "celebrate" });
   }
   return out;
 }

@@ -11,9 +11,9 @@ export function Welcome({ mutate, onDone }: { mutate: (fn: (s: AppState) => void
   };
   return (
     <div className="card hero" style={{ marginTop: 40 }}>
-      <h1>Welcome to Level Up! 🧭</h1>
-      <p>This is your path through middle school math: Grades 6, 7 and 8. You'll explore new ideas, use them in real problems, and explain how they work.</p>
-      <p>Move fast through what you know. Take your time on what's new. Every mistake is a chance to learn!</p>
+      <h1>Welcome to Math Quest: Level Up</h1>
+      <p>Practice for NC Math 1, 2, 3, 4 and Pre-Calculus: short daily runs, instant feedback, and practice tests in the EOC's format.</p>
+      <p>Skip what you already know, slow down on what's new, and let the reviews keep it all fresh.</p>
       <div className="field" style={{ maxWidth: 320 }}>
         <label htmlFor="nm">What's your name?</label>
         <input id="nm" type="text" value={name} onChange={(e) => setName(e.target.value)} autoFocus style={{ color: "var(--ink)" }} />

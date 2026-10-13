@@ -194,7 +194,7 @@ function Explanations({ state, mutate }: { state: AppState; mutate: (fn: (s: App
         {msg && <div className="feedback info">{msg}</div>}
         {showText && <textarea readOnly value={showText} />}
       </div>
-      {!list.length && <p className="muted">No explanations yet. They appear once the student is solid on a skill (at the end of a daily quest).</p>}
+      {!list.length && <p className="muted">No explanations yet. They appear once the student is solid on a skill (at the end of a daily run).</p>}
       {list.map((e) => (
         <div key={e.id} className="card tight">
           <div className="row">
@@ -271,7 +271,7 @@ function SettingsTab({ state, mutate, replace }: { state: AppState; mutate: (fn:
     const blob = new Blob([exportJson(state)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `math-quest-progress-${today()}.json`;
+    a.download = `level-up-progress-${today()}.json`;
     a.click();
     URL.revokeObjectURL(a.href);
   };
@@ -335,7 +335,7 @@ function SettingsTab({ state, mutate, replace }: { state: AppState; mutate: (fn:
       <div className="card">
         <h3>Learner</h3>
         <div className="field"><label htmlFor="n">Name</label><input id="n" type="text" value={st.studentName} onChange={(e) => set("studentName", e.target.value)} /></div>
-        <div className="field"><label htmlFor="t">Target date (for pacing)</label><input id="t" type="date" value={st.targetDate} onChange={(e) => set("targetDate", e.target.value)} /></div>
+        <div className="field"><label htmlFor="t">Course end or EOC date (for pacing)</label><input id="t" type="date" value={st.targetDate} onChange={(e) => set("targetDate", e.target.value)} /></div>
         <div className="field"><label htmlFor="len">Session length</label>
           <select id="len" value={st.sessionLength} onChange={(e) => set("sessionLength", e.target.value as "short" | "standard")}>
             <option value="standard">Standard (~30 min: 5 review + 15–20 learn + challenge)</option>
@@ -344,9 +344,9 @@ function SettingsTab({ state, mutate, replace }: { state: AppState; mutate: (fn:
         </div>
         <label className="row"><input type="checkbox" checked={st.calculator} onChange={(e) => set("calculator", e.target.checked)} /> Allow an on-screen calculator (turn off to match a no-calculator test)</label>
         <label className="row" style={{ marginTop: 8 }}><input type="checkbox" checked={st.readAloud} onChange={(e) => set("readAloud", e.target.checked)} /> Show “read aloud” buttons</label>
-        <div className="field" style={{ marginTop: 12 }}><label htmlFor="goal">Weekly goal (daily quests per week, Monday–Sunday)</label>
+        <div className="field" style={{ marginTop: 12 }}><label htmlFor="goal">Weekly goal (daily runs per week, Monday–Sunday)</label>
           <select id="goal" value={st.weeklyGoal} onChange={(e) => set("weeklyGoal", Number(e.target.value))}>
-            {[2, 3, 4, 5, 6, 7].map((n) => <option key={n} value={n}>{n} quests a week{n === 4 ? " (the roadmap's suggestion)" : ""}</option>)}
+            {[2, 3, 4, 5, 6, 7].map((n) => <option key={n} value={n}>{n} runs a week{n === 4 ? " (suggested)" : ""}</option>)}
           </select>
         </div>
         <div className="field" style={{ marginTop: 12 }}><label htmlFor="pin2">Teacher PIN (optional, keeps this corner private)</label><input id="pin2" type="password" inputMode="numeric" value={st.parentPin ?? ""} onChange={(e) => set("parentPin", e.target.value || undefined)} /></div>

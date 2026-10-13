@@ -127,7 +127,7 @@ export default function App() {
     <div className="app">
       {!inActivity && (
         <div className="topbar">
-          <div className="brand" onClick={home} role="link"><LogoMark /> <span>Math Quest <span className="brand-up">Level Up</span></span></div>
+          <div className="brand" onClick={home} role="link"><LogoMark /> <span><span className="brand-full">Math Quest </span><span className="brand-up">Level Up</span></span></div>
           <Avatar state={state} size="sm" />
           <span className="spacer" />
           <span className="row" style={{ gap: 8 }} data-tour="stats">
@@ -136,7 +136,7 @@ export default function App() {
             <span className="chip xp-counter" title={`XP to spend (${state.xp.toLocaleString()} earned in all). Rank ${rank.level}: ${rank.name}.`}><span className="rank-badge">{String(rank.level).padStart(2, "0")}</span> <Icon name="bolt" /> {starBalance(state).toLocaleString()} XP</span>
           </span>
           {onHome && <button className="btn ghost" title="Show me around" aria-label="Show me around" onClick={() => { go({ name: "home", tab: "today" }); setTouring(true); }}><Icon name="help" /></button>}
-          {route.name !== "parent" && <button className="btn ghost" data-tour="parent" onClick={() => go({ name: "parent" })}><Icon name="apple" /> Teacher</button>}
+          {route.name !== "parent" && <button className="btn ghost" data-tour="parent" aria-label="Teacher corner" onClick={() => go({ name: "parent" })}><Icon name="apple" /> <span className="hide-narrow">Teacher</span></button>}
         </div>
       )}
       {saveFailed && <div className="feedback warn">Progress couldn't be saved in this browser (private window or storage blocked?). Use Teacher corner → Settings → Download progress file to keep it.</div>}

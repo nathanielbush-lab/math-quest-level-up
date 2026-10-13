@@ -1,8 +1,8 @@
 // Unit 1: Functions and inverses (piecewise and absolute value, transformations, inverse functions).
-import { choice, cst, expr, linear, ms, num, poly, sn, trap, traps } from "../helpers";
+import { choice, cst, expr, linear, money, ms, num, poly, sn, trap, traps } from "../helpers";
 import { frac } from "../../lib/rational";
 import { st } from "../steps";
-import type { Problem, Skill } from "../types";
+import type { Skill } from "../types";
 import { coef, dn, linT, xm, xmT } from "./util";
 
 const T = "m3-functions";
@@ -57,13 +57,13 @@ const piecewiseEval: Skill = {
       return {
         prompt: `${r.pick(["Maya", "Diego", "Priya", "Jonah"])} earns P(h) dollars for working h hours in a week: P(h) = ${rate}h if 0 ≤ h ≤ 40, and P(h) = ${rate * 40} + ${dn(ot)}(h − 40) if h > 40. Find P(${h}).`,
         answer: num(ans, { pre: "$" }),
-        hints: [`Is ${h} at most 40 or more than 40?`, h <= 40 ? "Use the first rule." : `Use the overtime rule: the ${h - 40} hours over 40 are paid $${dn(ot)} each, on top of $${rate * 40}.`],
+        hints: [`Is ${h} at most 40 or more than 40?`, h <= 40 ? "Use the first rule." : `Use the overtime rule: the ${h - 40} hours over 40 are paid ${money(ot)} each, on top of $${rate * 40}.`],
         steps: [
           st("Pick the piece.", h <= 40 ? `${h} ≤ 40, so P(h) = ${rate}h.` : `${h} > 40, so P(h) = ${rate * 40} + ${dn(ot)}(h − 40).`),
           st("Substitute.", h <= 40 ? `P(${h}) = ${rate} · ${h} = ${ans}` : `P(${h}) = ${rate * 40} + ${dn(ot)}(${h - 40}) = ${rate * 40} + ${dn(ot * (h - 40))} = ${dn(ans)}`),
-          st("Interpret.", `Working ${h} hours earns $${dn(ans)}.`),
+          st("Interpret.", `Working ${h} hours earns ${money(ans)}.`),
         ],
-        traps: traps(frac(ans), [trap(rate * h, `That pays every hour at $${rate}. Hours past 40 earn $${dn(ot)}.`), trap(ot * h, "Only the hours over 40 get the overtime rate.")]),
+        traps: traps(frac(ans), [trap(rate * h, `That pays every hour at $${rate}. Hours past 40 earn ${money(ot)}.`), trap(ot * h, "Only the hours over 40 get the overtime rate.")]),
       };
     }
     if (lv === 1) {
@@ -100,7 +100,7 @@ const piecewiseEval: Skill = {
     const midL = lowIncl ? "<" : "≤", midR = highIncl ? "≤" : "<";
     const def = `f(x) = ${linear(m1, b1)} if x ${lowIncl ? "≤" : "<"} ${ms(c1)}; f(x) = ${poly([1, 0, q])} if ${ms(c1)} ${midL} x ${midR} ${c2}; f(x) = ${ms(k)} if x ${highIncl ? ">" : "≥"} ${c2}`;
     const rule = (p: number) => (p === 1 ? linear(m1, b1) : p === 2 ? poly([1, 0, q]) : ms(k));
-    const work = (p: number) => (p === 1 ? subLin(m1, b1, x) : p === 2 ? `(${ms(x)})^2${cst(q)} = ${x * x}${cst(q)} = ${ms(x * x + q)}` : ms(k));
+    const work = (p: number) => (p === 1 ? subLin(m1, b1, x) : p === 2 ? (q ? `(${ms(x)})^2${cst(q)} = ${x * x}${cst(q)} = ${ms(x * x + q)}` : `(${ms(x)})^2 = ${x * x}`) : ms(k));
     return {
       prompt: `${def}. Find f(${ms(x)}).`,
       answer: num(ans),
@@ -272,12 +272,12 @@ const absValue: Skill = {
       ]),
       hints: [
         `Isolate the absolute value: ${k > 0 ? "subtract" : "add"} ${Math.abs(k)}, then divide by ${a}.${a < 0 ? " You're dividing by a negative, so flip the sign." : ""}`,
-        `You should get ${inside} ${op} ${d}: x is ${within ? "within" : "more than"} ${d} of ${ms(h)}.`,
+        `You should get ${inside} ${op} ${d}: x is ${within ? "within" : "more than"} ${d} unit${d === 1 ? "" : "s"} ${within ? "of" : "away from"} ${ms(h)}.`,
       ],
       steps: [
         st(`${k > 0 ? "Subtract" : "Add"} ${Math.abs(k)}.`, `${a}${inside} ${shown} ${ms(rhs - k)}`),
         st(`Divide by ${a}.`, `${inside} ${op} ${d}${a < 0 ? " (dividing by a negative flips the sign)" : ""}`),
-        st("Think distance.", `x is ${within ? "within" : "more than"} ${d} unit${d === 1 ? "" : "s"} of ${ms(h)}${incl ? " (endpoints included)" : ""}. The endpoints are ${ms(h)} − ${d} = ${ms(lo)} and ${ms(h)} + ${d} = ${ms(hi)}.`),
+        st("Think distance.", `x is ${within ? "within" : "more than"} ${d} unit${d === 1 ? "" : "s"} ${within ? "of" : "away from"} ${ms(h)}${incl ? " (endpoints included)" : ""}. The endpoints are ${ms(h)} − ${d} = ${ms(lo)} and ${ms(h)} + ${d} = ${ms(hi)}.`),
         st("Answer.", correct),
       ],
     };
@@ -343,7 +343,7 @@ const transformWrite: Skill = {
     const innerT = b !== 1 ? (b === 0.5 ? "x/2" : `${b}x`) : xmT(h);
     const innerD = b !== 1 ? (b === 0.5 ? "{1/2}x" : `${b}x`) : xm(h);
     const aT = a === 1 ? "" : a === -1 ? "-" : `${a}*`;
-    const aD = a === 0.5 ? "{1/2}" : coef(a);
+    const aD = (a === 0.5 ? "{1/2}" : coef(a)) + (p.name === "2^x" && Math.abs(a) !== 1 ? "·" : "");
     const typed = `${aT}${p.t(innerT)}${k ? (k > 0 ? `+${k}` : `${k}`) : ""}`;
     const display = `${aD}${p.d(innerD)}${cst(k)}`;
     const desc: string[] = [];
@@ -363,7 +363,7 @@ const transformWrite: Skill = {
     }
     if (k) {
       desc.push(`shifted ${Math.abs(k)} unit${Math.abs(k) === 1 ? "" : "s"} ${k > 0 ? "up" : "down"}`);
-      steps.push(st(`Shift ${k > 0 ? "up" : "down"} ${Math.abs(k)}: ${k > 0 ? "add" : "subtract"} ${Math.abs(k)} to the outputs.`, `${display}`));
+      steps.push(st(`Shift ${k > 0 ? "up" : "down"} ${Math.abs(k)}: ${k > 0 ? "add" : "subtract"} ${Math.abs(k)} ${k > 0 ? "to" : "from"} the outputs.`, `${display}`));
     }
     const list = desc.length > 1 ? `${desc.slice(0, -1).join(", ")}, and then ${desc[desc.length - 1]}` : desc[0];
     steps.push(st("Answer.", `g(x) = ${display}`));
@@ -371,7 +371,7 @@ const transformWrite: Skill = {
       prompt: `The graph of g is the graph of f(x) = ${p.d("x")} ${list}. Write g(x).`,
       answer: expr(typed, { lhs: "g(x)", display }),
       hints: [
-        h ? `A horizontal shift changes the input: right ${Math.abs(h)} means replace x with ${xm(h)} (the sign looks opposite).` : b !== 1 ? `A horizontal ${b === 0.5 ? "stretch" : "compression"} multiplies the input x by ${b === 0.5 ? "{1/2}" : b}.` : `${a !== 1 ? "A vertical stretch or reflection multiplies the whole output." : "A vertical shift adds to the whole output."}`,
+        h ? `A horizontal shift changes the input: ${h > 0 ? "right" : "left"} ${Math.abs(h)} means replace x with ${xm(h)} (the sign looks opposite).` : b !== 1 ? `A horizontal ${b === 0.5 ? "stretch" : "compression"} multiplies the input x by ${b === 0.5 ? "{1/2}" : b}.` : `${a !== 1 ? "A vertical stretch or reflection multiplies the whole output." : "A vertical shift adds to the whole output."}`,
         `Build it step by step: start from f(x) = ${p.d("x")} and apply each change in order.`,
       ],
       steps,
@@ -765,7 +765,7 @@ const inverseContext: Skill = {
             st("Set up the reverse question.", `${dn(rate)}m + ${fee} = ${dn(total)}`),
             st(`Subtract ${fee}.`, `${dn(rate)}m = ${dn(total - fee)}`),
             st(`Divide by ${dn(rate)}.`, `m = ${m}`),
-            st("Interpret.", `$${dn(total)} pays for a ${m}-mile trip, so C^-1(${dn(total)}) = ${m}.`),
+            st("Interpret.", `$${dn(total)} pays for a trip of ${m} miles, so C^-1(${dn(total)}) = ${m}.`),
           ],
           traps: traps(frac(m), [trap(rate * total + fee, `That's C(${dn(total)}), the cost of ${dn(total)} miles. The inverse goes the other way.`), trap(total / rate, `Remember to subtract the $${fee} fee before dividing.`)]),
         };
@@ -782,14 +782,14 @@ const inverseContext: Skill = {
           st("Divide by 1.8.", `c = ${ms(c)}`),
           st("Interpret.", `${dn(F)}°F is the same as ${ms(c)}°C.`),
         ],
-        traps: traps(frac(c), [trap(Math.round((1.8 * F + 32) * 10) / 10, "That converts the number as if it were Celsius. T^-1 turns Fahrenheit back into Celsius."), trap(F / 1.8, "Subtract the 32 before dividing by 1.8.")]),
+        traps: traps(frac(c), [trap(Math.round((1.8 * F + 32) * 10) / 10, "That converts the number as if it were Celsius. T^-1 turns Fahrenheit back into Celsius."), trap(Math.round((F / 1.8) * 100) / 100, "Subtract the 32 before dividing by 1.8.")]),
       };
     }
     if (lv === 2) {
       const ts = [0, 1, 2, 3, 4, 5];
       const start = r.int(2, 10), step = r.pick([6, 8, 10, 12]);
       const hs = ts.map((t) => start + step * t + (t > 2 ? r.int(0, 0) : 0));
-      const i = r.int(1, 5);
+      const i = r.int(2, 5);
       const v = hs[i];
       const askT = ts.includes(v) ? v : -1;
       return {
@@ -831,7 +831,5 @@ const inverseContext: Skill = {
   },
 };
 
-export default [piecewiseEval, piecewiseGraph, absValue, transformWrite, transformPoint, inverseLinear, inverseQuadratic, inverseExists, inverseContext] satisfies Skill[] as Skill[];
-
-// (Problem type re-exported for unit files that build problems with helpers.)
-export type { Problem };
+const skills: Skill[] = [piecewiseEval, piecewiseGraph, absValue, transformWrite, transformPoint, inverseLinear, inverseQuadratic, inverseExists, inverseContext];
+export default skills;

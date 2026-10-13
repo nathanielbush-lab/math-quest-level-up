@@ -33,45 +33,45 @@ describe("shop catalog", () => {
     expect(isEquipped(s, DEFAULT_THEME)).toBe(true);
     expect(themeAttr(undefined)).toBe("");
     expect(themeAttr(DEFAULT_THEME)).toBe("");
-    expect(themeAttr("theme-ocean")).toBe("theme-ocean");
+    expect(themeAttr("theme-cyan")).toBe("theme-cyan");
   });
 });
 
 describe("buy", () => {
   it("spends stars, owns and equips an avatar", () => {
-    const r = buy(s, "avatar-fox");
+    const r = buy(s, "avatar-phi");
     expect(r.ok).toBe(true);
     expect(s.starsSpent).toBe(250);
     expect(starBalance(s)).toBe(750);
-    expect(s.owned).toEqual(["avatar-fox"]);
-    expect(s.equipped.avatar).toBe("avatar-fox");
-    expect(equippedAvatar(s)?.icon).toBe("🦊");
+    expect(s.owned).toEqual(["avatar-phi"]);
+    expect(s.equipped.avatar).toBe("avatar-phi");
+    expect(equippedAvatar(s)?.icon).toBe("φ");
     expect(isEquipped(s, DEFAULT_AVATAR)).toBe(false);
   });
   it("equips a bought theme", () => {
-    buy(s, "theme-ocean");
-    expect(s.equipped.theme).toBe("theme-ocean");
-    expect(isEquipped(s, "theme-ocean")).toBe(true);
+    buy(s, "theme-cyan");
+    expect(s.equipped.theme).toBe("theme-cyan");
+    expect(isEquipped(s, "theme-cyan")).toBe(true);
     expect(isEquipped(s, DEFAULT_THEME)).toBe(false);
   });
   it("refuses when short and says how many more", () => {
     s.xp = 300;
     s.starsSpent = 100;
-    const c = checkBuy(s, "avatar-fox");
+    const c = checkBuy(s, "avatar-phi");
     expect(c).toMatchObject({ ok: false, reason: "short", need: 50 });
-    expect(canBuy(s, "avatar-fox")).toBe(false);
+    expect(canBuy(s, "avatar-phi")).toBe(false);
     const before = JSON.stringify(s);
-    expect(buy(s, "avatar-fox").ok).toBe(false);
+    expect(buy(s, "avatar-phi").ok).toBe(false);
     expect(JSON.stringify(s)).toBe(before);
   });
   it("allows spending the exact balance", () => {
     s.xp = 250;
-    expect(buy(s, "avatar-fox").ok).toBe(true);
+    expect(buy(s, "avatar-phi").ok).toBe(true);
     expect(starBalance(s)).toBe(0);
   });
   it("won't buy twice, or buy free/unknown items", () => {
-    buy(s, "avatar-fox");
-    expect(checkBuy(s, "avatar-fox")).toMatchObject({ ok: false, reason: "owned" });
+    buy(s, "avatar-phi");
+    expect(checkBuy(s, "avatar-phi")).toMatchObject({ ok: false, reason: "owned" });
     expect(checkBuy(s, DEFAULT_THEME)).toMatchObject({ ok: false, reason: "owned" });
     expect(checkBuy(s, "nope")).toMatchObject({ ok: false, reason: "unknown" });
     expect(s.starsSpent).toBe(250);
@@ -102,23 +102,23 @@ describe("buy", () => {
 
 describe("equip", () => {
   it("switches between owned items for free and back to defaults", () => {
-    buy(s, "avatar-fox");
-    buy(s, "avatar-kitty");
-    expect(s.equipped.avatar).toBe("avatar-kitty");
+    buy(s, "avatar-phi");
+    buy(s, "avatar-pi");
+    expect(s.equipped.avatar).toBe("avatar-pi");
     const spent = s.starsSpent;
-    expect(equip(s, "avatar-fox")).toBe(true);
-    expect(s.equipped.avatar).toBe("avatar-fox");
+    expect(equip(s, "avatar-phi")).toBe(true);
+    expect(s.equipped.avatar).toBe("avatar-phi");
     expect(equip(s, DEFAULT_AVATAR)).toBe(true);
     expect(s.equipped.avatar).toBeUndefined();
     expect(equippedAvatar(s)).toBeUndefined();
-    buy(s, "theme-forest");
+    buy(s, "theme-violet");
     expect(equip(s, DEFAULT_THEME)).toBe(true);
     expect(s.equipped.theme).toBeUndefined();
     expect(s.starsSpent).toBe(spent + 500);
   });
   it("won't equip what she doesn't own or a power-up", () => {
     expect(equip(s, "avatar-dragon")).toBe(false);
-    expect(equip(s, "theme-berry")).toBe(false);
+    expect(equip(s, "theme-magenta")).toBe(false);
     expect(equip(s, FREEZE_ID)).toBe(false);
     expect(s.equipped).toEqual({});
   });
@@ -128,7 +128,7 @@ describe("equip", () => {
     expect(isEquipped(s, DEFAULT_AVATAR)).toBe(true);
   });
   it("unequip goes back to the default", () => {
-    buy(s, "theme-sunset");
+    buy(s, "theme-coral");
     unequip(s, "theme");
     expect(isEquipped(s, DEFAULT_THEME)).toBe(true);
   });

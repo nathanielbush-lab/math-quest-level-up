@@ -183,10 +183,12 @@ p { margin: 0 0 0.75em; }
 .btn.big { font-size: 1.3rem; padding: 15px 30px; border-radius: calc(var(--radius-sm) + 4px); }
 .btn.link { background: none; padding: 0; color: var(--primary); text-decoration: underline; font-weight: 700; font-family: var(--font-body); box-shadow: none; border: none; }
 .btn .icon { vertical-align: -3px; }
-/* Colored banner cards (mission and challenge headers). Shop themes override --primary, --hero-2 and --hero-btn-ink. */
-.hero { background: linear-gradient(135deg, var(--primary), var(--hero-2, #8a5cf0)); color: #fff; }
-.hero .muted { color: rgba(255, 255, 255, 0.88); }
-.hero .btn.primary { background: #fff; color: var(--hero-btn-ink, #3f31b8); box-shadow: 0 5px 0 rgba(0, 0, 0, 0.18); }
+/* Banner cards (welcome, mission and boss-level headers): a solid high-contrast block, no gradients. */
+.hero { background: var(--ink); color: var(--bg); border: none; }
+.hero .muted { color: color-mix(in srgb, var(--bg) 80%, transparent); }
+.hero .btn.primary { background: var(--primary); color: var(--primary-ink); }
+:root[data-skin="night"] .hero { background: var(--surface-2); color: var(--ink); border: 1px solid var(--primary); }
+:root[data-skin="night"] .hero .muted { color: var(--ink-2); }
 .stage { display: flex; gap: 8px; margin-bottom: 12px; }
 .stage span { padding: 5px 14px; border-radius: 999px; font-family: var(--font-display); font-size: 0.9rem; font-weight: 600; background: var(--surface); border: 2px solid var(--line); color: var(--ink-2); }
 .stage span.on { background: var(--primary); color: var(--primary-ink); border-color: transparent; }
@@ -412,3 +414,75 @@ textarea { width: 100%; min-height: 120px; resize: vertical; }
 
 
 
+
+/* =========================================================================
+   Level Up components
+   ========================================================================= */
+.mono { font-family: var(--font-mono); }
+.topbar .brand { font-weight: 800; font-size: 1.15rem; gap: 10px; letter-spacing: -0.01em; }
+.topbar .brand .brand-up { color: var(--primary); }
+.logo-mark { color: var(--primary); flex: none; }
+:root[data-skin="night"] .topbar .brand { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.92rem; font-weight: 700; }
+.xp-counter { font-family: var(--font-mono); font-weight: 700; }
+.rank-badge { font-family: var(--font-mono); font-weight: 700; font-size: 0.75rem; padding: 1px 6px; border-radius: 6px; border: 1px solid var(--primary); color: var(--primary); }
+
+.player-card .pc-top { display: flex; align-items: center; gap: 14px; }
+.player-card h1 { font-size: 1.6rem; margin: 0; letter-spacing: -0.02em; }
+.rank-tile { width: 52px; height: 52px; flex: none; border-radius: 14px; display: grid; place-items: center; font-family: var(--font-mono); font-weight: 700; font-size: 1.25rem; background: var(--primary-soft); color: var(--primary); border: 1.5px solid var(--primary); }
+.xp-row { display: flex; gap: 8px; margin: 16px 0 6px; }
+.xp-bar { height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+.xp-bar > div { height: 100%; background: var(--primary); border-radius: 99px; transition: width 0.6s ease; }
+
+.course-switch { display: flex; gap: 8px; margin: 0 0 16px; overflow-x: auto; padding: 2px 2px 4px; }
+.course-switch button { flex: 1 0 auto; min-width: 84px; min-height: 44px; display: flex; flex-direction: column; gap: 6px; align-items: stretch; padding: 9px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); font-family: var(--font-display); font-weight: 800; font-size: 0.95rem; cursor: pointer; }
+:root[data-skin="night"] .course-switch button { font-family: var(--font-mono); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.04em; }
+.course-switch button.on { border-color: var(--primary); background: var(--primary); color: var(--primary-ink); }
+.cs-bar { height: 4px; border-radius: 99px; background: color-mix(in srgb, currentColor 20%, transparent); overflow: hidden; }
+.cs-bar span { display: block; height: 100%; background: currentColor; }
+
+.run-steps { list-style: none; margin: 14px 0 16px; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.run-steps li { display: flex; gap: 14px; align-items: center; }
+.run-n { width: 36px; height: 36px; flex: none; display: grid; place-items: center; border-radius: 10px; font-weight: 700; font-size: 0.85rem; color: var(--topic-ink); background: var(--topic-soft); }
+.run-text { display: flex; flex-direction: column; gap: 1px; }
+.run-steps li.done .run-n { background: var(--good-soft); color: var(--good); }
+.run-go { width: 100%; justify-content: center; }
+.run-card .week-goal { margin-top: 14px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.eoc-card { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.eoc-card h3 { margin: 0 0 2px; }
+
+.unit-no { display: block; font-size: 0.72rem; color: var(--ink-2); letter-spacing: 0.08em; font-weight: 600; }
+.unit-title { display: block; line-height: 1.25; }
+.fam-badge.big { width: 52px; height: 52px; border-radius: 14px; }
+.fam-badge { background: var(--topic-soft); color: var(--topic-ink); display: inline-grid; place-items: center; flex: none; width: 40px; height: 40px; border-radius: 12px; }
+.fam-ink { color: var(--topic); }
+details.card-key summary { cursor: pointer; list-style-position: inside; }
+details.card-key[open] summary { margin-bottom: 10px; }
+
+/* Typed expressions: input, symbol keys, "reads as" preview */
+.expr-row { flex-wrap: wrap; }
+.expr-input { font-family: var(--font-mono); min-width: 0; flex: 1 1 220px; }
+.expr-lhs { font-family: var(--font-mono); }
+.expr-keys { display: flex; gap: 6px; flex-wrap: wrap; width: 100%; }
+.key-btn { min-width: 44px; min-height: 40px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); font-family: var(--font-mono); font-weight: 600; font-size: 1rem; cursor: pointer; }
+.key-btn:hover { border-color: var(--primary); }
+.expr-preview { width: 100%; font-size: 0.95rem; color: var(--ink-2); min-height: 1.5em; }
+.expr-preview > span:not(.muted):not(.kbd) { color: var(--ink); font-family: var(--font-mono); }
+
+/* Night Run touches: monospace numbers and labels, HUD-style tabs */
+:root[data-skin="night"] .tab { font-family: var(--font-mono); text-transform: uppercase; font-size: 0.82rem; letter-spacing: 0.05em; }
+:root[data-skin="night"] .answer-input { font-family: var(--font-mono); }
+:root[data-skin="night"] .btn.primary { font-weight: 700; }
+:root[data-skin="night"] .card { background: var(--surface); }
+.eoc-card .grow { flex: 1 1 200px; }
+@media (max-width: 560px) {
+  .topbar { flex-wrap: nowrap; gap: 8px; }
+  .topbar .brand-full, .hide-narrow { display: none; }
+  .topbar .mq-avatar.sm { display: none; }
+  .xp-counter { padding: 5px 9px; font-size: 0.85rem; }
+  .xp-counter .rank-badge { display: none; }
+  .topbar .btn { padding: 8px 10px; }
+  .topbar .spacer { min-width: 0; }
+  .tabs { flex-wrap: nowrap; overflow-x: auto; gap: 6px; }
+  .tab { padding: 8px 12px; font-size: 0.95rem; }
+  .player-card h1 { font-size: 1.35rem; }
+}

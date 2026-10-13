@@ -27,7 +27,7 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
-      - run: npx vite build --mode single && cp dist-single/index.html dist/math-quest-offline.html
+      - run: npx vite build --mode single && cp dist-single/index.html dist/level-up-offline.html
       - uses: actions/upload-pages-artifact@v3
         if: github.event_name != 'pull_request'
         with:

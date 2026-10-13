@@ -312,6 +312,6 @@ export function exportJson(state: AppState, includeKey = false): string {
 
 export function parseImport(text: string): AppState {
   const file = JSON.parse(text) as Partial<ExportFile>;
-  if (file.app !== "math-quest-level-up" || !file.state) throw new Error("This doesn't look like a Level Up: Level Up progress file.");
+  if (file.app !== "math-quest-level-up" || !file.state) throw new Error("This doesn't look like a Math Quest: Level Up progress file.");
   return migrate(file.state);
 }

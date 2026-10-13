@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { MISSIONS } from "./content/challenges";
 import { SKILLS, TOPICS } from "./content";
+import { COURSES, COURSE_BY_ID } from "./content/topics";
 import { loadState, saveState, type AppState } from "./engine/state";
 
 export interface Badge {
@@ -28,25 +29,30 @@ const atLeast = (id: string, icon: string, name: string, how: string, n: (s: App
 export const BADGES: Badge[] = [
   atLeast("first-correct", "🌱", "First right answer", "Answer a question correctly", (s) => Object.values(s.skills).filter((x) => x.correct > 0).length, 1),
   atLeast("first-ready", "🔓", "Unlocked a new skill", "Practice a new skill until it unlocks the next ones", (s) => Object.values(s.skills).filter((x) => x.ready && !x.placed).length, 1),
-  atLeast("independent-1", "🦉", "First Independent skill", "Pass a review of a skill on a later day", (s) => lv(s, 3), 1),
+  atLeast("independent-1", "💡", "First Independent skill", "Pass a review of a skill on a later day", (s) => lv(s, 3), 1),
   atLeast("independent-10", "🏅", "10 Independent skills", "Reach Independent on 10 skills", (s) => lv(s, 3), 10),
   atLeast("independent-25", "🏆", "25 Independent skills", "Reach Independent on 25 skills", (s) => lv(s, 3), 25),
   atLeast("explainer", "🎤", "Can explain & apply", "Explain a skill in your own words (and pass the check-back)", (s) => lv(s, 4), 1),
-  atLeast("explainer-5", "👩‍🏫", "Explained 5 skills", "Reach “Can explain & apply” on 5 skills", (s) => lv(s, 4), 5),
-  atLeast("streak-3", "🔥", "3-day streak", "Do a quest 3 days in a row", (s) => s.streak.count, 3),
-  atLeast("streak-7", "☄️", "7-day streak", "Do a quest 7 days in a row", (s) => s.streak.count, 7),
-  atLeast("goal-1", "🎯", "Met my weekly goal", "Do your weekly goal of quests in one week", (s) => s.goalWeeks.length, 1),
+  atLeast("explainer-5", "🧠", "Explained 5 skills", "Reach “Can explain & apply” on 5 skills", (s) => lv(s, 4), 5),
+  atLeast("streak-3", "🔥", "3-day streak", "Do a run 3 days in a row", (s) => s.streak.count, 3),
+  atLeast("streak-7", "☄️", "7-day streak", "Do a run 7 days in a row", (s) => s.streak.count, 7),
+  atLeast("goal-1", "🎯", "Met my weekly goal", "Hit your weekly goal of runs in one week", (s) => s.goalWeeks.length, 1),
   atLeast("goal-4", "📆", "Weekly goal 4 times", "Meet your weekly goal in 4 different weeks", (s) => s.goalWeeks.length, 4),
-  atLeast("first-buy", "🛍️", "First shop treat", "Spend stars in the shop", (s) => s.owned.length, 1),
-  atLeast("screener-1", "📝", "Took a practice screener", "Finish a screener practice", (s) => s.assessments.filter((a) => a.kind !== "checkpoint").length, 1),
+  atLeast("first-buy", "🛍️", "First unlock", "Spend XP in the shop", (s) => s.owned.length, 1),
+  atLeast("screener-1", "📝", "First EOC practice", "Finish an EOC practice test", (s) => s.assessments.filter((a) => a.kind !== "checkpoint").length, 1),
   atLeast("checkpoint-3", "📅", "3 monthly checkpoints", "Finish the monthly checkpoint 3 times", (s) => s.assessments.filter((a) => a.kind === "checkpoint").length, 3),
-  atLeast("mistake-fixer", "🛠️", "Fixed 5 old mistakes", "Get 5 questions right from your mistake journal", (s) => s.mistakes.filter((m) => m.resolved).length, 5),
-  atLeast("placement", "🧭", "Found my starting point", "Finish the starting-point check for 5 topics", (s) => Object.keys(s.placement).length, 5),
+  atLeast("mistake-fixer", "🛠️", "Fixed 5 old mistakes", "Get 5 questions right in Mistake replay", (s) => s.mistakes.filter((m) => m.resolved).length, 5),
+  atLeast("placement", "🧭", "Found my starting point", "Finish the skip-ahead check for 5 units", (s) => Object.keys(s.placement).length, 5),
   ...TOPICS.map((t) => {
     const skills = SKILLS.filter((k) => k.topic === t.id);
-    return atLeast(`topic-${t.id}`, t.icon, `Topic star: ${t.title}`, `Unlock every skill in ${t.title}`, (s) => skills.filter((k) => s.skills[k.id]?.ready).length, skills.length);
+    return atLeast(`topic-${t.id}`, "🎖️", `Unit cleared: ${t.title}`, `Unlock every skill in ${COURSE_BY_ID[t.course].short} Unit ${t.unit}, ${t.title}`, (s) => skills.filter((k) => s.skills[k.id]?.ready).length, skills.length);
   }),
-  ...MISSIONS.map((m) => atLeast(`mission-${m.id}`, "🚩", `Mission: ${m.title}`, `Complete the “${m.title}” stage challenge`, (s) => (s.missions[m.id]?.done ? 1 : 0), 1)),
+  ...COURSES.map((c) => {
+    const ids = new Set(TOPICS.filter((t) => t.course === c.id).map((t) => t.id));
+    const skills = SKILLS.filter((k) => ids.has(k.topic));
+    return atLeast(`course-${c.id}`, "👑", `${c.short} complete`, `Unlock every skill in ${c.name}`, (s) => skills.filter((k) => s.skills[k.id]?.ready).length, Math.max(1, skills.length));
+  }),
+  ...MISSIONS.map((m) => atLeast(`mission-${m.id}`, "🚩", `Mission: ${m.title}`, `Complete the “${m.title}” mission`, (s) => (s.missions[m.id]?.done ? 1 : 0), 1)),
 ];
 
 /** The locked badge she's closest to, for a "next badge" nudge. */
@@ -95,12 +101,13 @@ export function useAppState() {
   return { state, mutate, replace, saveFailed, newBadges, popBadge };
 }
 
-/** The roadmap's month-by-month suggestion. */
+/** A month-by-month suggestion that follows the NC school year. */
 export function monthFocus(d = new Date()): { title: string; text: string } {
   const m = d.getMonth();
-  if (m === 9) return { title: "October: diagnose and build connections", text: "Check Grades 6–8 in short sessions. Begin fraction division, decimals, ratios, rates and percents. Start a geometry or data topic alongside." };
-  if (m === 10) return { title: "November: strengthen algebra", text: "Signed numbers, expressions, equations, inequalities and proportions. Continue scale drawings, circles, data and probability." };
-  if (m === 11) return { title: "December: reach Grade 8 ideas", text: "Powers and roots, functions, slope and systems as foundations permit. Include transformations, Pythagorean reasoning, solid volumes and data relationships." };
-  if (m === 0) return { title: "Early January: review and retain", text: "Mixed problems and revisiting earlier errors. Treat unlearned topics as learning needs, not failures." };
-  return { title: "Keep building", text: "Short, regular sessions: review, learn something new, then try an unfamiliar problem." };
+  if (m === 7 || m === 8) return { title: "Start of the year: lock in the basics", text: "Use the skip-ahead checks so practice starts where you are, then build a habit of short daily runs." };
+  if (m === 9 || m === 10) return { title: "Fall: steady habits", text: "Keep pace with class: learn each new unit here the week it's taught, and let the warm-ups keep older skills fresh." };
+  if (m === 11 || m === 0) return { title: "Semester exams: mixed review", text: "Take a monthly checkpoint and clear your Mistake replay. Mixed practice beats re-reading notes." };
+  if (m >= 1 && m <= 2) return { title: "Winter: keep the streak", text: "This is when skills fade if you stop. A few runs a week keeps them yours." };
+  if (m === 3 || m === 4) return { title: "EOC season", text: "If your course has an EOC, take a practice test every week or two and work on the units it flags." };
+  return { title: "Summer: get ahead", text: "Preview next year's course. Starting it early makes the fall much easier." };
 }

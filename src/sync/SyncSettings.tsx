@@ -234,7 +234,7 @@ function Backups({ backups, replace }: { backups: ReturnType<typeof loadBackups>
   const download = (file: string, savedAt: string) => {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([file], { type: "application/json" }));
-    a.download = `math-quest-backup-${savedAt.slice(0, 10)}.json`;
+    a.download = `level-up-backup-${savedAt.slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(a.href);
   };

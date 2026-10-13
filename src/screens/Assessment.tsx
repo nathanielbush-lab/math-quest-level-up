@@ -125,7 +125,7 @@ function Hub({ state, go, onExit }: { state: AppState; go: (k?: AssessKind) => v
         ) : next ? (
           <p className="muted" style={{ margin: 0 }}>Next checkpoint opens on <strong>{fmtDate(next)}</strong>.</p>
         ) : !checkpointEligible(state) ? (
-          <p className="muted" style={{ margin: 0 }}>Your first checkpoint opens after 3 quests (or a starting-point check).</p>
+          <p className="muted" style={{ margin: 0 }}>Your first checkpoint opens after 3 runs (or a skip-ahead check).</p>
         ) : null}
         {cps.length > 0 && (
           <>
@@ -698,7 +698,7 @@ function Results({ kind, done, timed, go, onExit, openTopic }: {
         <div className="row small muted">
           <span>⏱️ {fmtClock(secsUsed)} {timed ? `of ${fmtClock(ASSESS_SPEC[kind].minutes * 60)}` : ""} used</span>
           {skipped > 0 && <span>· {skipped} skipped</span>}
-          <span className="chip">+{stars} ⭐</span>
+          <span className="chip mono">+{stars} XP</span>
         </div>
         {kind !== "checkpoint" && <p className="small muted" style={{ margin: "8px 0 0" }}>Remember: this is practice, not the real EOC. The score shows what to practice next, nothing more.</p>}
       </div>

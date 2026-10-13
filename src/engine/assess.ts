@@ -284,7 +284,7 @@ export function saveTest(s: AppState, kind: AssessKind, scored: ScoredItem[], se
 export type BandId = "ready" | "close" | "building";
 
 export function readinessBand(pct: number): { id: BandId; label: string; text: string } {
-  if (pct >= 80) return { id: "ready", label: "Looking ready", text: "You handled most of these on your own. Keep your skills fresh with your daily quests." };
+  if (pct >= 80) return { id: "ready", label: "Looking ready", text: "You handled most of these on your own. Keep your skills fresh with your daily runs." };
   if (pct >= 60) return { id: "close", label: "Getting close", text: "You know a lot of this already. A little more practice on the topics below will help." };
   return { id: "building", label: "Keep building", text: "That's what practice is for! Every question you missed shows you what to work on next." };
 }

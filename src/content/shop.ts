@@ -1,5 +1,5 @@
-// The star shop catalog: avatars, color themes and power-ups.
-// Prices are set from the star economy: a daily quest earns roughly 150–300 stars.
+// The shop catalog: avatars, accent colors and power-ups, bought with XP.
+// Prices are set from the XP economy: a daily run earns roughly 150–300 XP.
 
 export type ShopKind = "avatar" | "theme" | "powerup";
 export type ShopTier = "free" | "starter" | "nice" | "legendary";
@@ -10,18 +10,16 @@ export interface ShopItem {
   name: string;
   /** Emoji shown on the card (and as the avatar). */
   icon: string;
-  /** Price in stars. 0 = free and owned from the start. */
+  /** Price in XP. 0 = free and owned from the start. */
   price: number;
   tier: ShopTier;
   blurb?: string;
   /** Themes: two colors for the card's little preview swatch (light mode). */
   swatch?: [string, string];
-}
-
-/** Using no avatar shows the first letter of her name. */
+}/** Using no avatar shows the first letter of the student's name. */
 export const DEFAULT_AVATAR = "avatar-letter";
-/** The built-in purple look. Equipping it clears `equipped.theme`. */
-export const DEFAULT_THEME = "theme-grape";
+/** The skin's own accent. Equipping it clears `equipped.theme`. */
+export const DEFAULT_THEME = "theme-default";
 export const FREEZE_ID = "powerup-freeze";
 
 const avatar = (id: string, icon: string, name: string, price: number, blurb?: string): ShopItem => ({
@@ -36,32 +34,30 @@ const avatar = (id: string, icon: string, name: string, price: number, blurb?: s
 
 export const AVATARS: ShopItem[] = [
   { id: DEFAULT_AVATAR, kind: "avatar", name: "My letter", icon: "", price: 0, tier: "free", blurb: "The first letter of your name." },
-  // Starter: affordable after the first quest or two.
-  avatar("kitty", "🐱", "Kitty", 50),
-  avatar("puppy", "🐶", "Puppy", 50),
-  avatar("frog", "🐸", "Frog", 75),
-  avatar("pizza", "🍕", "Pizza", 80),
-  avatar("soccer", "⚽", "Soccer ball", 90),
-  avatar("turtle", "🐢", "Turtle", 100),
-  avatar("cupcake", "🧁", "Cupcake", 100),
-  avatar("penguin", "🐧", "Penguin", 120),
-  avatar("happy-cat", "🐾", "Cat paws", 150), // id kept from the old 😺 “Happy cat” so anyone who bought it keeps it
-  // Nice: a few days of quests.
-  avatar("butterfly", "🦋", "Butterfly", 200),
-  avatar("cat", "🐈", "Cat", 200),
-  avatar("fox", "🦊", "Fox", 250),
-  avatar("panda", "🐼", "Panda", 250),
-  avatar("black-cat", "🐈‍⬛", "Black cat", 300),
-  avatar("owl", "🦉", "Owl", 300),
-  avatar("heart-cat", "😻", "Heart-eyes cat", 350),
-  avatar("rocket", "🚀", "Rocket", 350),
-  avatar("leopard", "🐆", "Leopard", 350),
-  avatar("tiger", "🐯", "Tiger", 400),
-  avatar("robot", "🤖", "Robot", 400),
-  avatar("trex", "🦖", "T. rex", 400),
+  // Starter: affordable after a run or two.
+  avatar("pi", "π", "Pi", 50),
+  avatar("sigma", "Σ", "Sigma", 60),
+  avatar("root", "√", "Root", 75),
+  avatar("delta", "Δ", "Delta", 90),
+  avatar("theta", "θ", "Theta", 100),
+  avatar("bolt", "⚡", "Bolt", 120),
+  avatar("headphones", "🎧", "Headphones", 120),
+  avatar("controller", "🎮", "Controller", 150),
+  // Nice: a few days of runs.
+  avatar("infinity", "∞", "Infinity", 200),
+  avatar("lambda", "λ", "Lambda", 220),
+  avatar("phi", "φ", "Golden ratio", 250, "φ ≈ 1.618"),
+  avatar("integral", "∫", "Integral", 300, "A preview of calculus."),
+  avatar("basketball", "🏀", "Hoops", 300),
+  avatar("skateboard", "🛹", "Skate", 300),
+  avatar("guitar", "🎸", "Guitar", 350),
+  avatar("wolf", "🐺", "Wolf", 350),
+  avatar("shark", "🦈", "Shark", 400),
+  avatar("rocket", "🚀", "Rocket", 400),
+  avatar("euler", "e", "Euler's e", 450, "e ≈ 2.718"),
   // Legendary: a few weeks of work.
-  avatar("unicorn", "🦄", "Unicorn", 1500, "A legendary friend."),
-  avatar("lion", "🦁", "Royal lion", 1800, "The king of all cats."),
+  avatar("aleph", "ℵ", "Aleph", 1500, "For infinities bigger than infinity."),
+  avatar("imaginary", "𝑖", "Imaginary unit", 1800, "i² = −1."),
   avatar("dragon", "🐉", "Dragon", 2200, "The rarest of them all."),
 ];
 
@@ -77,17 +73,19 @@ const theme = (id: string, icon: string, name: string, price: number, swatch: [s
 });
 
 export const THEMES: ShopItem[] = [
-  theme("grape", "🍇", "Grape", 0, ["#5b4bd6", "#8a5cf0"], "The classic purple."),
-  theme("ocean", "🌊", "Ocean", 400, ["#1d67a8", "#0e7c86"], "Cool blues and sea green."),
-  theme("forest", "🌲", "Forest", 500, ["#2b7a4b", "#1d6b5a"], "Leafy greens."),
-  theme("sunset", "🌅", "Sunset", 600, ["#bf4310", "#c2335f"], "Warm orange and pink."),
-  theme("berry", "🍓", "Berry", 700, ["#b8246f", "#7f2db0"], "Bright pink and plum."),
-  theme("midnight", "🌙", "Midnight", 900, ["#2b3a8c", "#10173f"], "Deep night-sky blue."),
+  theme("default", "◆", "Skin default", 0, ["#2448e8", "#c8ff4d"], "Studio blue or Night Run lime."),
+  theme("cyan", "◆", "Cyan", 400, ["#0e7490", "#4dd6ff"], "Cool and electric."),
+  theme("violet", "◆", "Violet", 500, ["#6d28d9", "#b794ff"], "Deep purple."),
+  theme("coral", "◆", "Coral", 600, ["#c2410c", "#ff8a65"], "Warm orange-red."),
+  theme("magenta", "◆", "Magenta", 700, ["#be185d", "#ff6fb5"], "Hot pink."),
+  theme("gold", "◆", "Gold", 900, ["#a16207", "#ffc94d"], "For a Legend."),
 ];
 
 export const POWERUPS: ShopItem[] = [
   { id: FREEZE_ID, kind: "powerup", name: "Streak freeze", icon: "🧊", price: 250, tier: "nice", blurb: "Keeps your streak safe if you miss a day." },
 ];
+
+
 
 export const SHOP_ITEMS: ShopItem[] = [...AVATARS, ...THEMES, ...POWERUPS];
 export const SHOP_BY_ID: Record<string, ShopItem> = Object.fromEntries(SHOP_ITEMS.map((x) => [x.id, x]));

@@ -62,7 +62,7 @@ export function Session({ state, mutate, type, skillId, onExit, toast }: {
         s.sessions.push({ date: today(), minutes: Math.max(1, Math.round((Date.now() - ctx.startedAt) / 60000)), answered: ctx.answered, correct: ctx.correct, skills: ctx.touched, kind: type });
         if (st.usedFreezes) notes.push(`🧊 ${st.usedFreezes === 1 ? "A streak freeze" : `${st.usedFreezes} streak freezes`} saved your ${s.streak.count}-day streak!`);
         if (st.earnedFreeze) notes.push(`🧊 ${s.streak.count} days in a row! You earned a streak freeze.`);
-        if (type === "daily" && checkWeeklyGoal(s)) notes.push(`🎯 Weekly goal reached! +${WEEK_BONUS} ⭐`);
+        if (type === "daily" && checkWeeklyGoal(s)) notes.push(`Weekly goal reached. +${WEEK_BONUS} XP`);
       });
       if (notes.length) toast(notes.join("  "));
     }
@@ -157,7 +157,7 @@ function ItemView({ item, state, mutate, ctx, advance, toast, onExit, xpGained, 
             mutate((s) => {
               const out = afterAnswer(s, ctx, item, { ok: r.ok, assisted: r.assisted, given: r.given, correct: r.correct, prompt: problem!.prompt });
               logEvent(s, { skill: item.skillId, level: item.level, mode: item.guided ? "guided" : item.mode, ok: r.ok, assisted: r.assisted, tries: r.tries, hints: r.hints, secs: r.secs, tutor: r.tutor || undefined });
-              if (out.levelUp && out.levelUp >= 2) msg = `⭐ ${skill.title}: ${LEVEL_NAMES[out.levelUp]}!`;
+              if (out.levelUp && out.levelUp >= 2) msg = `Level up: ${skill.title} is now ${LEVEL_NAMES[out.levelUp]}`;
               else if (out.becameReady) msg = `🔓 ${skill.title} is solid. New skills unlocked!`;
             });
             if (msg) toast(msg);
@@ -228,7 +228,7 @@ function ItemView({ item, state, mutate, ctx, advance, toast, onExit, xpGained, 
       const changed = Object.entries(state.skills).filter(([id, ss]) => ss.level > (startLevels[id] ?? 0) && SKILL_BY_ID[id]);
       return (
         <div className="card hero celebrate">
-          <h1>Quest complete! 🎉</h1>
+          <h1>Run complete</h1>
           <p>You answered {ctx.answered} question{ctx.answered === 1 ? "" : "s"} and earned {xpGained} XP. {state.streak.count > 1 ? `That's a ${state.streak.count}-day streak! 🔥` : ""}</p>
           {changed.length > 0 && (
             <div className="card tight" style={{ color: "var(--ink)" }}>

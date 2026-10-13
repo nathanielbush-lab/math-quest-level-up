@@ -1,113 +1,27 @@
-/* ---------- Color themes (bought in the shop) ----------
-   App.tsx sets <html data-mq-theme="<theme id>">; "" means the default Grape look.
-   `:root[data-mq-theme=…]` (0,2,0) beats styles.css's `:root` (0,1,0) in both modes, so every
-   variable set here for light mode is set again in the dark-mode block below.
-   Contrast (WCAG AA ≥ 4.5): --primary-ink on --primary, --primary on --bg/--surface/--primary-soft,
-   white on both hero stops, --hero-btn-ink on white. */
+/* ---------- Accent colors (bought in the shop) ----------
+   App.tsx sets <html data-mq-theme="<theme id>">; "" means the skin's own accent.
+   `:root[data-mq-theme=…]` (0,2,0) beats the skins' token blocks, so light values are set here and
+   dark values (Studio dark, and Night Run, which is always dark) in the block below.
+   Contrast: --primary-ink on --primary ≥ 4.5:1 in both modes. */
 
-/* The hero gradient starts at --hero-1 when a theme sets it (dark mode uses a deeper start so
-   the white hero text stays readable), otherwise at --primary as before. */
-:root .hero { background: linear-gradient(135deg, var(--hero-1, var(--primary)), var(--hero-2, #8a5cf0)); }
-
-:root[data-mq-theme="theme-ocean"] {
-  --primary: #1d67a8;
-  --primary-ink: #ffffff;
-  --primary-soft: #e2eff9;
-  --shade: #5ea3dd;
-  --hero-1: #1d67a8;
-  --hero-2: #0e7c86;
-  --hero-btn-ink: #17558c;
-}
-:root[data-mq-theme="theme-forest"] {
-  --primary: #2b7a4b;
-  --primary-ink: #ffffff;
-  --primary-soft: #e1f2e7;
-  --shade: #6bbf8c;
-  --hero-1: #2b7a4b;
-  --hero-2: #1d6b5a;
-  --hero-btn-ink: #215f3a;
-}
-:root[data-mq-theme="theme-sunset"] {
-  --primary: #bf4310;
-  --primary-ink: #ffffff;
-  --primary-soft: #fff0e6;
-  --shade: #f2935c;
-  --hero-1: #bf4310;
-  --hero-2: #c2335f;
-  --hero-btn-ink: #9c360b;
-}
-:root[data-mq-theme="theme-berry"] {
-  --primary: #b8246f;
-  --primary-ink: #ffffff;
-  --primary-soft: #fce4f0;
-  --shade: #e872ad;
-  --hero-1: #b8246f;
-  --hero-2: #7f2db0;
-  --hero-btn-ink: #951c5a;
-}
-:root[data-mq-theme="theme-midnight"] {
-  --primary: #2b3a8c;
-  --primary-ink: #ffffff;
-  --primary-soft: #e4e7f7;
-  --shade: #6f7fd6;
-  --hero-1: #2b3a8c;
-  --hero-2: #10173f;
-  --hero-btn-ink: #2b3a8c;
-}
+:root[data-mq-theme="theme-cyan"] { --primary: #0e7490; --primary-ink: #ffffff; --primary-soft: #e0f4f8; --primary-deep: #0b5566; }
+:root[data-mq-theme="theme-violet"] { --primary: #6d28d9; --primary-ink: #ffffff; --primary-soft: #efe7ff; --primary-deep: #5321b0; }
+:root[data-mq-theme="theme-coral"] { --primary: #c2410c; --primary-ink: #ffffff; --primary-soft: #ffece4; --primary-deep: #9a3409; }
+:root[data-mq-theme="theme-magenta"] { --primary: #be185d; --primary-ink: #ffffff; --primary-soft: #ffe4ef; --primary-deep: #9d174d; }
+:root[data-mq-theme="theme-gold"] { --primary: #a16207; --primary-ink: #ffffff; --primary-soft: #fff4d6; --primary-deep: #854d0e; }
 
 @media (prefers-color-scheme: dark) {
-  /* Default Grape: a deeper hero start so white text reads well on it (was white on #8f82ff ≈ 3:1). */
-  :root { --hero-1: #4f40c4; --hero-2: #6e3fd6; }
-  :root[data-mq-theme="theme-ocean"] {
-    --primary: #6cb4f0;
-    --primary-ink: #0d1620;
-    --primary-soft: #1a2d40;
-    --shade: #5ea3dd;
-    --hero-1: #1d5f99;
-    --hero-2: #0b6b73;
-  }
-  :root[data-mq-theme="theme-forest"] {
-    --primary: #62cc8e;
-    --primary-ink: #0e1a13;
-    --primary-soft: #173225;
-    --shade: #4fae78;
-    --hero-1: #246b42;
-    --hero-2: #1a5c4e;
-  }
-  :root[data-mq-theme="theme-sunset"] {
-    --primary: #ff9c66;
-    --primary-ink: #1d120c;
-    --primary-soft: #3d2518;
-    --shade: #e07a45;
-    --hero-1: #a83c0e;
-    --hero-2: #a52d55;
-  }
-  :root[data-mq-theme="theme-berry"] {
-    --primary: #ff7eb9;
-    --primary-ink: #1d0f17;
-    --primary-soft: #3d1a2e;
-    --shade: #d65d9a;
-    --hero-1: #9c2262;
-    --hero-2: #6c2a99;
-  }
-  :root[data-mq-theme="theme-midnight"] {
-    --primary: #9eabff;
-    --primary-ink: #0e1020;
-    --primary-soft: #232a4d;
-    --shade: #7d8be6;
-    --hero-1: #27337d;
-    --hero-2: #0d1233;
-    --bg: #11131d;
-    --surface: #1a1d2b;
-    --surface-2: #242838;
-    --line: #343a52;
-  }
+  :root[data-mq-theme="theme-cyan"] { --primary: #4dd6ff; --primary-ink: #0b0f17; --primary-soft: #0f2a36; --primary-deep: #4dd6ff; }
+  :root[data-mq-theme="theme-violet"] { --primary: #b794ff; --primary-ink: #0b0f17; --primary-soft: #231a3d; --primary-deep: #b794ff; }
+  :root[data-mq-theme="theme-coral"] { --primary: #ff8a65; --primary-ink: #0b0f17; --primary-soft: #2f1a14; --primary-deep: #ff8a65; }
+  :root[data-mq-theme="theme-magenta"] { --primary: #ff6fb5; --primary-ink: #0b0f17; --primary-soft: #2f1424; --primary-deep: #ff6fb5; }
+  :root[data-mq-theme="theme-gold"] { --primary: #ffc94d; --primary-ink: #0b0f17; --primary-soft: #2d240f; --primary-deep: #ffc94d; }
 }
 
 /* ---------- Avatar ---------- */
 .mq-avatar { display: inline-grid; place-items: center; flex: none; border-radius: 50%; line-height: 1; font-weight: 800; user-select: none; }
 .mq-avatar.sm { width: 34px; height: 34px; font-size: 1.15rem; background: var(--primary-soft); border: 2px solid var(--primary); color: var(--primary); }
-.mq-avatar.lg { width: 56px; height: 56px; font-size: 2rem; background: rgba(255, 255, 255, 0.95); border: 3px solid rgba(255, 255, 255, 0.55); background-clip: padding-box; color: var(--hero-btn-ink, #3f31b8); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); }
+.mq-avatar.lg { width: 56px; height: 56px; font-size: 1.9rem; background: var(--primary-soft); border: 2px solid var(--primary); color: var(--primary); }
 .mq-avatar.letter.sm { background: var(--primary); color: var(--primary-ink); font-size: 1rem; }
 .mq-avatar.letter.lg { font-size: 1.6rem; }
 

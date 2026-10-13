@@ -1,5 +1,5 @@
 // Unit 1: Composition and inverse functions (PC.F.5.1–PC.F.5.7).
-import { choice, cst, exact, expr, linear, ms, num, poly, polyExpr, sn, trap, traps, money } from "../helpers";
+import { choice, cst, exact, expr, linear, ms, num, poly, polyExpr, sn, term, trap, traps, money } from "../helpers";
 import { frac } from "../../lib/rational";
 import { st } from "../steps";
 import type { Skill } from "../types";
@@ -139,8 +139,8 @@ const evalReps: Skill = {
         prompt: `g(x) = ${linear(m, b)}, and f is given by the table. Find (f ∘ g)(${a}).`,
         visual: table,
         answer: num(ans),
-        hints: [`(f ∘ g)(${a}) means f(g(${a})). Start by evaluating g(${a}) with the formula.`, `g(${a}) = ${ms(m)} · ${sn(a)}${cst(b)} = ${target}. Now look up f(${target}).`],
-        steps: [st("Rewrite the notation.", `(f ∘ g)(${a}) = f(g(${a}))`), st("Evaluate the inside function.", `g(${a}) = ${m === 1 ? "" : m === -1 ? "−" : m}${m === 1 || m === -1 ? a : `(${a})`}${cst(b)} = ${target}`), st("Look up f at that value.", `f(${target}) = ${ans}`)],
+        hints: [`(f ∘ g)(${a}) means f(g(${a})). Start by evaluating g(${a}) with the formula.`, `g(${a}) = ${m === -1 ? "−" : ms(m) + " · "}${m === -1 ? a : sn(a)}${cst(b)} = ${target}. Now look up f(${target}).`],
+        steps: [st("Rewrite the notation.", `(f ∘ g)(${a}) = f(g(${a}))`), st("Evaluate the inside function.", `g(${a}) = ${m === -1 ? "−" + a : `${ms(m)}(${a})`}${cst(b)} = ${target}`), st("Look up f at that value.", `f(${target}) = ${ans}`)],
         traps: traps(frac(ans), [trap(fv[a], `That's f(${a}). The input to f should be g(${a}) = ${target}.`), trap(m * fv[a] + b, `That's g(f(${a})): the order is reversed. In f ∘ g, g acts first.`)]),
       };
     }
@@ -215,7 +215,7 @@ const domain: Skill = {
         steps: [
           st("Write the composite.", `f(g(x)) = √(${gText})`),
           st("The inside of the square root must be ≥ 0.", `${gText} ≥ 0`),
-          st("Solve.", m === 1 ? `x ≥ ${ms(t)}` : `${m}x ≥ ${ms(-b)}, so x ${m > 0 ? "≥" : "≤"} ${ms(t)}${m < 0 ? " (flip: dividing by a negative)" : ""}`),
+          st("Solve.", m === 1 ? `x ≥ ${ms(t)}` : `${term(m, "x")} ≥ ${ms(-b)}, so x ${m > 0 ? "≥" : "≤"} ${ms(t)}${m < 0 ? " (flip: dividing by a negative)" : ""}`),
           st("Write in interval notation.", correct),
         ],
       };
@@ -404,21 +404,24 @@ const inverse: Skill = {
   generate(r, lv) {
     if (lv === 1) {
       const m = r.pick([2, 3, 4, 5, -2, -3]), b = r.nonzero(-9, 9);
+      const top = `x ${b > 0 ? "−" : "+"} ${Math.abs(b)}`;
+      const invText = m > 0 ? `{${top}/${m}}` : `−{${top}/${-m}}`;
       return {
         prompt: `Find the inverse of f(x) = ${linear(m, b)}.`,
-        answer: expr(`(x${b > 0 ? "-" : "+"}${Math.abs(b)})/(${m})`, { lhs: "f^-1(x)", display: `{x ${b > 0 ? "−" : "+"} ${Math.abs(b)}/${ms(m)}}` }),
+        answer: expr(`(x${b > 0 ? "-" : "+"}${Math.abs(b)})/(${m})`, { lhs: "f^-1(x)", display: invText }),
         hints: [`Write y = ${linear(m, b)} and swap x and y.`, `x = ${linear(m, b, "y")}. Now solve for y: undo the ${b > 0 ? "+" : "−"} ${Math.abs(b)}, then divide by ${ms(m)}.`],
         steps: [
           st("Write y = f(x).", `y = ${linear(m, b)}`),
           st("Swap x and y.", `x = ${linear(m, b, "y")}`),
-          st(`${b > 0 ? "Subtract" : "Add"} ${Math.abs(b)} on both sides.`, `x ${b > 0 ? "−" : "+"} ${Math.abs(b)} = ${m}y`),
-          st(`Divide by ${ms(m)}.`, `f^-1(x) = {x ${b > 0 ? "−" : "+"} ${Math.abs(b)}/${ms(m)}}`),
-          st("Check with a number.", `f(0) = ${ms(b)}, and f^-1(${ms(b)}) = {${ms(b)} ${b > 0 ? "−" : "+"} ${Math.abs(b)}/${ms(m)}} = 0 ✓`),
+          st(`${b > 0 ? "Subtract" : "Add"} ${Math.abs(b)} on both sides.`, `${top} = ${ms(m)}y`),
+          st(`Divide by ${ms(m)}.`, `f^-1(x) = ${invText}`),
+          st("Check with a number.", `f(0) = ${ms(b)}, and f^-1(${ms(b)}) = {${ms(b)} ${b > 0 ? "−" : "+"} ${Math.abs(b)}/${sn(m)}} = 0 ✓`),
         ],
       };
     }
     if (lv === 2) {
-      const h = r.nonzero(-5, 5), k = r.int(-8, 8);
+      const h = r.nonzero(-5, 5);
+      let k = r.int(-8, 8);
       if (r.chance(0.5)) {
         return {
           prompt: `Find the inverse of f(x) = (${shiftText(h)})^3${cst(k)}.`,
@@ -433,6 +436,8 @@ const inverse: Skill = {
         };
       }
       const base = r.pick([2, 3]);
+      // Keep the inverse's domain (x > k) wide enough to be checked at sample points.
+      if (k > 1) k = 1 - k;
       return {
         prompt: `Find the inverse of f(x) = ${base}^(${shiftText(h)})${cst(k)}.`,
         answer: expr(`log_${base}(${shiftExpr(k)})${h > 0 ? "+" : "-"}${Math.abs(h)}`, { lhs: "f^-1(x)", display: `log_${base}(${shiftText(k)}) ${h > 0 ? "+" : "−"} ${Math.abs(h)}` }),
@@ -445,7 +450,9 @@ const inverse: Skill = {
         ],
       };
     }
-    const p = r.pick([1, 2, 3, -1]), a = r.nonzero(-6, 6), b = r.nonzero(-4, 4);
+    const p = r.pick([1, 2, 3, -1]), b = r.nonzero(-4, 4);
+    let a = r.nonzero(-6, 6);
+    if (a === -p * b) a += 1; // otherwise f would be constant
     const fTop = linear(p, a), num_ = `${linear(b, a)}`;
     return {
       prompt: `Find the inverse of f(x) = {${fTop}/${shiftText(b)}}.`,
@@ -453,7 +460,7 @@ const inverse: Skill = {
       hints: ["Swap x and y, then multiply both sides by the denominator.", `x(${shiftText(b, "y")}) = ${linear(p, a, "y")}. Get every y-term on one side.`, `Factor out y: y(x ${p > 0 ? "−" : "+"} ${Math.abs(p)}) = ${num_}.`],
       steps: [
         st("Swap x and y.", `x = {${linear(p, a, "y")}/${shiftText(b, "y")}}`),
-        st("Clear the fraction.", `xy ${b > 0 ? "−" : "+"} ${Math.abs(b)}x = ${linear(p, a, "y")}`),
+        st("Clear the fraction.", `xy ${b > 0 ? "−" : "+"} ${Math.abs(b) === 1 ? "" : Math.abs(b)}x = ${linear(p, a, "y")}`),
         st("Collect the y-terms on the left and everything else on the right.", `xy ${p > 0 ? "−" : "+"} ${Math.abs(p) === 1 ? "" : Math.abs(p)}y = ${num_}`),
         st("Factor out y and divide.", `y(${shiftText(p)}) = ${num_}, so f^-1(x) = {${num_}/${shiftText(p)}}`),
       ],
@@ -576,7 +583,7 @@ const verify: Skill = {
       hints: ["Compute f(g(x)) by replacing x in f with g(x).", "Remember: (∛A)^3 = A, but (∛x + c)^3 is not x + c^3."],
       steps: good
         ? [st("Compose.", `f(g(x)) = (∛(${shiftText(-k)}))^3${cst(-k)} = ${shiftText(-k)}${cst(-k)} = x`), st("Other order.", `g(f(x)) = ∛(x^3${cst(-k)}${cst(k)}) = ∛(x^3) = x`), st("Decide.", "Both are x, so they are inverses.")]
-        : [st("Compose.", `f(g(x)) = (∛x ${k > 0 ? "+" : "−"} ${Math.abs(k)})^3${cst(-k)}`), st("Test a value.", `At x = 0: g(0) = ${ms(k)}, f(${ms(k)}) = ${ms(k ** 3 - k)}, not 0.`), st("Decide.", `Not inverses. The true inverse is ∛(${shiftText(-k)}).`)],
+        : [st("Compose.", `f(g(x)) = (∛x ${k > 0 ? "+" : "−"} ${Math.abs(k)})^3${cst(-k)}`), st("Test a value.", `At x = 8: g(8) = 2${cst(k)} = ${ms(2 + k)}, and f(${ms(2 + k)}) = ${ms((2 + k) ** 3 - k)}, not 8.`), st("Decide.", `Not inverses. The true inverse is ∛(${shiftText(-k)}).`)],
     };
   },
 };

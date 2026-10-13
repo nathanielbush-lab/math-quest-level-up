@@ -7,7 +7,7 @@ import type { Rng } from "../../lib/rng";
 import { plane, pointAns, pt, randTriangle, PRIME, type P } from "./util";
 
 const T = "m2-transformations";
-const A1 = `A${PRIME}`, B1 = `B${PRIME}`, C1 = `C${PRIME}`;
+const A1 = `A${PRIME}`;
 
 /** A rigid motion (or other mapping) on the plane. */
 interface Move {
