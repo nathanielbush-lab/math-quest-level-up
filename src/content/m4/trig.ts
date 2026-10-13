@@ -1,5 +1,5 @@
 // Unit 3: Trig identities and non-right triangles (NC.M4.AF.2.1, NC.M4.AF.2.2).
-import { choice, fr, num, trap, traps } from "../helpers";
+import { choice, num, trap, traps } from "../helpers";
 import { frac, type Frac } from "../../lib/rational";
 import { st } from "../steps";
 import type { Skill, Visual } from "../types";
@@ -51,7 +51,7 @@ const reciprocal: Skill = {
     visual: { type: "geo", points: { A: { x: 0, y: 0 }, B: { x: 12, y: 0 }, C: { x: 12, y: 5 } }, polygons: [["A", "B", "C"]], segments: [{ from: "A", to: "B", label: "12" }, { from: "B", to: "C", label: "5" }, { from: "A", to: "C", label: "13" }], angles: [{ at: "A", from: "B", to: "C", label: "θ" }, { at: "B", from: "A", to: "C", right: true }] },
   },
   why: [
-    { kind: "choice", prompt: "Why is sec θ undefined when cos θ = 0?", choices: ["sec θ = 1 ÷ cos θ, and you can't divide by 0.", "Because sec θ is always 0 there too.", "Because the angle doesn't exist."], correct: 0, explain: "A reciprocal of 0 is undefined." },
+    { kind: "choice", prompt: "Why is sec θ not defined when cos θ = 0?", choices: ["sec θ = 1 ÷ cos θ, and you can't divide by 0.", "Because sec θ is always 0 there too.", "Because the angle doesn't exist."], correct: 0, explain: "A reciprocal of 0 is not defined." },
     { kind: "written", prompt: "If sin θ = 0.25, explain how to find csc θ and why it must be bigger than 1.", keyIdeas: ["csc θ = 1 ÷ sin θ", "1 ÷ 0.25 = 4", "the reciprocal of a number between 0 and 1 is greater than 1 (hypotenuse over a leg)"], exemplar: "csc θ is the reciprocal of sin θ, so csc θ = 1 ÷ 0.25 = 4. Since sin θ is a leg over the hypotenuse, it's less than 1, and flipping it gives hypotenuse over leg, which is more than 1." },
   ],
   generate(r, lv) {
@@ -93,7 +93,7 @@ const reciprocal: Skill = {
       prompt: `sin θ = ${fracText(vals.sin)} and cos θ = ${fracText(vals.cos)}. Find the exact value of ${e}.`,
       answer: num(ans),
       hints: ["Write every function in terms of sin θ and cos θ, or find each value first.", `csc θ = ${fracText(vals.csc)}, sec θ = ${fracText(vals.sec)}, tan θ = ${fracText(vals.tan)}, cot θ = ${fracText(vals.cot)}.`],
-      steps: [st("Find the needed values.", `tan θ = {sin θ/cos θ} = ${fracText(vals.tan)}, cot θ = ${fracText(vals.cot)}, sec θ = ${fracText(vals.sec)}, csc θ = ${fracText(vals.csc)}`), st("Combine.", work)],
+      steps: [st("Find the needed values.", `tan θ = {sin θ/cos θ} = ${fracText(vals.tan)}, cot θ = ${fracText(vals.cot)}, sec θ = ${fracText(vals.sec)}, csc θ = ${fracText(vals.csc)}`), st("Combine.", `${work}${work.endsWith(fracText(ans)) ? "" : ` = ${fracText(ans)}`}`)],
       traps: traps(ans, [trap(frac(ans.d, ans.n), "That's the reciprocal of the answer. Check which functions flip.")]),
     };
   },
@@ -359,7 +359,7 @@ const lawCosines: Skill = {
         st("Substitute.", `cos C = {${a * a} + ${b * b} − ${c * c}/${2 * a * b}} = {${a * a + b * b - c * c}/${2 * a * b}} ≈ ${dec(cosC)}`),
         st("Use inverse cosine.", `C ≈ cos^−1(${dec(cosC)}) ≈ ${dec(ans, 1)}°`),
       ],
-      traps: tolTraps(ans, 0.15, [[deg(Math.acos(Math.max(-1, Math.min(1, (a * a + b * b - c * c) / (a * b))))), "The denominator is 2ab."], [deg(Math.acos(Math.max(-1, Math.min(1, (c * c - a * a - b * b) / (2 * a * b))))), "The numerator is a² + b² − c² (the side opposite C is subtracted)."]]),
+      traps: tolTraps(ans, 0.15, [[Math.abs((a * a + b * b - c * c) / (a * b)) <= 1 ? deg(Math.acos((a * a + b * b - c * c) / (a * b))) : NaN, "The denominator is 2ab."], [deg(Math.acos(Math.max(-1, Math.min(1, (c * c - a * a - b * b) / (2 * a * b))))), "The numerator is a² + b² − c² (the side opposite C is subtracted)."]]),
     };
   },
 };

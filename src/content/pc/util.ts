@@ -143,7 +143,7 @@ export function trigEx(fn: TrigFn, a: Ang): Ex | null {
 
 /** Number answer for rational values, exact answer otherwise. */
 export function exAns(e: Ex): Answer {
-  return e.q ? num(e.q) : exact(e.typed, e.text);
+  return e.q ? num(e.q, { simplest: true }) : exact(e.typed, e.text);
 }
 
 // ---------- Rounded answers ----------
@@ -212,3 +212,9 @@ export const plusExpr = (c: number) => (c === 0 ? "" : c < 0 ? `-${fmtNum(-c)}` 
 /** "(x − 3)" style shift inside a function, display. h is the shift; returns "x" when 0. */
 export const shiftText = (h: number, v = "x") => (h === 0 ? v : `${v} ${h > 0 ? "−" : "+"} ${fmtNum(Math.abs(h))}`);
 export const shiftExpr = (h: number, v = "x") => (h === 0 ? v : `${v}${h > 0 ? "-" : "+"}${fmtNum(Math.abs(h))}`);
+
+/** Two different items from a list. */
+export function pick2<T>(r: { shuffle: <U>(x: readonly U[]) => U[] }, list: readonly T[]): [T, T] {
+  const s = r.shuffle(list);
+  return [s[0], s[1]];
+}

@@ -118,3 +118,15 @@ export const article = (w: string) => (/^[aeiou8]/i.test(w) || /^11/.test(w) || 
 
 /** Percent text from a growth factor like 1.05 → "5%". */
 export const pctText = (p: number) => `${fmtNum(p)}%`;
+
+/** "3(−2)", "(−2)" for coefficient 1, "−(−2)" for −1: a coefficient times a substituted value. */
+export function times(a: number, v: number): string {
+  const inner = `(${f(v)})`;
+  return a === 1 ? inner : a === -1 ? `−${inner}` : `${f(a)}${inner}`;
+}
+
+/** "a(x) + b(y)" with signs handled, e.g. "2(3) − 4(−1)". */
+export function times2(a: number, x: number, b: number, y: number): string {
+  const second = b < 0 ? ` − ${times(-b, y)}` : ` + ${times(b, y)}`;
+  return `${times(a, x)}${second}`;
+}

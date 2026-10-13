@@ -45,7 +45,7 @@ const evaluate: Skill = {
     if (lv === 2) {
       const kind = r.pick(["recip", "root", "dec"]);
       if (kind === "recip") {
-        const b = r.pick([2, 3, 4, 5]), k = r.int(1, b === 2 ? 5 : 3), N = b ** k;
+        const b = r.pick([2, 3, 4, 5]), k = r.int(2, b === 2 ? 5 : 3), N = b ** k;
         return {
           prompt: `Evaluate ${lg(b, fr(1, N))}.`,
           answer: num(-k),
@@ -208,7 +208,7 @@ const solve: Skill = {
     explain: [
       "log_2(x + 3) = 5 means x + 3 = 2^5 = 32, so **x = 29**.",
       "With two logs, combine first: log_2(x) + log_2(x + 2) = 3 becomes log_2(x(x + 2)) = 3, so x^2 + 2x = 8, x^2 + 2x − 8 = 0, (x + 4)(x − 2) = 0.",
-      "x = −4 would make log_2(−4) undefined, so it's extraneous. The only solution is **x = 2**.",
+      "x = −4 would make log_2(−4) not defined, so it's extraneous. The only solution is **x = 2**.",
     ],
   },
   why: [
@@ -259,10 +259,10 @@ const solve: Skill = {
         st("Exponential form.", `x(x + ${c}) = ${b}^${k} = ${P}`),
         st("Set the quadratic to zero.", `x^2 + ${c}x − ${P} = 0`),
         st("Factor.", `(x − ${x})(x + ${x + c}) = 0, so x = ${x} or x = ${ms(neg)}`),
-        st("Check for extraneous roots.", `x = ${ms(neg)} gives ${lg(b, ms(neg))}, which is undefined. Reject it.`),
+        st("Check for extraneous roots.", `x = ${ms(neg)} gives ${lg(b, ms(neg))}, which is not defined. Reject it.`),
         st("Answer.", `x = ${x}`),
       ],
-      traps: traps(frac(x), [trap(neg, `${ms(neg)} is extraneous: the log of a negative number is undefined.`), trap(P - c, "Combine the two logs into one with the product rule before rewriting.")]),
+      traps: traps(frac(x), [trap(neg, `${ms(neg)} is extraneous: the log of a negative number is not defined.`), trap(P - c, "Combine the two logs into one with the product rule before rewriting.")]),
     };
   },
 };
@@ -283,7 +283,7 @@ const expContext: Skill = {
     visual: { type: "plot", xMin: 0, xMax: 14, yMin: 0, yMax: 1200, xStep: 2, yStep: 200, curves: [{ expr: "500(1.06)^x", label: "A = 500(1.06)^t" }], hlines: [{ y: 800, dashed: true, label: "800" }], vlines: [{ x: 8.07, dashed: true }] },
   },
   why: [
-    { kind: "choice", prompt: "Why do you divide by 500 before taking logs in 500(1.06)^t = 800?", choices: ["The exponent applies only to 1.06, so isolate (1.06)^t first.", "Because log(500) is undefined.", "It's optional; the answer is the same either way."], correct: 0, explain: "log(500 · 1.06^t) = log 500 + t·log 1.06; dividing first keeps it simple. Skipping it and treating 500 as part of the power gives a wrong answer." },
+    { kind: "choice", prompt: "Why do you divide by 500 before taking logs in 500(1.06)^t = 800?", choices: ["The exponent applies only to 1.06, so isolate (1.06)^t first.", "Because log(500) is not defined.", "It's optional; the answer is the same either way."], correct: 0, explain: "log(500 · 1.06^t) = log 500 + t·log 1.06; dividing first keeps it simple. Skipping it and treating 500 as part of the power gives a wrong answer." },
     { kind: "written", prompt: "Explain why taking the log of both sides helps solve 2^t = 20.", keyIdeas: ["the variable is in the exponent", "log(2^t) = t·log 2 by the power rule", "then divide: t = log 20 ÷ log 2"], exemplar: "The unknown is an exponent, so ordinary algebra can't reach it. Logs bring exponents down: log(2^t) = t·log 2. Then t·log 2 = log 20 and t = log 20 ÷ log 2 ≈ 4.32." },
   ],
   generate(r, lv) {
@@ -300,7 +300,7 @@ const expContext: Skill = {
         prompt = `${name} invests $${P} at ${rate}% interest compounded yearly: A = ${P}(${1 + rate / 100})^t. How many years until it's worth $${target}? Round to the nearest hundredth.`;
       } else if (ctx === 1) {
         P = r.pick([1200, 2500, 4000]); rate = r.pick([8, 10, 12, 15]); target = P * r.pick([2, 5, 10]); unit = "weeks";
-        prompt = `${name}'s channel has ${P} followers and grows ${rate}% per week: F = ${P}(${1 + rate / 100})^w. After how many weeks will it reach ${target} followers? Round to the nearest hundredth.`;
+        prompt = `${name}'s channel has ${P} followers and grows ${rate}% per week: F = ${P}(${1 + rate / 100})^t, where t is in weeks. After how many weeks will it reach ${target} followers? Round to the nearest hundredth.`;
       } else {
         decay = true;
         P = r.pick([200, 400, 500]); rate = r.pick([10, 15, 20, 25]); target = P * r.pick([0.5, 0.25, 0.1]); unit = "hours";
@@ -450,7 +450,7 @@ const features: Skill = {
     if (lv === 1) {
       return {
         prompt: `What is the domain of ${fx}?`,
-        answer: choice(r, `x > ${ms(h)}`, [[`x > ${ms(-h)}`, `Set the input positive: ${inside} > 0.`], [`x ≥ ${ms(h)}`, `At x = ${ms(h)} the input is 0, and log(0) is undefined.`], ["all real numbers", "Logs only take positive inputs."], [`x > ${ms(k)}`, "The vertical shift doesn't affect the domain."]]),
+        answer: choice(r, `x > ${ms(h)}`, [[`x > ${ms(-h)}`, `Set the input positive: ${inside} > 0.`], [`x ≥ ${ms(h)}`, `At x = ${ms(h)} the input is 0, and log(0) is not defined.`], ["all real numbers", "Logs only take positive inputs."], [`x > ${ms(k)}`, "The vertical shift doesn't affect the domain."]]),
         hints: ["The input of a log must be positive.", `Solve ${inside} > 0.`],
         steps: [st("Set the input positive.", `${inside} > 0`), st("Solve.", `x > ${ms(h)}`), st("Connection to the graph.", `The vertical asymptote is x = ${ms(h)}; the graph lives only to its right.`)],
       };
@@ -461,7 +461,7 @@ const features: Skill = {
       const f2 = `y = ${lg(b, inside)}${cst(kk)}`;
       return {
         prompt: `Find the x-intercept of ${f2}.`,
-        answer: num(ans, { pre: "x =" }),
+        answer: num(ans, { pre: "x = " }),
         hints: ["Set y = 0 and isolate the log.", `${lg(b, inside)} = ${-kk}, so ${inside} = ${b}^${-kk}.`],
         steps: [st("Set y = 0.", `${lg(b, inside)}${cst(kk)} = 0`), st("Isolate the log.", `${lg(b, inside)} = ${-kk}`), st("Exponential form.", `${inside} = ${b}^${-kk} = ${b ** -kk}`), st("Solve.", `x = ${ms(ans)}`)],
         traps: traps(frac(ans), [trap(h + 1, `x = ${ms(h + 1)} is where the log part is 0, but the graph is shifted ${kk < 0 ? "down" : "up"}.`), trap(-h + b ** -kk, `The shift inside is to the ${h >= 0 ? "right" : "left"}: ${inside} = ${b ** -kk}.`), trap(h + b * -kk, `${b}^${-kk} is not ${b} × ${-kk}.`)]),

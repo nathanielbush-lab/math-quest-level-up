@@ -470,7 +470,7 @@ const piecewiseGraph: Skill = {
     visual: { type: "plot", xMin: -4, xMax: 5, yMin: -6, yMax: 6, curves: [{ expr: "x+3", domain: [-4, 1] }, { expr: "-2x+3", domain: [1, 5] }], points: [{ x: 1, y: 4, open: true }, { x: 1, y: 1 }] },
   },
   why: [
-    { kind: "choice", prompt: "On a piecewise graph, what does an open circle at the end of a piece mean?", choices: ["That point is not part of that piece, so the inequality is strict (< or >).", "The function is undefined everywhere near there.", "The point is included (≤ or ≥)."], correct: 0, explain: "Open means excluded; a closed dot shows which piece includes the boundary value." },
+    { kind: "choice", prompt: "On a piecewise graph, what does an open circle at the end of a piece mean?", choices: ["That point is not part of that piece, so the inequality is strict (< or >).", "The function is not defined everywhere near there.", "The point is included (≤ or ≥)."], correct: 0, explain: "Open means excluded; a closed dot shows which piece includes the boundary value." },
     { kind: "written", prompt: "How can you tell from a graph whether f(2) uses the left piece or the right piece when both pieces end at x = 2?", keyIdeas: ["look for the closed dot at x = 2", "the piece with the closed dot includes x = 2", "the other piece has an open circle there"], exemplar: "I look at x = 2. One piece ends in a filled dot and the other in an open circle. f(2) is the y-value of the filled dot, so that piece's interval uses ≤ or ≥ at 2." },
   ],
   generate(r, lv) {

@@ -360,9 +360,9 @@ const optimize: Skill = {
       const m = r.int(1, 4), s = 6 * m, x = m, V = x * (s - 2 * x) ** 2;
       const askV = kind === "box-volume";
       return {
-        prompt: `An open box is made from a ${s} in by ${s} in sheet of cardboard by cutting equal x-by-x squares from the corners and folding up the sides. ${askV ? "What is the largest possible volume, in cubic inches?" : "What cut size x gives the largest volume?"}`,
+        prompt: `An open box is made from ${s === 18 ? "an" : "a"} ${s} in by ${s} in sheet of cardboard by cutting equal x-by-x squares from the corners and folding up the sides. ${askV ? "What is the largest possible volume, in cubic inches?" : "What cut size x gives the largest volume?"}`,
         answer: num(askV ? V : x, { unit: askV ? " in³" : " in" }),
-        hints: ["The base is (s − 2x) by (s − 2x) and the height is x.", `V(x) = x(${s} − 2x)^2 for 0 < x < ${s / 2}. Graph it and find the highest point.`, `The maximum is at x = ${x} (one sixth of the side).`],
+        hints: [`After cutting, the base is (${s} − 2x) by (${s} − 2x) and the height is x.`, `V(x) = x(${s} − 2x)^2 for 0 < x < ${s / 2}. Graph it and find the highest point.`, `The maximum is at x = ${x} (one sixth of the side).`],
         steps: [
           st("Write the volume.", `V(x) = x(${s} − 2x)^2, domain 0 < x < ${s / 2}`),
           st("Find the maximum (graph or calculator).", `The highest point is at x = ${x}.`),

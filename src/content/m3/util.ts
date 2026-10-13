@@ -130,3 +130,47 @@ export function coefT(a: number): string {
 
 /** Sign word for shifts. */
 export const plural = (n: number, w: string) => `${n} ${w}${Math.abs(n) === 1 ? "" : "s"}`;
+
+// ---------- Polynomial arithmetic (coefficients highest power first) ----------
+
+export function mulPoly(a: number[], b: number[]): number[] {
+  const out = Array(a.length + b.length - 1).fill(0);
+  a.forEach((x, i) => b.forEach((y, j) => { out[i + j] += x * y; }));
+  return out;
+}
+
+/** a · (x − r1)(x − r2)… */
+export function fromRoots(roots: number[], a = 1): number[] {
+  return roots.reduce((p, r) => mulPoly(p, [1, -r]), [a]);
+}
+
+export function evalPoly(c: number[], x: number): number {
+  return c.reduce((acc, k) => acc * x + k, 0);
+}
+
+/** Factored display: −2(x − 1)^2(x + 3). factors: [root, multiplicity]. */
+export function factoredText(a: number, factors: [number, number][]): string {
+  const lead = a === 1 ? "" : a === -1 ? "−" : ms0(a);
+  return lead + factors.map(([r, m]) => {
+    const b = r === 0 ? "x" : `(x ${r > 0 ? "−" : "+"} ${Math.abs(r)})`;
+    return m === 1 ? b : r === 0 ? `x^${m}` : `${b}^${m}`;
+  }).join("");
+}
+
+/** Typed version of factoredText. */
+export function factoredT(a: number, factors: [number, number][]): string {
+  const lead = a === 1 ? "" : a === -1 ? "-" : `${a}*`;
+  return lead + factors.map(([r, m]) => {
+    const b = r === 0 ? "x" : `(x${r > 0 ? "-" : "+"}${Math.abs(r)})`;
+    return m === 1 ? b : `${b}^${m}`;
+  }).join("*");
+}
+
+function ms0(x: number): string {
+  return x < 0 ? `−${-x}` : String(x);
+}
+
+/** "(x − r)" for display (root r), safe inside stacked fractions. */
+export function binU(r: number): string {
+  return r === 0 ? "x" : `(x ${r > 0 ? "−" : "+"} ${Math.abs(r)})`;
+}
