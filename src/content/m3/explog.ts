@@ -117,14 +117,15 @@ const features: Skill = {
       const b = r.pick([2, 3, 0.5]), a = r.pick([1, 2, 3, -1, -2]), k = r.nonzero(-5, 5);
       const bT = b === 0.5 ? "0.5" : String(b), bD = b === 0.5 ? "({1/2})" : String(b);
       const yi = a + k;
+      const aDot = a === 1 ? "" : `${ms(a)} · `;
       const fD = `${a === 1 ? "" : a === -1 ? "−" : `${ms(a)} · `}${bD}^x${cst(k)}`;
       const visual = { type: "plot" as const, xMin: -5, xMax: 5, yMin: a > 0 ? k - 6 : k - 14, yMax: a > 0 ? k + 14 : k + 6, yStep: 2, curves: [{ expr: `${a}*${bT}^x+${k}`.replace("+-", "-") }], hlines: [{ y: k, dashed: true }] };
       if (lv === 1) {
         return {
           prompt: `The graph of f(x) = ${fD} is shown. What is the equation of its horizontal asymptote? Enter the value of k in y = k.`,
           visual,
-          answer: num(k, { pre: "y =" }),
-          hints: [`What happens to ${bD}^x as x heads ${b > 1 ? "toward −∞" : "toward +∞"}?`, `${bD}^x gets close to 0, so f(x) gets close to ${a === 1 ? "" : ms(a) + " · "}0${cst(k)}.`],
+          answer: num(k, { pre: "y = " }),
+          hints: [`What happens to ${bD}^x as x heads ${b > 1 ? "toward −∞" : "toward +∞"}?`, `${bD}^x gets close to 0, so f(x) gets close to ${aDot}0${cst(k)} = ${ms(k)}.`],
           steps: [
             st("The exponential part shrinks to 0.", `As x → ${b > 1 ? "−∞" : "+∞"}, ${bD}^x → 0.`),
             st("So f(x) levels off at k.", `f(x) → ${ms(k)}, so the asymptote is y = ${ms(k)}.`),
@@ -135,9 +136,9 @@ const features: Skill = {
       if (r.chance(0.5)) {
         return {
           prompt: `What is the y-intercept of f(x) = ${fD}?`,
-          answer: num(yi, { pre: "y =" }),
-          hints: ["The y-intercept is f(0).", `Any nonzero number to the power 0 is 1, so f(0) = ${ms(a)} · 1${cst(k)}.`],
-          steps: [st("Substitute x = 0.", `f(0) = ${ms(a)} · ${bD}^0${cst(k)} = ${ms(a)} · 1${cst(k)} = ${ms(yi)}`)],
+          answer: num(yi, { pre: "y = " }),
+          hints: ["The y-intercept is f(0).", `Any nonzero number to the power 0 is 1, so f(0) = ${aDot}1${cst(k)}.`],
+          steps: [st("Substitute x = 0.", `f(0) = ${aDot}${bD}^0${cst(k)} = ${aDot}1${cst(k)} = ${ms(yi)}`)],
           traps: traps(frac(yi), [trap(k, "That's the asymptote level, not the value at x = 0."), trap(a, `Don't forget the${cst(k)} at the end.`), trap(a * b + k, "You substituted x = 1. The y-intercept uses x = 0.")]),
         };
       }
@@ -161,7 +162,7 @@ const features: Skill = {
       return {
         prompt: `The graph of g(x) = ${gD} is shown. What is its vertical asymptote? Enter the value of h in x = h.`,
         visual,
-        answer: num(h, { pre: "x =" }),
+        answer: num(h, { pre: "x = " }),
         hints: ["You can only take the log of a positive number.", `Set the inside equal to 0: ${xm(h)} = 0.`],
         steps: [st("The log's input must be positive.", `${xm(h)} > 0, so x > ${ms(h)}.`), st("Asymptote.", `As x approaches ${ms(h)}, the input approaches 0 and g(x) → −∞. The asymptote is x = ${ms(h)}.`)],
         traps: traps(frac(h), [trap(-h, `Check the sign: ${xm(h)} = 0 when x = ${ms(h)}.`), trap(k, `${ms(k)} is the vertical shift, which doesn't move a vertical asymptote.`)]),
@@ -691,10 +692,10 @@ const vsPoly: Skill = {
         steps: [st("Compare growth per step.", `f is multiplied by ${b} each time x increases by 1. For g, (x + 1)/x gets close to 1 as x grows, so g's multiplying factor shrinks toward 1.`), st("Conclusion.", correct)],
       };
     }
-    const f = lv === 2 ? { b: 2, t: "2^x" } : r.pick([{ b: 1.5, t: "1.5^x" }, { b: 1.2, t: "1.2^x" }]);
+    const f = lv === 2 ? { b: 2, t: "2^x" } : { b: 1.5, t: "1.5^x" };
     const gs = lv === 2
       ? [{ t: "20x", e: (x: number) => 20 * x }, { t: "50x", e: (x: number) => 50 * x }, { t: "100x", e: (x: number) => 100 * x }, { t: "5x^2", e: (x: number) => 5 * x * x }, { t: "10x^2", e: (x: number) => 10 * x * x }]
-      : [{ t: "x^2", e: (x: number) => x * x }, { t: "10x", e: (x: number) => 10 * x }, { t: "x^3", e: (x: number) => x ** 3 }];
+      : [{ t: "x^2", e: (x: number) => x * x }, { t: "10x", e: (x: number) => 10 * x }, { t: "25x", e: (x: number) => 25 * x }, { t: "2x^2", e: (x: number) => 2 * x * x }, { t: "x^3", e: (x: number) => x ** 3 }];
     const g = r.pick(gs);
     const start = lv === 2 ? 1 : 2;
     let ans = start;
@@ -785,7 +786,7 @@ const compare: Skill = {
         hints: ["Each maximum is the y-coordinate of a vertex.", `For g, the vertex is at x = −{b/2a} = −{${ms(B)}/2(${ms(a2)})} = ${ms(h2)}. Then find g(${ms(h2)}).`],
         steps: [
           st("Maximum of f.", `From the graph, the vertex is (${ms(h1)}, ${k1}), so the maximum is ${k1}.`),
-          st("Vertex of g.", `x = −{b/2a} = −{${ms(B)}/${2 * a2}} = ${ms(h2)}`),
+          st("Vertex of g.", `x = −{b/2a} = −{${ms(B)}/${ms(2 * a2)}} = ${ms(h2)}`),
           st("Maximum of g.", `g(${ms(h2)}) = ${ms(k2)}`),
           st("Compare.", `${big} > ${small}, so the greater maximum is ${big} (${big === k1 ? "f" : "g"}).`),
         ],

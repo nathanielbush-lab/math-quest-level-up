@@ -288,7 +288,7 @@ const lawSines: Skill = {
         st("Use inverse sine.", `B ≈ sin^−1(${dec((b * sinD(A)) / a)}) ≈ ${dec(ans, 1)}°`),
         st("Check for a second triangle.", `The other option would be 180° − ${dec(ans, 1)}° = ${dec(180 - ans, 1)}°, but then A + B > 180°, so there is only one triangle. (Also b < a means B < A.)`),
       ],
-      traps: tolTraps(ans, 0.15, [[180 - ans, "That angle plus A is more than 180°, so it can't be in the triangle."], [deg(Math.asin(Math.min(1, (a * sinD(A)) / b / 2))), "Put b with sin B and a with sin A."]]),
+      traps: tolTraps(ans, 0.15, [[180 - ans, "That angle plus A is more than 180°, so it can't be in the triangle."], [Cang, "That's angle C. Angle B is opposite side b."]]),
     };
   },
 };
@@ -323,8 +323,8 @@ const lawCosines: Skill = {
         ? `In triangle ABC, a = ${a}, b = ${b} and C = ${C}°. Find c to the nearest tenth.`
         : r.pick([
             `${name} and a friend leave the same trailhead. ${name} hikes ${a} km on one path, the friend hikes ${b} km on another, and the paths split at an angle of ${C}°. How far apart are they, to the nearest tenth of a km?`,
-            `On a golf hole, the tee is ${a} yards... no`,
-          ].slice(0, 1).concat([`A drone flies ${a} m from its launch point, and a second drone flies ${b} m from the same point. The angle between their flight paths is ${C}°. How far apart are the drones, to the nearest tenth of a meter?`]))[0];
+            `A drone flies ${a} m from its launch point, and a second drone flies ${b} m from the same point. The angle between their flight paths is ${C}°. How far apart are the drones, to the nearest tenth of a meter?`,
+          ]);
       return {
         prompt,
         visual: triangle(Aang, b, c, { a: String(a), b: String(b), c: "?", C: `${C}°` }),
@@ -435,7 +435,7 @@ const navigation: Skill = {
         st("Law of Sines for angle S.", `sin S = {${d2} sin ${inside}°/${dec(d, 2)}} ≈ ${dec((d2 * sinD(inside)) / d)}`),
         st("Inverse sine.", `S ≈ ${dec(ans, 1)}° (acute, since the largest angle is the ${inside}° at T)`),
       ],
-      traps: tolTraps(ans, 0.2, [[turn, "The return angle isn't the same as the turn angle."], [180 - inside - turn > 0 ? 180 - inside - turn : -1, "Check your triangle: find SE first, then use the Law of Sines."]]),
+      traps: tolTraps(ans, 0.2, [[turn, "The return angle isn't the same as the turn angle."], [180 - inside - S, "That's the angle at E. Angle S is opposite the side TE."]]),
     };
   },
 };
