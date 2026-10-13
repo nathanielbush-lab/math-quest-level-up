@@ -3,7 +3,7 @@ import { choice, num, trap, traps } from "../helpers";
 import { frac } from "../../lib/rational";
 import { st } from "../steps";
 import type { Skill, Visual } from "../types";
-import { f, fiveNum, mean, med, sortNums } from "./util";
+import { f, fiveNum, mean, med, ordinal, sortNums } from "./util";
 
 const T = "m1-one-var-stats";
 
@@ -129,7 +129,7 @@ const histogram: Skill = {
     const labels = bins2.map((b) => `${b.from} to ${b.to}`);
     const running: number[] = [];
     counts.reduce((a, c) => { running.push(a + c); return a + c; }, 0);
-    const pos = total % 2 ? `the ${(total + 1) / 2}th value` : `the average of the ${total / 2}th and ${total / 2 + 1}th values`;
+    const pos = total % 2 ? `the ${ordinal((total + 1) / 2)} value` : `the average of the ${ordinal(total / 2)} and ${ordinal(total / 2 + 1)} values`;
     const modeBin = counts.indexOf(Math.max(...counts));
     return {
       prompt: `The histogram shows data for ${total} ${ctx.who}. Which interval contains the median?`,
@@ -183,7 +183,7 @@ const fiveNumber: Skill = {
     const s = fiveNum(data);
     const listText = data.join(", ");
     const sortStep = st("Sort the data.", s.sorted.join(", "));
-    const medStep = st("Find the median.", n % 2 ? `${n} values: the middle one is the ${(n + 1) / 2}th, ${f(s.median)}.` : `${n} values: average the ${n / 2}th and ${n / 2 + 1}th values, (${s.sorted[n / 2 - 1]} + ${s.sorted[n / 2]}) ÷ 2 = ${f(s.median)}.`);
+    const medStep = st("Find the median.", n % 2 ? `${n} values: the middle one is the ${ordinal((n + 1) / 2)}, ${f(s.median)}.` : `${n} values: average the ${ordinal(n / 2)} and ${ordinal(n / 2 + 1)} values, (${s.sorted[n / 2 - 1]} + ${s.sorted[n / 2]}) ÷ 2 = ${f(s.median)}.`);
     const halfSteps = [
       st("Find Q1, the median of the lower half.", `${s.lower.join(", ")} → Q1 = ${f(s.q1)}`),
       st("Find Q3, the median of the upper half.", `${s.upper.join(", ")} → Q3 = ${f(s.q3)}`),

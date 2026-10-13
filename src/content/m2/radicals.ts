@@ -1,5 +1,5 @@
 // Unit 5: Radicals, rational exponents, rational vs. irrational numbers, and the imaginary unit.
-import { choice, exact, expr, num, radical, radText, trap, traps } from "../helpers";
+import { choice, exact, expr, ms, num, radical, radText, trap, traps } from "../helpers";
 import { frac, gcd } from "../../lib/rational";
 import { st } from "../steps";
 import type { Skill } from "../types";
@@ -208,7 +208,7 @@ const operations: Skill = {
         prompt: `Simplify √${n1} ${sub ? "−" : "+"} √${n2}.`,
         answer: exact(`${tot}sqrt(${b})`, disp),
         hints: ["Simplify each radical first.", `√${n1} = ${radText(p, b)} and √${n2} = ${radText(q, b)}. Now combine like terms.`],
-        steps: [st("Simplify each radical.", `√${n1} = ${radText(p, b)}, √${n2} = ${radText(q, b)}`), st("Combine like radicals.", `${p} ${sub ? "−" : "+"} ${q} = ${tot}, so the answer is ${disp}`)],
+        steps: [st("Simplify each radical.", `√${n1} = ${radText(p, b)}, √${n2} = ${radText(q, b)}`), st("Combine like radicals.", `${p} ${sub ? "−" : "+"} ${q} = ${ms(tot)}, so the answer is ${disp}`)],
       };
     }
     if (lv === 2) {
@@ -371,7 +371,7 @@ const imaginary: Skill = {
       prompt: `Simplify √(−${a * a}) · √(−${b * b}).`,
       answer: num(v),
       hints: ["Rewrite each root with i before multiplying.", `${a}i · ${b}i = ${a * b}i². What is i²?`],
-      steps: [st("Rewrite with i.", `√(−${a * a}) = ${a}i and √(−${b * b}) = ${b}i`), st("Multiply.", `${a}i · ${b}i = ${a * b}i²`), st("Use i² = −1.", `${a * b}(−1) = ${v}`)],
+      steps: [st("Rewrite with i.", `√(−${a * a}) = ${a}i and √(−${b * b}) = ${b}i`), st("Multiply.", `${a}i · ${b}i = ${a * b}i²`), st("Use i² = −1.", `${a * b}(−1) = ${ms(v)}`)],
       traps: traps(frac(v), [trap(a * b, "√a · √b = √(ab) doesn't work when both are negative. Rewrite with i first: you get i² = −1.")]),
     };
   },

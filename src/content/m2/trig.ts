@@ -118,7 +118,7 @@ const pythag: Skill = {
       ans = r1(Math.sqrt(rise * rise + run * run));
       prompt = `A wheelchair ramp rises ${rise} ft over a horizontal distance of ${run} ft. How long is the ramp surface? Round to the nearest tenth of a foot.`;
       steps = [st("The ramp surface is the hypotenuse.", `L² = ${rise}² + ${run}² = ${rise * rise + run * run}`), st("Take the square root.", `L = √${rise * rise + run * run} ≈ ${ans} ft`)];
-      vis = rightTri(rise * 3, run, { a: `${rise} ft`, b: `${run} ft`, c: "L" });
+      vis = rightTri(rise, run, { a: `${rise} ft`, b: `${run} ft`, c: "L" });
     }
     return {
       prompt,

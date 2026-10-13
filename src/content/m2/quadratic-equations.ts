@@ -246,7 +246,7 @@ const discriminant: Skill = {
     return {
       prompt: `For what value of k does ${aa === 1 ? "" : aa}x^2 ${bb < 0 ? "−" : "+"} ${Math.abs(bb)}x + k = 0 have exactly one real solution?`,
       answer: num(k),
-      hints: ["Exactly one real solution means the discriminant equals 0.", `${bb}^2 − 4(${aa})k = 0.`],
+      hints: ["Exactly one real solution means the discriminant equals 0.", `${sn(bb)}^2 − 4(${aa})k = 0.`],
       steps: [st("Set the discriminant to 0.", `${sn(bb)}^2 − 4(${aa})k = 0`), st("Solve.", `${bb * bb} = ${4 * aa}k, so k = ${k}`), st("Check.", `${poly([aa, bb, k])} = ${aa === 1 ? "" : aa}(x ${s > 0 ? "+" : "−"} ${Math.abs(s)})^2, a perfect square. ✓`)],
       traps: traps(frac(k), [trap(-k, "Check the sign: b^2 is positive, so 4ak must be positive too."), trap(bb * bb, "Divide by 4a after setting b^2 − 4ak = 0.")]),
     };

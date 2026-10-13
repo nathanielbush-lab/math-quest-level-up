@@ -8,6 +8,8 @@ import modeling from "./modeling";
 import trig from "./trig";
 import circles from "./circles";
 import geometry from "./geometry";
+import stats from "./stats";
+import challenges from "./challenges";
 
 const topics: Topic[] = [
   { id: "m3-functions", course: "m3", unit: 1, strand: "algebra", family: "functions", title: "Functions and Inverses", standards: "NC.M3.F-BF.3–4, F-IF.2, F-IF.7", blurb: "Piecewise and absolute value functions, transformations, and inverse functions.", icon: "f⁻¹" },
@@ -18,8 +20,9 @@ const topics: Topic[] = [
   { id: "m3-trig", course: "m3", unit: 6, strand: "algebra", family: "trig", title: "Trigonometric Functions", standards: "NC.M3.F-TF.1–5, F-IF.1", blurb: "Radians, the unit circle, and sine and cosine graphs that model repeating patterns.", icon: "∿" },
   { id: "m3-circles", course: "m3", unit: 7, strand: "geo-stats", family: "geometry", title: "Circles", standards: "NC.M3.G-C.2, G-C.5, G-GPE.1", blurb: "Angles, chords and tangents, arcs and sectors, and equations of circles.", icon: "◯" },
   { id: "m3-geometry", course: "m3", unit: 8, strand: "geo-stats", family: "geometry", title: "Geometric Modeling", standards: "NC.M3.G-CO.10–14, G-GMD.3–4, G-MG.1", blurb: "Triangle centers, parallelogram proofs, volume, cross-sections, density and design.", icon: "△" },
+  { id: "m3-stats", course: "m3", unit: 9, strand: "geo-stats", family: "stats", title: "Statistical Inference", standards: "NC.M3.S-IC.1–6", blurb: "Study design, estimating from samples, simulation, margins of error, and judging data claims.", icon: "σ" },
 ];
-const skills: Skill[] = [...functions, ...explog, ...polynomials, ...rational, ...modeling, ...trig, ...circles, ...geometry];
+const skills: Skill[] = [...functions, ...explog, ...polynomials, ...rational, ...modeling, ...trig, ...circles, ...geometry, ...stats];
 
-const content: CourseContent = { topics, skills };
+const content: CourseContent = { topics, skills, challenges };
 export default content;

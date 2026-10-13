@@ -1,6 +1,7 @@
 // NC Math 2: units in teaching order (Open Up NC order: transformations and geometry first,
 // then quadratics, variation and square-root functions, and probability). One file per unit.
 import type { CourseContent, Skill, Topic } from "../types";
+import challenges from "./challenges";
 import transformations from "./transformations";
 import congruence from "./congruence";
 import similarity from "./similarity";
@@ -26,5 +27,5 @@ const topics: Topic[] = [
 ];
 const skills: Skill[] = [...transformations, ...congruence, ...similarity, ...trig, ...radicals, ...quadFns, ...quadEqs, ...systems, ...variation, ...probability];
 
-const content: CourseContent = { topics, skills };
+const content: CourseContent = { topics, skills, challenges };
 export default content;

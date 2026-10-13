@@ -10,6 +10,9 @@ import studies from "./studies";
 import distributions from "./distributions";
 import normal from "./normal";
 import sampling from "./sampling";
+import intervals from "./intervals";
+import tests from "./tests";
+import challenges from "./challenges";
 
 const topics: Topic[] = [
   { id: "m4-functions", course: "m4", unit: 1, strand: "algebra", family: "functions", title: "Composition, Inverses & Piecewise", standards: "NC.M4.AF.1, AF.4", blurb: "Chain functions together, undo them, and build rules that change partway.", icon: "fn" },
@@ -22,8 +25,10 @@ const topics: Topic[] = [
   { id: "m4-distributions", course: "m4", unit: 8, strand: "geo-stats", family: "stats", title: "Probability Distributions", standards: "NC.M4.SP.3.1–3.2", blurb: "Expected value for decisions and the binomial distribution.", icon: "dice" },
   { id: "m4-normal", course: "m4", unit: 9, strand: "geo-stats", family: "stats", title: "Normal Distributions", standards: "NC.M4.SP.3.4", blurb: "Use the bell curve, z-scores and percentiles to find probabilities.", icon: "bell" },
   { id: "m4-sampling", course: "m4", unit: 10, strand: "geo-stats", family: "stats", title: "Sampling Distributions", standards: "NC.M4.SP.2.1, SP.3.3", blurb: "Simulate samples and see how sample proportions and means behave.", icon: "sample" },
+  { id: "m4-intervals", course: "m4", unit: 11, strand: "geo-stats", family: "stats", title: "Confidence Intervals", standards: "NC.M4.SP.2.2", blurb: "Estimate a population proportion with a margin of error.", icon: "range" },
+  { id: "m4-tests", course: "m4", unit: 12, strand: "geo-stats", family: "stats", title: "Significance Tests", standards: "NC.M4.SP.2.3", blurb: "Test a claim about a proportion with a one-proportion z-test.", icon: "test" },
 ];
-const skills: Skill[] = [...functions, ...logs, ...trig, ...sinusoids, ...regression, ...number, ...studies, ...distributions, ...normal, ...sampling];
+const skills: Skill[] = [...functions, ...logs, ...trig, ...sinusoids, ...regression, ...number, ...studies, ...distributions, ...normal, ...sampling, ...intervals, ...tests];
 
-const content: CourseContent = { topics, skills };
+const content: CourseContent = { topics, skills, challenges };
 export default content;

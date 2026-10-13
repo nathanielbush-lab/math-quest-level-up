@@ -92,7 +92,7 @@ const evaluate: Skill = {
       prompt: `Solve for x: ${lg(b, "x")} = ${ms(k)}.`,
       answer: num(x),
       hints: ["Rewrite in exponential form: base^(answer) = input.", `x = ${b}^${ms(k)}.`],
-      steps: [st("Rewrite in exponential form.", `x = ${b}^${ms(k)}`), st("A negative exponent means a reciprocal.", `x = {1/${b}^${-k}} = {1/${b ** -k}}`)],
+      steps: [st("Rewrite in exponential form.", `x = ${b}^${ms(k)}`), st("A negative exponent means a reciprocal.", -k === 1 ? `x = {1/${b}}` : `x = {1/${b}^${-k}} = {1/${b ** -k}}`)],
       traps: traps(x, [trap(b * k, "The log is the exponent, so x = base^exponent, not base × exponent."), trap(-(b ** -k), "A negative exponent makes a reciprocal, not a negative number.")]),
     };
   },

@@ -130,3 +130,9 @@ export function times2(a: number, x: number, b: number, y: number): string {
   const second = b < 0 ? ` − ${times(-b, y)}` : ` + ${times(b, y)}`;
   return `${times(a, x)}${second}`;
 }
+
+/** 1st, 2nd, 3rd, 4th, 11th, 21st … */
+export function ordinal(n: number): string {
+  const s = n % 100 >= 11 && n % 100 <= 13 ? "th" : n % 10 === 1 ? "st" : n % 10 === 2 ? "nd" : n % 10 === 3 ? "rd" : "th";
+  return `${n}${s}`;
+}

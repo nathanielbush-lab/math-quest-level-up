@@ -283,10 +283,13 @@ const aa: Skill = {
     const k = r.pick([frac(2), frac(3, 2), frac(5, 2), frac(3)]);
     const ac = 2 * r.int(2, 5), ab = 2 * r.int(3, 6);
     const ce = (ac * k.n) / k.d, de = (ab * k.n) / k.d;
-    const pts = { [A]: { x: -3, y: 2 }, [B]: { x: -3, y: -1 }, [C]: { x: 0, y: 0 } };
+    // Draw to scale: C at the origin, A on the left, B so that AB = ab; then E = −k·A and D = −k·B.
     const kk = fx(k);
-    pts[E] = r3({ x: 3 * kk, y: -2 * kk });
-    pts[D] = r3({ x: 3 * kk, y: 1 * kk });
+    const Ap = { x: -ac, y: 0 }, phi = 110 * (Math.PI / 180);
+    const Bp = { x: Ap.x + ab * Math.cos(phi), y: Ap.y + ab * Math.sin(phi) };
+    const pts: Record<string, { x: number; y: number }> = { [A]: Ap, [B]: r3(Bp), [C]: { x: 0, y: 0 } };
+    pts[E] = r3({ x: -kk * Ap.x, y: 0 });
+    pts[D] = r3({ x: -kk * Bp.x, y: -kk * Bp.y });
     return {
       prompt: `${A}${B} ∥ ${D}${E}, and segments ${A}${E} and ${B}${D} cross at ${C}. ${A}${C} = ${ac}, ${C}${E} = ${ce} and ${A}${B} = ${ab}. Find ${D}${E}.`,
       visual: { type: "geo", showLabels: true, points: pts, polygons: [[A, B, C], [E, D, C]], segments: [{ from: A, to: C, label: String(ac) }, { from: C, to: E, label: String(ce) }, { from: A, to: B, label: String(ab) }, { from: D, to: E, label: "?" }] },

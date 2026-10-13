@@ -286,7 +286,7 @@ const independence: Skill = {
         visual: tableVisual(t),
         answer: num(pAgB),
         hints: [`Restrict to the ${t.cols[0]} column: ${colT(t, 0)} people.`, `${t.cells[0][0]} of them are ${t.rows[0]}.`],
-        steps: [st("Conditional probability.", `${raw(t.cells[0][0], colT(t, 0))} = ${ft(pAgB.n, pAgB.d)}`), st("Compare with the overall rate.", `P(${t.rows[0]}) = ${raw(rowT(t, 0), N)} = ${ft(pA.n, pA.d)}: ${isIndep ? "the same, so the events are independent" : "different, so the events are dependent"}.`)],
+        steps: [st("Conditional probability.", `${rs(t.cells[0][0], colT(t, 0))}`), st("Compare with the overall rate.", `P(${t.rows[0]}) = ${rs(rowT(t, 0), N)}: ${isIndep ? "the same, so the events are independent" : "different, so the events are dependent"}.`)],
         traps: traps(pAgB, [trap(pA, "That's P(A) overall, not given B."), trap(F(t.cells[0][0], rowT(t, 0)), "That's the reverse condition.")]),
       };
     }
@@ -295,7 +295,7 @@ const independence: Skill = {
       visual: tableVisual(t),
       answer: choice(r, correct, [[isIndep ? "Not independent" : "Independent", `Compare P(${t.rows[0]}) = ${ft(pA.n, pA.d)} with P(${t.rows[0]} | ${t.cols[0]}) = ${ft(pAgB.n, pAgB.d)}.`], ["You can't tell from a table", "A table gives every probability you need to compare."]], true),
       hints: [`Find P(${t.rows[0]}) using the row total and the grand total.`, `Find P(${t.rows[0]} | ${t.cols[0]}) using only the ${t.cols[0]} column. Are they equal?`],
-      steps: [st("Overall probability.", `P(${t.rows[0]}) = ${raw(rowT(t, 0), N)} = ${ft(pA.n, pA.d)}`), st("Conditional probability.", `P(${t.rows[0]} | ${t.cols[0]}) = ${raw(t.cells[0][0], colT(t, 0))} = ${ft(pAgB.n, pAgB.d)}`), st("Compare.", isIndep ? "Equal, so the events are independent." : "Not equal, so the events are not independent.")],
+      steps: [st("Overall probability.", `P(${t.rows[0]}) = ${rs(rowT(t, 0), N)}`), st("Conditional probability.", `P(${t.rows[0]} | ${t.cols[0]}) = ${rs(t.cells[0][0], colT(t, 0))}`), st("Compare.", isIndep ? "Equal, so the events are independent." : "Not equal, so the events are not independent.")],
     };
   },
 };
@@ -401,7 +401,7 @@ const multiplication: Skill = {
         visual: { type: "tape", rows: [{ label: "Start", segments: [{ text: `${a} ${items[0]}`, size: a, shade: true }, { text: `${b} ${items[1]}`, size: b }] }, { label: "After one " + items[0], segments: [{ text: `${a - 1} ${items[0]}`, size: a - 1, shade: true }, { text: `${b} ${items[1]}`, size: b }] }] },
         answer: num(ans),
         hints: [`First pick: ${raw(a, n)}.`, `After removing one ${items[0]}, there are ${a - 1} ${items[0]} out of ${n - 1}. Multiply.`],
-        steps: [st("First pick.", `P(${items[0]}) = ${raw(a, n)}`), st("Second pick, given the first.", `P(${items[0]} | ${items[0]} first) = ${raw(a - 1, n - 1)}`), st("Multiply.", `${raw(a, n)} · ${raw(a - 1, n - 1)} = ${raw(a * (a - 1), n * (n - 1))} = ${ft(ans.n, ans.d)}`)],
+        steps: [st("First pick.", `P(${items[0]}) = ${raw(a, n)}`), st("Second pick, given the first.", `P(${items[0]} | ${items[0]} first) = ${raw(a - 1, n - 1)}`), st("Multiply.", `${raw(a, n)} · ${raw(a - 1, n - 1)} = ${rs(a * (a - 1), n * (n - 1))}`)],
         traps: traps(ans, [trap(F(a * a, n * n), "That's with replacement. Without replacement, the second pick has one fewer of each."), trap(F(2 * a, n), "Multiply the two probabilities; don't add.")]),
       };
     }
@@ -410,7 +410,7 @@ const multiplication: Skill = {
       prompt: `There are ${a} ${items[0]} and ${b} ${items[1]} ${items[2]}. Two are chosen at random without replacement. Find the probability of getting one of each.`,
       answer: num(ans),
       hints: [`One of each can happen two ways: ${items[0]} then ${items[1]}, or ${items[1]} then ${items[0]}.`, `${raw(a, n)} · ${raw(b, n - 1)} + ${raw(b, n)} · ${raw(a, n - 1)}.`],
-      steps: [st(`${items[0]} then ${items[1]}.`, `${raw(a, n)} · ${raw(b, n - 1)} = ${raw(a * b, n * (n - 1))}`), st(`${items[1]} then ${items[0]}.`, `${raw(b, n)} · ${raw(a, n - 1)} = ${raw(a * b, n * (n - 1))}`), st("Add the two ways.", `${raw(2 * a * b, n * (n - 1))} = ${ft(ans.n, ans.d)}`)],
+      steps: [st(`${items[0]} then ${items[1]}.`, `${raw(a, n)} · ${raw(b, n - 1)} = ${raw(a * b, n * (n - 1))}`), st(`${items[1]} then ${items[0]}.`, `${raw(b, n)} · ${raw(a, n - 1)} = ${raw(a * b, n * (n - 1))}`), st("Add the two ways.", `${rs(2 * a * b, n * (n - 1))}`)],
       traps: traps(ans, [trap(F(a * b, n * (n - 1)), "That's only one order. One of each can happen in either order."), trap(F(2 * a * b, n * n), "Without replacement the second denominator is " + (n - 1) + ".")]),
     };
   },
@@ -443,7 +443,7 @@ const simulation: Skill = {
       { what: "a fair spinner with 5 equal sections landing on gold", p: F(1, 5) },
       { what: "rolling a sum of 7 with two fair dice", p: F(1, 6) },
     ]);
-    const trials = r.pick([100, 200, 300, 400, 500]);
+    const trials = r.pick([120, 180, 240, 300, 360, 600]);
     const expected = (trials * setup.p.n) / setup.p.d;
     if (lv === 1) {
       const got = Math.round(expected + r.int(-6, 6));

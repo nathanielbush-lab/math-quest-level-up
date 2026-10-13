@@ -45,7 +45,7 @@ const margin: Skill = {
     const ph = lv === 3 ? x / n : rnd(r.int(15, 80) / 100, 2);
     const se = Math.sqrt((ph * (1 - ph)) / n);
     const me = rnd(zs * se, 3);
-    const phText = lv === 3 ? `${x} of ${n} said they ${c.trait}` : `${dec(ph * 100)}% ${c.trait}`;
+    const phText = lv === 3 ? `${x} said they ${c.trait}` : `${dec(ph * 100)}% ${c.trait}`;
     return {
       prompt: `A random sample of ${n} ${c.pop} found that ${phText}. Find the margin of error for a ${conf}% confidence interval${lv === 1 ? " (use z* = 1.96)" : ` ${ZTABLE}`}. Round to three decimal places.`,
       answer: num(me, { tolerance: 0.0015 }),

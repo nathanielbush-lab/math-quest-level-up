@@ -64,7 +64,7 @@ const studyType: Skill = {
       const fb: Record<string, string> = { survey: "A survey collects answers to questions from a sample.", "observational study": "In an observational study, researchers only observe; they don't assign anything.", experiment: "An experiment imposes a treatment on the subjects." };
       return {
         prompt: `What kind of study is this? ${sc.text}`,
-        answer: choice(r, `An ${sc.type === "survey" ? "survey" : sc.type}`.replace("An survey", "A survey"), all.filter((t) => t !== sc.type).map((t) => [`${t === "survey" ? "A" : "An"} ${t}`, fb[sc.type]] as [string, string]), true),
+        answer: choice(r, `${sc.type === "survey" ? "A" : "An"} ${sc.type}`, all.filter((t) => t !== sc.type).map((t) => [`${t === "survey" ? "A" : "An"} ${t}`, fb[sc.type]] as [string, string]), true),
         hints: ["Does the researcher impose a treatment, just watch, or ask questions?", "If subjects are assigned to groups by the researcher, it's an experiment."],
         steps: [st("Who decides the groups?", sc.type === "experiment" ? "The researcher assigns the treatments." : sc.type === "survey" ? "No groups: people are asked questions." : "The groups already existed; the researcher only records data."), st("Answer.", `This is ${sc.type === "survey" ? "a survey" : `an ${sc.type}`}.`)],
       };
@@ -377,7 +377,7 @@ const randTest: Skill = {
   generate(r, lv): Problem {
     const ctx = r.pick([
       { treat: "practiced with a typing game", ctrl: "used regular practice", y: "words per minute", w: 1 },
-      { treat: "drank an electrolyte drink", ctrl: "drank water", y: "seconds in a sprint test", w: 0.2 },
+      { treat: "did a new stretching routine", ctrl: "did their usual warm-up", y: "centimeters on a vertical jump", w: 0.5 },
       { treat: "used a spaced-repetition app", ctrl: "studied normally", y: "quiz points", w: 1 },
     ]);
     const w = ctx.w;
@@ -460,12 +460,26 @@ const evaluate: Skill = {
       ["A school compares students who chose to take an SAT prep class with those who didn't and concludes the class raised scores by 60 points.", "Students chose whether to take the class, so motivated students may be in it; without random assignment, the class can't be credited.", ["60 points is too small to notice.", "The SAT changes every year.", "Nothing; the comparison proves the class works."]],
     ];
     const pool = lv === 1 ? easy : hard;
-    const [text, ans, wrong] = r.pick(pool);
+    const pick = r.int(0, pool.length - 1);
+    const [text, ans, wrong] = pool[pick];
     if (lv === 3) {
-      const fixes: Record<string, string> = {
-        observational: "Randomly assign participants to the treatment and control groups.",
+      const fixes = [
+        "Randomly assign students to play chess or not, then compare math scores.",
+        "Test the app on a large random sample, with a control group randomly assigned to not use it.",
+        "Reword the question neutrally, such as “Should teachers receive a raise?”",
+        "Randomly assign students to take the prep class or not, then compare score gains.",
+      ];
+      const fix = fixes[pick];
+      return {
+        prompt: `${text} Which change would most improve this study?`,
+        answer: choice(r, fix, [
+          ["Collect data from more people chosen the same way.", "More data collected the same flawed way keeps the same flaw."],
+          ["Report the results with more decimal places.", "Precision doesn't fix a design problem."],
+          ["Present the results in a more eye-catching graph.", "Presentation doesn't fix how the data were collected."],
+        ]),
+        hints: ["First name the main flaw: confounding, a tiny or self-selected sample, or a leading question.", "Pick the change that removes that flaw."],
+        steps: [st("Main flaw.", ans), st("Fix.", fix)],
       };
-      void fixes;
     }
     return {
       prompt: `${text} What is the biggest problem with this report?`,

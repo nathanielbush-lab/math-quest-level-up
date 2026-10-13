@@ -10,7 +10,7 @@ type Dir = ">" | "<" | "≠";
 export interface TestCtx { setup: string; p0: number; dir: Dir; pop: string; trait: string; ha: string }
 export const TESTS: TestCtx[] = [
   { setup: "Nationally, 35% of teens have a part-time job. A counselor thinks the rate is higher at her school.", p0: 0.35, dir: ">", pop: "students at her school", trait: "have a part-time job", ha: "more than 35% of students at her school have a part-time job" },
-  { setup: "A phone company claims 80% of its customers are satisfied. A consumer group suspects the true rate is lower.", p0: 0.8, dir: "<", pop: "the company's customers", trait: "are satisfied", ha: "fewer than 80% of the company's customers are satisfied" },
+  { setup: "A phone company claims 80% of its customers are satisfied. A consumer group suspects the true rate is lower.", p0: 0.8, dir: "<", pop: "customers of the company", trait: "are satisfied", ha: "fewer than 80% of the company's customers are satisfied" },
   { setup: "A game developer says 10% of loot boxes hold a rare item. Players suspect the rate is lower.", p0: 0.1, dir: "<", pop: "loot boxes", trait: "hold a rare item", ha: "fewer than 10% of loot boxes hold a rare item" },
   { setup: "Last year 60% of students passed a placement test. After a new tutoring program, the school wants to know if the pass rate went up.", p0: 0.6, dir: ">", pop: "students this year", trait: "pass", ha: "more than 60% of students now pass" },
   { setup: "A coin used in a game app is supposed to land heads 50% of the time. A player wonders if it's unfair.", p0: 0.5, dir: "≠", pop: "flips of the app's coin", trait: "land heads", ha: "the coin does not land heads 50% of the time" },
@@ -192,4 +192,4 @@ const conclusion: Skill = {
 };
 
 export default [hypotheses, zStat, pValue, conclusion] satisfies Skill[];
-void dec;
+
