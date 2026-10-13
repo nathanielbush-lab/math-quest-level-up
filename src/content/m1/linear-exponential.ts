@@ -268,7 +268,7 @@ const growthDecay: Skill = {
   id: "m1.linexp.growth-decay",
   title: "Growth and decay rates",
   topic: T,
-  standards: ["NC.M1.F-IF.8b"],
+  standards: ["NC.M1.F-IF.8", "NC.M1.F-IF.8b"],
   prereqs: ["m1.linexp.build-exp"],
   lesson: {
     bigIdea: "In a·b^t, b > 1 means growth at rate b − 1; 0 < b < 1 means decay at rate 1 − b. Write the rate as a percent.",

@@ -471,7 +471,7 @@ const compare: Skill = {
         { what: "points per game", A: "Team Red", B: "Team Blue" },
         { what: "minutes per pizza delivery", A: "Store A", B: "Store B" },
         { what: "daily tips (dollars)", A: "Ava", B: "Diego" },
-        { what: "100 m sprint times (tenths of a second over 12 s)", A: "Kai", B: "Nora" },
+        { what: "minutes of daily guitar practice", A: "Kai", B: "Nora" },
       ]);
       const { A, B } = ctx;
       const mA = r.int(20, 85), mB = mA + r.nonzero(-6, 6);

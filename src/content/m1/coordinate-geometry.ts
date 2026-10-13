@@ -51,8 +51,8 @@ const slope: Skill = {
       return {
         prompt: `The line through ${known} has slope ${fracMark(m)}. Find k.`,
         answer: num(ans),
-        hints: ["Write the slope formula with k in it and set it equal to the slope.", `The run is ${x2} − ${sn(x1)} = ${dx}. Rise = slope × run.`],
-        steps: [st("Find the run.", `${ms(x2)} − ${sn(x1)} = ${dx}`), st("Rise = slope × run.", `${fracMark(m)} × ${dx} = ${ms((m.n * dx) / m.d)}`), st(askFirst ? "Go back from the second point." : "Go up from the first point.", askFirst ? `k = ${ms(y2)} − ${sn((m.n * dx) / m.d)} = ${ms(y1)}` : `k = ${ms(y1)} + ${sn((m.n * dx) / m.d)} = ${ms(y2)}`)],
+        hints: ["Write the slope formula with k in it and set it equal to the slope.", `The run is ${ms(x2)} − ${sn(x1)} = ${dx}. Rise = slope × run.`],
+        steps: [st("Find the run.", `${ms(x2)} − ${sn(x1)} = ${dx}`), st("Rise = slope × run.", `${fracMark(m)} × ${dx} = ${ms((m.n * dx) / m.d)}`), st(askFirst ? "Work back from the second point." : "Move from the first point.", askFirst ? `k = ${ms(y2)} − ${sn((m.n * dx) / m.d)} = ${ms(y1)}` : `k = ${ms(y1)} + ${sn((m.n * dx) / m.d)} = ${ms(y2)}`)],
         traps: traps(frac(ans), [trap(askFirst ? y2 + (m.n * dx) / m.d : y1 - (m.n * dx) / m.d, "Check the direction: the slope's sign tells you whether y goes up or down as x increases.")]),
       };
     }

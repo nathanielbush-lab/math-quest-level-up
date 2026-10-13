@@ -525,7 +525,7 @@ const design: Skill = {
       answer: num(ans, { tolerance: 0.05, unit: " cm" }),
       hints: ["Graph y = 2πx^2 + " + `${2 * Vc}/x for x > 0 and find the minimum.`, `Check values near r = ${dn(Math.floor(rOpt))} to ${dn(Math.floor(rOpt) + 1)}.`],
       steps: [
-        st("Where S comes from.", `h = {${Vc}/πr^2}, so S = 2πr^2 + 2πrh = 2πr^2 + {${2 * Vc}/r}.`),
+        st("Where S comes from.", `h = ${Vc} ÷ (πr^2), so S = 2πr^2 + 2πrh = 2πr^2 + {${2 * Vc}/r}.`),
         st("Minimize.", `The graph's lowest point is at r ≈ ${dn(rOpt, 3)} (S ≈ ${dn(2 * Math.PI * rOpt * rOpt + (2 * Vc) / rOpt, 1)} cm^2).`),
         st("Answer.", `r ≈ ${dn(ans, 1)} cm`),
       ],

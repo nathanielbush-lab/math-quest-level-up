@@ -313,7 +313,7 @@ const zerosFactors: Skill = {
   id: "m1.quad.zeros-factors",
   title: "Zeros, factors and x-intercepts",
   topic: T,
-  standards: ["NC.M1.A-APR.3", "NC.M1.F-IF.8a"],
+  standards: ["NC.M1.A-APR.3", "NC.M1.F-IF.8", "NC.M1.F-IF.8a"],
   prereqs: ["m1.quad.solve-factoring"],
   lesson: {
     bigIdea: "If (x − r) is a factor of a quadratic, then r is a zero of the function, a solution of f(x) = 0, and an x-intercept of its graph: four ways to say the same thing.",

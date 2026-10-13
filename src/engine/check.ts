@@ -162,7 +162,8 @@ function fmtNum(v: Frac, tolerance?: number, preferFraction = false): string {
   while (d % 2 === 0) d /= 2;
   while (d % 5 === 0) d /= 5;
   if (d === 1 && !preferFraction) return String(Number(toNum(v).toFixed(6)));
-  return fmtFrac(v, Math.abs(v.n) > v.d);
+  // High school writes improper fractions (4/3), not mixed numbers (1 1/3).
+  return fmtFrac(v, false);
 }
 
 /** A response that should always be marked correct (used by tests). */

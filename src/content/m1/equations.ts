@@ -175,7 +175,7 @@ const multiStep: Skill = {
     const d = lhs - c * (x + q);
     const A = a, B = a * p + b, C = c, D = c * q + d;
     return {
-      prompt: `Solve for x: ${a}${binom(-p)}${cst(b)} = ${c}${binom(-q)}${cst(d)}`,
+      prompt: `Solve for x: ${a}${binom(-p)}${cst(b)} = ${ms(c)}${binom(-q)}${cst(d)}`,
       answer: num(x),
       hints: ["Distribute on both sides first.", `Simplify each side: ${lin(A, B)} = ${lin(C, D)}.`, "Then collect the x-terms on one side and the numbers on the other."],
       steps: [

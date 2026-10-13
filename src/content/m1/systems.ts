@@ -354,8 +354,8 @@ const equivalent: Skill = {
     const e1 = stdText(a1, b1, c1), e2 = stdText(a2, b2, c2);
     const good = `${e1} and ${stdText(a2 + k * a1, b2 + k * b1, c2 + k * c1)}`;
     const wrong: [string, string][] = [
-      [`${e1} and ${stdText(a2 + k * a1, b2 + k * b1, c2 + c1)}`, `The constant ${ms(c1)} must be multiplied by ${k} too.`],
-      [`${e1} and ${stdText(a2 + k * a1, b2 + b1, c2 + k * c1)}`, `Every term of the first equation must be multiplied by ${k}, including the y-term.`],
+      [`${e1} and ${stdText(a2 + k * a1, b2 + k * b1, c2 + c1)}`, `The constant ${ms(c1)} must be multiplied by ${ms(k)} too.`],
+      [`${e1} and ${stdText(a2 + k * a1, b2 + b1, c2 + k * c1)}`, `Every term of the first equation must be multiplied by ${ms(k)}, including the y-term.`],
       [`${stdText(k * a1, k * b1, c1)} and ${e2}`, "Multiplying only the left side of an equation changes its solutions."],
     ];
     if (lv === 3) {
@@ -363,14 +363,14 @@ const equivalent: Skill = {
         prompt: `The system ${e1} and ${e2} has solution ${pt(x0, y0)}. Which system also has the solution ${pt(x0, y0)}?`,
         answer: choice(r, good, wrong.slice(0, 2).concat([[`${e1} and ${stdText(a2 + k * a1, b2 + k * b1, c2 - k * c1)}`, "You added the left sides but subtracted on the right. Do the same operation to both sides."]])),
         hints: ["A new system is equivalent if it's built by multiplying a whole equation by a number and adding it to the other.", `Test ${pt(x0, y0)} in each option's second equation.`],
-        steps: [st(`Multiply the first equation by ${k}.`, stdText(k * a1, k * b1, k * c1)), st("Add it to the second equation.", stdText(a2 + k * a1, b2 + k * b1, c2 + k * c1)), st("Check.", `${times2(a2 + k * a1, x0, b2 + k * b1, y0)} = ${ms(c2 + k * c1)} ✓`)],
+        steps: [st(`Multiply the first equation by ${ms(k)}.`, stdText(k * a1, k * b1, k * c1)), st("Add it to the second equation.", stdText(a2 + k * a1, b2 + k * b1, c2 + k * c1)), st("Check.", `${times2(a2 + k * a1, x0, b2 + k * b1, y0)} = ${ms(c2 + k * c1)} ✓`)],
       };
     }
     return {
-      prompt: `Which system is produced by replacing the second equation of ${e1} and ${e2} with the sum of that equation and ${k} times the first equation?`,
+      prompt: `Which system is produced by replacing the second equation of ${e1} and ${e2} with the sum of that equation and ${ms(k)} times the first equation?`,
       answer: choice(r, good, wrong),
-      hints: [`Multiply every term of the first equation, including the constant, by ${k}.`, "Add the result to the second equation term by term."],
-      steps: [st(`Multiply the first equation by ${k}.`, stdText(k * a1, k * b1, k * c1)), st("Add to the second equation.", `(${ms(a2)} + ${sn(k * a1)})x + (${ms(b2)} + ${sn(k * b1)})y = ${ms(c2)} + ${sn(k * c1)} → ${stdText(a2 + k * a1, b2 + k * b1, c2 + k * c1)}`), st("Keep the first equation.", good)],
+      hints: [`Multiply every term of the first equation, including the constant, by ${ms(k)}.`, "Add the result to the second equation term by term."],
+      steps: [st(`Multiply the first equation by ${ms(k)}.`, stdText(k * a1, k * b1, k * c1)), st("Add to the second equation.", `(${ms(a2)} + ${sn(k * a1)})x + (${ms(b2)} + ${sn(k * b1)})y = ${ms(c2)} + ${sn(k * c1)} → ${stdText(a2 + k * a1, b2 + k * b1, c2 + k * c1)}`), st("Keep the first equation.", good)],
     };
   },
 };

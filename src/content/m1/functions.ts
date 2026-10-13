@@ -349,7 +349,7 @@ const domainRange: Skill = {
       const a = r.pick([1, -1, 2, -2]), h = r.int(-3, 3), k = r.int(-5, 5);
       const right = a > 0 ? `Domain: all real numbers; range: y ≥ ${f(k)}` : `Domain: all real numbers; range: y ≤ ${f(k)}`;
       return {
-        prompt: `What are the domain and range of f(x) = ${a === 1 ? "" : a === -1 ? "−" : a}(x ${h < 0 ? "+" : "−"} ${Math.abs(h)})^2 ${k < 0 ? "−" : "+"} ${Math.abs(k)}?`,
+        prompt: `What are the domain and range of f(x) = ${a === 1 ? "" : a === -1 ? "−" : ms(a)}${h === 0 ? "x" : `(x ${h < 0 ? "+" : "−"} ${Math.abs(h)})`}^2${k === 0 ? "" : ` ${k < 0 ? "−" : "+"} ${Math.abs(k)}`}?`,
         visual: { type: "plot", xMin: h - 5, xMax: h + 5, yMin: Math.min(k, 0) - 6, yMax: Math.max(k, 0) + 6, curves: [{ expr: `${a}(x-(${h}))^2+(${k})` }] },
         answer: choice(r, right, [[a > 0 ? `Domain: all real numbers; range: y ≤ ${f(k)}` : `Domain: all real numbers; range: y ≥ ${f(k)}`, `The parabola opens ${a > 0 ? "up" : "down"}, so ${f(k)} is a ${a > 0 ? "minimum" : "maximum"}.`], [`Domain: x ≥ ${f(h)}; range: all real numbers`, "Any x can be squared, so the domain is all real numbers; the range is limited by the vertex."], [`Domain: all real numbers; range: y ≥ ${f(h)}`, "The vertex's y-coordinate limits the range, not its x-coordinate."]]),
         hints: ["Can you substitute any x into this rule?", `The vertex is (${f(h)}, ${f(k)}). Does the parabola open up or down?`],

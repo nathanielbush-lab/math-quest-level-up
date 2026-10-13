@@ -82,7 +82,7 @@ const build: Skill = {
             st("Write the function.", `f(x) = ${display}`),
           ]
         : [
-            st("Divide the two equations.", `{a · b^3/a · b} = {${y2}/${y1}}, so b^2 = ${dn(y2 / y1)}.`),
+            st("Divide the two equations.", `{a · b³/a · b} = {${y2}/${y1}}, so b^2 = ${dn(y2 / y1)}.`),
             st("Find b.", `b = ${dn(b)} (b must be positive)`),
             st("Find a.", `${y1} = a · ${dn(b)}, so a = ${a}.`),
             st("Check and write.", `f(3) = ${a} · ${dn(b)}^3 = ${y2} ✓, so f(x) = ${display}`),
@@ -293,8 +293,8 @@ const logEval: Skill = {
         return {
           prompt: `Evaluate ${logName(b)}({1/${b ** n}}).`,
           answer: num(-n),
-          hints: [`${b ** n} = ${b}^${n}. How do you write 1 over a power using an exponent?`, `{1/${b}^${n}} = ${b}^-${n}.`],
-          steps: [st("Write the input as a power of " + b + ".", `{1/${b ** n}} = {1/${b}^${n}} = ${b}^-${n}`), st("Read the exponent.", `${logName(b)}({1/${b ** n}}) = −${n}`)],
+          hints: [`${b ** n} = ${b}^${n}. How do you write 1 over a power using an exponent?`, `{1/${b ** n}} = 1 ÷ ${b}^${n} = ${b}^-${n}.`],
+          steps: [st("Write the input as a power of " + b + ".", `{1/${b ** n}} = 1 ÷ ${b}^${n} = ${b}^-${n}`), st("Read the exponent.", `${logName(b)}({1/${b ** n}}) = −${n}`)],
           traps: traps(frac(-n), [trap(n, `${b}^${n} = ${b ** n}, not {1/${b ** n}}. A reciprocal needs a negative exponent.`)]),
         };
       }
@@ -473,7 +473,7 @@ const solve: Skill = {
   standards: ["NC.M3.F-LE.4", "NC.M3.A-CED.1", "NC.M3.A-REI.1"],
   prereqs: ["m3.exp.log-eval"],
   lesson: {
-    bigIdea: "To solve a · b^(ct) = d, isolate the power, then take a log of both sides to bring the exponent down: t = {log(d/a)/c · log(b)}.",
+    bigIdea: "To solve a · b^(ct) = d, isolate the power, then take a log of both sides to bring the exponent down: t = {log(d ÷ a)/c · log(b)}.",
     explain: [
       "$1500 grows at 4% per year: 1500(1.04)^t = 2500. When does it reach $2500?",
       "Divide by 1500: 1.04^t = {2500/1500} ≈ 1.6667. Take log of both sides: t · log(1.04) = log(1.6667).",

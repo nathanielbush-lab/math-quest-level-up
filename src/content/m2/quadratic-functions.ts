@@ -45,8 +45,8 @@ function quadPlot(coefs: [number, number, number], pts: { x: number; y: number; 
   const ys = [k, f(xs[0]), f(xs[1]), 0, ...pts.map((p) => p.y)];
   let yMin = Math.floor(Math.min(...ys) - 2), yMax = Math.ceil(Math.max(...ys) + 2);
   if (a > 0) yMax = Math.min(yMax, Math.ceil(k + 16)); else yMin = Math.max(yMin, Math.floor(k - 16));
-  yMin = Math.min(yMin, -2); yMax = Math.max(yMax, 2);
-  return { type: "plot", xMin: Math.floor(Math.min(h - 6, -1)), xMax: Math.ceil(Math.max(h + 6, 1)), yMin, yMax, curves: [{ expr: polyExpr([a, b, c]) }], points: pts, ...extra };
+  yMin = Math.min(yMin, -2, ...pts.map((p) => Math.floor(p.y - 2))); yMax = Math.max(yMax, 2, ...pts.map((p) => Math.ceil(p.y + 2)));
+  return { type: "plot", xMin: Math.floor(Math.min(h - 6, -1, ...pts.map((p) => p.x - 1))), xMax: Math.ceil(Math.max(h + 6, 1, ...pts.map((p) => p.x + 1))), yMin, yMax, curves: [{ expr: polyExpr([a, b, c]) }], points: pts, ...extra };
 }
 
 // ---------- 1. Polynomial operations ----------
@@ -440,7 +440,7 @@ const transform: Skill = {
       const kText = k === 0.5 ? "1/2" : String(k);
       return {
         prompt: `The graph shows f(x) = ${fam.f === "x" ? "x" : fam.f} (dashed) and g(x) = k · f(x). Find k.`,
-        visual: { type: "plot", xMin: -4, xMax: 4, yMin: -8, yMax: 8, curves: [{ expr: fam.f, dashed: true, label: "f" }, { expr: `${kText === "1/2" ? "0.5" : k}*${fam.f === "|x|" ? "abs(x)" : fam.f === "x^2" ? "x^2" : "x"}`, color: 2, label: "g" }], points: [{ x: 2, y: (fam.f === "x^2" ? 4 : 2) * k, label: pt(2, (fam.f === "x^2" ? 4 : 2) * k) }, { x: 2, y: fam.f === "x^2" ? 4 : 2, label: pt(2, fam.f === "x^2" ? 4 : 2) }] },
+        visual: { type: "plot", xMin: -4, xMax: 4, yMin: -Math.max(8, Math.abs((fam.f === "x^2" ? 4 : 2) * k) + 2), yMax: Math.max(8, Math.abs((fam.f === "x^2" ? 4 : 2) * k) + 2), curves: [{ expr: fam.f, dashed: true, label: "f" }, { expr: `${kText === "1/2" ? "0.5" : k}*${fam.f === "|x|" ? "abs(x)" : fam.f === "x^2" ? "x^2" : "x"}`, color: 2, label: "g" }], points: [{ x: 2, y: (fam.f === "x^2" ? 4 : 2) * k, label: pt(2, (fam.f === "x^2" ? 4 : 2) * k) }, { x: 2, y: fam.f === "x^2" ? 4 : 2, label: pt(2, fam.f === "x^2" ? 4 : 2) }] },
         answer: num(k),
         hints: ["Compare the heights of f and g at the same x-value.", `At x = 2: f(2) = ${fam.f === "x^2" ? 4 : 2} and g(2) = ${ms((fam.f === "x^2" ? 4 : 2) * k)}. k = g(2) ÷ f(2).`],
         steps: [st("Compare outputs at x = 2.", `f(2) = ${fam.f === "x^2" ? 4 : 2}, g(2) = ${ms((fam.f === "x^2" ? 4 : 2) * k)}`), st("Divide.", `k = ${ms((fam.f === "x^2" ? 4 : 2) * k)} ÷ ${fam.f === "x^2" ? 4 : 2} = ${ms(k)}`)],
