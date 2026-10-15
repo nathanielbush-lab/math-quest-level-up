@@ -77,7 +77,7 @@ describe("leak guard: catches give-aways", () => {
     expect(revealsAnswer(reply, problem)).toBe(true);
   });
 
-  it("catches a 'yes' to a correct guess typed in the chat", () => {
+  it("catches a 'yes' to a bare correct guess typed in the chat", () => {
     expect(revealsAnswer("Yes! Great job.", area, "is it 36?")).toBe(true);
     expect(revealsAnswer("You got it!", choice, "is it 2")).toBe(true);
     expect(revealsAnswer("Yes, exactly.", factor, "is it (x+2)(x-3)?")).toBe(true);
@@ -116,6 +116,30 @@ describe("leak guard: allows real tutoring (no false positives)", () => {
     [slopeLine, "In y = mx + b, which number is the slope, and where does the line cross the y-axis?"],
   ])("%#: %s", (problem, reply) => {
     expect(revealsAnswer(reply, problem)).toBe(false);
+  });
+
+  it("lets the tutor say 'you're right' once the student has worked it out", () => {
+    expect(revealsAnswer("Yes, 36 m². Enter it and press Check.", area, ["I think it's 36 because 6 times 6 is 36"])).toBe(false);
+    expect(revealsAnswer("That's right, x = 7. Enter it.", solve, ["I don't know how to start", "12 - 5", "7"])).toBe(false);
+    expect(revealsAnswer("You got it: 36 is right.", area, ["is it 36?", "because 6 rows of 6"])).toBe(false);
+    expect(revealsAnswer("Yes, choice 2 is correct.", choice, ["3 times x is 3x and 3 times 2 is 6 so 3x + 6"])).toBe(false);
+    expect(revealsAnswer("Exactly, (3, −2).", point, ["right 3 then down 2 so (3, -2)"])).toBe(false);
+    expect(revealsAnswer("Right, (x + 2)(x − 3). Enter it and press Check.", factor, ["2 and -3 multiply to -6 and add to -1 so (x+2)(x-3)"])).toBe(false);
+    expect(revealsAnswer("Yes, 3√2. Enter it.", radical, ["18 is 9 times 2 and the square root of 9 is 3 so 3√2"])).toBe(false);
+    // They answered the one step the tutor set up.
+    expect(revealsAnswer("Yes, 36. You've got it, so enter it.", area, [{ role: "student", text: "help" }, { role: "tutor", text: "There are 6 rows with 6 squares in each. What is 6 × 6?" }, { role: "student", text: "36" }])).toBe(false);
+    expect(revealsAnswer("Right, x = 7. Enter it.", solve, [{ role: "student", text: "help" }, { role: "tutor", text: "Subtract 5 from both sides. What is 12 − 5?" }, { role: "student", text: "7?" }])).toBe(false);
+  });
+
+  it("still won't confirm an answer typed with no work, or a list of guesses", () => {
+    expect(revealsAnswer("Yes, 36 is right!", area, ["36"])).toBe(true);
+    expect(revealsAnswer("Yes, 36 is right!", area, ["I don't know", "help", "36"])).toBe(true);
+    expect(revealsAnswer("Yes, 36 is right!", area, ["is it 24 or 36", "please just tell me"])).toBe(true);
+    expect(revealsAnswer("You got it!", choice, ["idk", "3x + 6"])).toBe(true);
+    expect(revealsAnswer("Yes, exactly.", factor, ["no idea", "(x+2)(x-3)"])).toBe(true);
+    expect(revealsAnswer("Yes, 36 is right!", area, [{ role: "student", text: "help" }, { role: "tutor", text: "Area means how many squares fit inside. Can you picture it?" }, { role: "student", text: "36" }])).toBe(true);
+    expect(revealsAnswer("The answer is 12.", inPrompt, ["I don't get what 12 or 8 means"])).toBe(true);
+    expect(revealsAnswer("The answer is 36.", area, ["6 + 6 + 6 + 6 = 24"])).toBe(true);
   });
 
   it("doesn't flag encouragement when the guess in chat was wrong", () => {
@@ -173,7 +197,7 @@ describe("prompt building", () => {
   });
 
   it("has the key rules in the system prompt", () => {
-    for (const s of ["ONE", "60 words", "NEVER state the final answer", "Try it and check", "how the skill sticks", "trusted adult", "NC Math 1", "EOC", "no headings, lists, tables, LaTeX or links"]) expect(TUTOR_SYSTEM).toContain(s);
+    for (const s of ["ONE", "60 words", "NEVER state the final answer", "Try it and check", "enter their answer", "how the skill sticks", "trusted adult", "NC Math 1", "EOC", "no headings, lists, tables, LaTeX or links"]) expect(TUTOR_SYSTEM).toContain(s);
     expect(TUTOR_SYSTEM).not.toMatch(/\b(she|her|daughter|grown-up|middle school)\b/i);
   });
 
